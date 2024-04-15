@@ -1,0 +1,24 @@
+server:
+  config:
+    secrets:
+      password-secret: PeSgVkYp3s6v9y$B&E)H@McQfTjWmZq4t7w!z%C*F-JaNdRgUkXp2r5u8x/A?D(G
+      access-token-secret: 9z$C&F)J@NcRfUjWnZr4u7x!A%D*G-KaPdSgVkYp2s5v8y/B?E(H+MbQeThWmZq4
+      refresh-token-secret: D*G-KaPdSgVkYp2s5v8y/B?E(H+MbQeThWmZq4t6w9z$C&F)J@NcRfUjXn2r5u8x
+      token-hash-secret: QfTjWmZq4t7w!z%C*F-JaNdRgUkXp2r5u8x/A?D(G+KbPeShVmYq3t6v9y$B&E)H
+    max-refresh-tokens: 3
+
+  port: 80
+
+
+spring:
+  application:
+    name: pharmacist
+
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: true
+
+logging:
+  level:
+    org.springframework.web: INFO
