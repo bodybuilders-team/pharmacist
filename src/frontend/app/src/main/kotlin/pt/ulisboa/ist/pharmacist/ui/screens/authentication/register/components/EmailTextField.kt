@@ -1,0 +1,35 @@
+package pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.components
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import pt.ulisboa.ist.pharmacist.R
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.components.AuthenticationTextField
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validateEmail
+
+/**
+ * The email text field.
+ *
+ * @param email email to show
+ * @param onEmailChangeCallback callback to be invoked when the email text is changed
+ * @param modifier modifier to be applied to the text field
+ */
+@Composable
+fun EmailTextField(
+    email: String,
+    onEmailChangeCallback: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val invalidEmailMessage = stringResource(R.string.register_message_invalidEmail)
+    val invalidEmail = email.isNotEmpty() && !validateEmail(email)
+
+    AuthenticationTextField(
+        label = stringResource(R.string.register_emailTextField_label),
+        value = email,
+        onValueChange = onEmailChangeCallback,
+        modifier = Modifier.fillMaxWidth().then(modifier),
+        required = true,
+        errorMessage = if (invalidEmail) invalidEmailMessage else null
+    )
+}

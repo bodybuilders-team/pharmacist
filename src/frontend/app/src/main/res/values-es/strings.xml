@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="backButton_text">Volver</string>
+    <string name="defaultLoading_text" tools:ignore="TypographyEllipsis">Cargando...</string>
+
+    <!-- Main Menu -->
+
+    <string name="home_loginButton_text">Login</string>
+    <string name="home_loginButton_description">Botón de la pantalla de inicio de sesión</string>
+
+    <string name="home_registerButton_text">Registrarse</string>
+    <string name="home_registerButton_description">Botón para la pantalla de registro</string>
+
+    <string name="home_aboutButton_text">Sobre</string>
+    <string name="home_aboutButton_description">Botón de pantalla con información del desarrollador.</string>
+
+    <string name="home_logoutButton_description">Botón para cerrar sesión</string>
+    <string name="home_logoutButton_text">Cerrar sesión</string>
+
+    <string name="home_welcome_text">Bienvenido, %s!</string>
+    <string name="home_welcome_guest_text">Bienvenido, ¡necesitas iniciar sesión para jugar!</string>
+
+    <!-- Authentication (Both Login and Register) -->
+
+    <string name="authentication_message_invalidUsername">Nombre de usuario debe tener al menos 3 caracteres.</string>
+    <string name="authentication_message_invalidPassword">Contraseña debe tener al menos 8 caracteres.</string>
+    <string name="authentication_usernameTextField_label">Nombre de Usuario</string>
+    <string name="authentication_passwordTextField_label">Contraseña</string>
+
+    <!-- Login -->
+
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="login_loginButton_text">Iniciar Sesión</string>
+    <string name="login_loginButton_description">Botón para iniciar sesión</string>
+
+    <string name="login_message_usernameNotFound">Nombre de usuario no existe.</string>
+    <string name="login_message_wrongPassword">Contraseña está incorrecta.</string>
+    <string name="login_message_successful">El inicio de sesión fue un éxito.</string>
+
+    <!-- Register -->
+
+    <string name="register_title">Registrarse</string>
+    <string name="register_registerButton_text">Registrarse</string>
+    <string name="register_registerButton_description">Botón para se registrar</string>
+
+    <string name="register_message_invalidEmail">Email Inválido</string>
+    <string name="register_message_userExists">Nombre de usuario ya existe.</string>
+    <string name="register_message_successful">Usuario registrado con éxito.</string>
+
+    <!-- About -->
+
+    <string name="about_title">Autores</string>
+    <string name="about_authorImage_contentDescription">Imagen del Autor</string>
+    <string name="about_repoGithub_text">El código de esta aplicación está disponible aquí:</string>
+    <string name="about_githubLogo_contentDescription">Logo de Github</string>
+    <string name="about_emailIcon_contentDescription">Ícono de email</string>
+</resources>
