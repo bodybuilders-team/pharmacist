@@ -1,6 +1,6 @@
 # pharmacist
 
-> A simple but powerful **Pharmacy Management** application.
+> A simple but powerful **Pharmacy Management** application ⚕️.
 
 ## Authors
 
