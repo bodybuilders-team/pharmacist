@@ -2,6 +2,10 @@ package pt.ulisboa.ist.pharmacist.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val IstBlue = Color(0xFF009BDE)
+val IstBlueDark = Color(0xFF0077A2)
+// TODO: Change the colors to match the new design
+
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)

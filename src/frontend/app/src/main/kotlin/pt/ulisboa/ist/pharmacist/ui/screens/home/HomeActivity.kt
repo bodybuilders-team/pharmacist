@@ -43,11 +43,6 @@ class HomeActivity : PharmacistActivity() {
             }
         }
 
-        if (viewModel.state == IDLE) {
-            viewModel.updateHomeLinks()
-            viewModel.loadHome()
-        }
-
         setContent {
             HomeScreen(
                 loggedIn = viewModel.isLoggedIn,

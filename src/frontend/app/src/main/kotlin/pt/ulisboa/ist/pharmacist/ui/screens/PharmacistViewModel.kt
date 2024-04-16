@@ -16,7 +16,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
  * @property events the events that occurred in the view model
  */
 abstract class PharmacistViewModel(
-    private val pharmacistService: PharmacistService,
+    val pharmacistService: PharmacistService,
     protected val sessionManager: SessionManager
 ) : ViewModel() {
 

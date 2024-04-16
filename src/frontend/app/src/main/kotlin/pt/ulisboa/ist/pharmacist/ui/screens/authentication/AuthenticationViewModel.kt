@@ -13,8 +13,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewMod
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.SUCCESS
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.launchAndExecuteRequest
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.Links
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.Rels
 
 /**
  * View model for both authentication methods (login and register).
@@ -51,14 +49,10 @@ open class AuthenticationViewModel(
             request = { getAuthenticationResult() },
             events = _events,
             onSuccess = { authenticationData ->
-                val properties = authenticationData.properties
-                    ?: throw IllegalStateException("Token properties are null")
-
                 sessionManager.setSession(
-                    accessToken = properties.accessToken,
-                    refreshToken = properties.refreshToken,
-                    username = username,
-                    userHomeLink = authenticationData.getLink(Rels.USER_HOME).href.path
+                    accessToken = authenticationData.accessToken,
+                    refreshToken = authenticationData.refreshToken,
+                    username = username
                 )
                 _state = SUCCESS
             },
@@ -67,16 +61,6 @@ open class AuthenticationViewModel(
                 false
             }
         )
-    }
-
-    /**
-     * Updates the links.
-     *
-     * @param links the links to update
-     */
-    override fun updateLinks(links: Links) {
-        super.updateLinks(links)
-        _state = LINKS_LOADED
     }
 
     /**

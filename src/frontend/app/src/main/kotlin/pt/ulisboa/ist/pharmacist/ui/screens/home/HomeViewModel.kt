@@ -13,18 +13,14 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewMod
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeLoadingState.LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeLoadingState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeLoadingState.NOT_LOADING
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.HOME_LINKS_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.HOME_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.IDLE
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.LOADING_HOME
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.LOADING_USER_HOME
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.USER_HOME_LINKS_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.USER_HOME_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.launchAndExecuteRequest
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.launchAndExecuteRequestThrowing
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.Links
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.Rels
 
 /**
  * View model for the [HomeActivity].
@@ -60,46 +56,25 @@ class HomeViewModel(
      * Loads the home page.
      */
     fun loadHome() {
-        check(state == HOME_LINKS_LOADED) { "The view model is not in the links loaded state." }
+        check(state == IDLE) { "The view model is not in the idle state." }
 
         _state = LOADING_HOME
 
-        launchAndExecuteRequestThrowing(
-            request = { pharmacistService.getHome() },
-            events = _events,
-            onSuccess = {
-                _state = HOME_LOADED
-
-                if (sessionManager.isLoggedIn()) {
-                    val newLinks = getLinks().links
-                        .toMutableMap()
-                        .also { links -> links[Rels.USER_HOME] = sessionManager.userHomeLink!! }
-
-                    updateUserHomeLinks(Links(links = newLinks))
-                    loadUserHome()
-                }
-            }
-        )
+        if (sessionManager.isLoggedIn()) {
+            loadUserHome()
+            return
+        }
     }
 
     /**
      * Loads the user home links.
      */
     fun loadUserHome() {
-        check(state == USER_HOME_LINKS_LOADED) {
-            "The view model is not in the user home links loaded state."
-        }
+        check(state == LOADING_HOME) { "The view model is not in the home links loaded state." }
 
         _state = LOADING_USER_HOME
-
-        launchAndExecuteRequestThrowing(
-            request = { pharmacistService.usersService.getUserHome() },
-            events = _events,
-            onSuccess = {
-                _state = USER_HOME_LOADED
-                _isLoggedIn = true
-            }
-        )
+        _state = USER_HOME_LOADED
+        _isLoggedIn = true
     }
 
     /**
@@ -155,24 +130,6 @@ class HomeViewModel(
     }
 
     /**
-     * Updates the home links.
-     */
-    fun updateHomeLinks() {
-        super.updateLinks(Links(emptyMap()))
-        _state = HOME_LINKS_LOADED
-    }
-
-    /**
-     * Updates the user home links.
-     *
-     * @param links the new user home links
-     */
-    fun updateUserHomeLinks(links: Links) {
-        super.updateLinks(links)
-        _state = USER_HOME_LINKS_LOADED
-    }
-
-    /**
      * The state of the [HomeViewModel].
      *
      * @property IDLE the initial state
@@ -185,10 +142,8 @@ class HomeViewModel(
      */
     enum class HomeState {
         IDLE,
-        HOME_LINKS_LOADED,
         LOADING_HOME,
         HOME_LOADED,
-        USER_HOME_LINKS_LOADED,
         LOADING_USER_HOME,
         USER_HOME_LOADED
     }

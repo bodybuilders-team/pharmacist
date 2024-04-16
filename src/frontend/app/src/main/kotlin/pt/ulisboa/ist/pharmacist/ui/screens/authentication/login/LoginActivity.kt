@@ -1,15 +1,15 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.authentication.login
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.IDLE
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.Links.Companion.getLinks
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.Links.Companion.putLinks
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 
 /**
@@ -30,9 +30,6 @@ class LoginActivity : PharmacistActivity() {
             }
         }
 
-        if (viewModel.state == IDLE)
-            viewModel.updateLinks(intent.getLinks())
-
         setContent {
             LoginScreen(
                 state = viewModel.state,
@@ -41,9 +38,6 @@ class LoginActivity : PharmacistActivity() {
                 },
                 onLoginSuccessful = {
                     val resultIntent = Intent()
-
-                    resultIntent.putLinks(viewModel.getLinks())
-
                     setResult(RESULT_OK, resultIntent)
                     finish()
                 },
@@ -60,6 +54,7 @@ class LoginActivity : PharmacistActivity() {
      *
      * @param event the event to handle
      */
+    @RequiresApi(Build.VERSION_CODES.R)
     private suspend fun handleEvent(event: Event) {
         when (event) {
             is Event.Error -> showToast(event.message)

@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name" translatable="false">Pharmacist</string>
+    <string name="logo_content_description" translatable="false">Pharmacist Logo</string>
 
     <string name="backButton_text">Go Back</string>
-    <string name="defaultLoading_text" tools:ignore="TypographyEllipsis">Loading...</string>
+    <string name="defaultLoading_text">Loading…</string>
 
     <!-- Home -->
 

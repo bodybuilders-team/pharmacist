@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,7 +65,7 @@ fun HomeScreen(
 
             Box {
                 Image(
-                    painter = painterResource(R.drawable.logo),
+                    painter = painterResource(R.drawable.pharmacy_logo),
                     contentDescription = stringResource(R.string.logo_content_description),
                     modifier = Modifier
                         .fillMaxWidth(LOGO_MAX_WIDTH_FACTOR)
@@ -80,7 +78,7 @@ fun HomeScreen(
                     }
             }
 
-            Text(
+            /*Text(
                 text = if (loggedIn)
                     stringResource(R.string.home_welcome_text, username!!)
                 else
@@ -90,7 +88,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth(WELCOME_TEXT_WIDTH_FACTOR)
                     .padding(bottom = WELCOME_TEXT_PADDING.dp)
-            )
+            )*/
 
 
             if (!loggedIn) {

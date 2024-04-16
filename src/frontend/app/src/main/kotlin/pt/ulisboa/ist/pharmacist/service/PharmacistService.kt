@@ -22,6 +22,6 @@ class PharmacistService(
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
     val usersService = UsersService(apiEndpoint, httpClient, jsonEncoder)
-    val pharmaciesService = PharmaciesService(apiEndpoint, httpClient, jsonEncoder)
-    val medicinesService = MedicinesService(apiEndpoint, httpClient, jsonEncoder)
+    //val pharmaciesService = PharmaciesService(apiEndpoint, httpClient, jsonEncoder)
+    //val medicinesService = MedicinesService(apiEndpoint, httpClient, jsonEncoder)
 }

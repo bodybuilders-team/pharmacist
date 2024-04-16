@@ -1,7 +1,5 @@
 package pt.ulisboa.ist.pharmacist.service.services.users.models.getUser
 
-import pt.ulisboa.ist.pharmacist.service.media.siren.SirenEntity
-
 /**
  * The Get User Output Model.
  *
@@ -18,4 +16,4 @@ data class GetUserOutputModel(
 /**
  * The Get User Output.
  */
-typealias GetUserOutput = SirenEntity<GetUserOutputModel>
+typealias GetUserOutput = GetUserOutputModel

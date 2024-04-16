@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.service.services.users.models.login
+package pt.ulisboa.ist.pharmacist.service.services.users.models.logout
 
 import pt.ulisboa.ist.pharmacist.service.services.users.models.AuthenticationOutput
 
