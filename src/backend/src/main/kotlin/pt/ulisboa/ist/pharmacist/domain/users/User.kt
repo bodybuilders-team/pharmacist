@@ -11,7 +11,7 @@ import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidUserException
  * @property passwordHash the hashed password of the user
  */
 data class User(
-    private var id: Int? = null,
+    var id: String? = null,
     val username: String,
     val email: String,
     val passwordHash: String

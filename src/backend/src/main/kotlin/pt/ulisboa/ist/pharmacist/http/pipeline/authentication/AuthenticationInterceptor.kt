@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
+import pt.ulisboa.ist.pharmacist.service.exceptions.AuthenticationException
 import pt.ulisboa.ist.pharmacist.utils.JwtProvider
 
 /**

@@ -69,7 +69,9 @@ class UsersController(private val usersService: UsersService) {
             }
         )
 
-        return GetUsersOutputModel(totalCount = usersDTO.totalCount, users = usersDTO.users)
+        return GetUsersOutputModel(
+            totalCount = usersDTO.totalCount,
+            users = usersDTO.users.map { GetUserOutputModel(it) })
     }
 
     /**

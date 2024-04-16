@@ -16,7 +16,6 @@ import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPaginationParamsExcep
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
 import pt.ulisboa.ist.pharmacist.service.exceptions.RefreshTokenExpiredException
-import pt.ulisboa.ist.pharmacist.service.medicines.MedicinesService
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDTO
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDTO
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginInputDTO
@@ -50,7 +49,7 @@ class UsersServiceImpl(
     private val hashingUtils: HashingUtils,
     private val jwtProvider: JwtProvider,
     private val config: ServerConfiguration
-) : MedicinesService {
+) : UsersService {
 
     override fun getUsers(offset: Int, limit: Int, orderBy: UsersOrder, ascending: Boolean): UsersDTO {
         if (offset < 0 || limit < 0)
@@ -187,8 +186,8 @@ class UsersServiceImpl(
 
     override fun getUser(userId: String): UserDTO {
         val user = usersRepository
-            .findByUsername(username)
-            ?: throw NotFoundException("User with username $username not found")
+            .findById(userId)
+            ?: throw NotFoundException("User with id $userId not found")
 
         return UserDTO(user = user)
     }
