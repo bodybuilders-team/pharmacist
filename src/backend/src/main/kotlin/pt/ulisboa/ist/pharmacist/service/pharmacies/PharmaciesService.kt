@@ -1,13 +1,8 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies
 
-import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginInputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.refreshToken.RefreshTokenOutputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterInputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDTO
-import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.CreateMedicineOutputDto
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesOutputDto
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
 
 /**
  * Service that handles the business logic of the pharmacies.
@@ -15,4 +10,18 @@ import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 interface PharmaciesService {
 
     // TODO: Implement the methods of the PharmaciesService interface
+
+    fun addPharmacy(name: String, location: String, picture: String): PharmacyDto
+
+    fun listAvailableMedicines(pharmacyId: Long, limit: Int, offset: Int): ListAvailableMedicinesOutputDto
+
+    fun createMedicine(
+        pharmacyId: Long,
+        name: String,
+        boxPhoto: String,
+        quantity: Int,
+        preferredUse: String
+    ): CreateMedicineOutputDto
+
+    // fun addMedicineStock(pharmacyId: Long, medicineId: Long, quantity: Int): AddMedicineStockOutputDto
 }

@@ -6,10 +6,10 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 @Repository
 class PharmaciesRepositoryMem : PharmaciesRepository {
 
-    private val pharmacies = mutableMapOf<Int, Pharmacy>()
+    private val pharmacies = mutableMapOf<Long, Pharmacy>()
 
     override fun save(pharmacy: Pharmacy): Pharmacy {
-        pharmacies[pharmacy.id ?: pharmacies.size] = pharmacy
+        pharmacies[pharmacy.id ?: pharmacies.size.toLong()] = pharmacy
         return pharmacy
     }
 
@@ -18,7 +18,7 @@ class PharmaciesRepositoryMem : PharmaciesRepository {
     }
 
     override fun findById(id: Long): Pharmacy? {
-        return pharmacies[id.toInt()]
+        return pharmacies[id]
     }
 
     override fun findAll(): List<Pharmacy> {
