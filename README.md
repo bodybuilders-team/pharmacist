@@ -12,7 +12,7 @@ Professor: João Garcia
 
 @IST<br>
 Master in Computer Science and Computer Engineering<br>
-Mobile and Ubiquitous Computing - Group ??<br>
+Mobile and Ubiquitous Computing - Group 03<br>
 Summer Semester of 2023/2024
 
 ## Table of Contents 📜
