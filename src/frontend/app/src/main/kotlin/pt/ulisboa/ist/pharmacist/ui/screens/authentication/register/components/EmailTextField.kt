@@ -28,7 +28,9 @@ fun EmailTextField(
         label = stringResource(R.string.register_emailTextField_label),
         value = email,
         onValueChange = onEmailChangeCallback,
-        modifier = Modifier.fillMaxWidth().then(modifier),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
         required = true,
         errorMessage = if (invalidEmail) invalidEmailMessage else null
     )

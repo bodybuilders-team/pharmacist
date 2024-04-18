@@ -49,9 +49,9 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
 
     val invalidFields = (email.isEmpty() || username.isEmpty() || password.isEmpty()) ||
-        email.isNotEmpty() && !validateEmail(email) ||
-        username.isNotEmpty() && !validateUsername(username) ||
-        password.isNotEmpty() && !validatePassword(password)
+            email.isNotEmpty() && !validateEmail(email) ||
+            username.isNotEmpty() && !validateUsername(username) ||
+            password.isNotEmpty() && !validatePassword(password)
 
     PharmacistScreen {
         Column(

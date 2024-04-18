@@ -8,7 +8,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.IDLE
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 

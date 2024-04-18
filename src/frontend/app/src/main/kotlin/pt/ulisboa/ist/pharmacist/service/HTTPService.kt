@@ -48,8 +48,10 @@ abstract class HTTPService(
                 when {
                     response.isSuccessful && contentType == applicationJsonMediaType ->
                         APIResult.Success(data = jsonEncoder.fromJson<T>(resJson))
+
                     !response.isSuccessful && contentType == problemMediaType ->
                         APIResult.Failure(error = jsonEncoder.fromJson(resJson))
+
                     else -> throw UnexpectedResponseException(response)
                 }
             } catch (e: JsonSyntaxException) {

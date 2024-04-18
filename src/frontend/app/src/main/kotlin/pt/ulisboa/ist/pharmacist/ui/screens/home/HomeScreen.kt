@@ -88,7 +88,7 @@ fun HomeScreen(
                     stringResource(R.string.home_welcome_text, username!!)
                 else
                     stringResource(R.string.home_welcome_guest_text),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth(WELCOME_TEXT_WIDTH_FACTOR)

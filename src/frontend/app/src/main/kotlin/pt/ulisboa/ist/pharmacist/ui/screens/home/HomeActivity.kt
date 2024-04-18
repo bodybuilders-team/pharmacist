@@ -3,7 +3,6 @@ package pt.ulisboa.ist.pharmacist.ui.screens.home
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -14,7 +13,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterActi
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ToastDuration
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateToForResult
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 
 /**
@@ -62,6 +60,7 @@ class HomeActivity : PharmacistActivity() {
                 navigateTo(event.clazz)
                 viewModel.setLoadingStateToLoaded()
             }
+
             is Event.Error -> showToast(event.message, ToastDuration.LONG)
         }
     }

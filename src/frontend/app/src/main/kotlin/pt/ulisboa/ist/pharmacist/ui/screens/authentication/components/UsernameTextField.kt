@@ -28,7 +28,9 @@ fun UsernameTextField(
         label = stringResource(R.string.authentication_usernameTextField_label),
         value = username,
         onValueChange = onUsernameChangeCallback,
-        modifier = Modifier.fillMaxWidth().then(modifier),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
         required = true,
         maxLength = MAX_USERNAME_LENGTH,
         forbiddenCharacters = listOf('\n'),

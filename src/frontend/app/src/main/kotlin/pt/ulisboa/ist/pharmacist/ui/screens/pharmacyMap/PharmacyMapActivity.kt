@@ -28,8 +28,18 @@ class PharmacyMapActivity : PharmacistActivity() {
             }
         }
 
+        viewModel.getCurrentLocation(this)
+        viewModel.checkForLocationAccessPermission(this)
+
         setContent {
+            if (viewModel.state == PharmacyMapViewModel.PharmacyMapState.IDLE)
+                viewModel.loadPharmacyMap()
+
             PharmacyMapScreen(
+                hasLocationPermission = viewModel.hasLocationPermission,
+                mapProperties = viewModel.mapProperties,
+                cameraPositionState = viewModel.cameraPositionState,
+                pharmacies = viewModel.pharmacies,
                 onPharmacyDetailsClick = { pid -> viewModel.navigateToPharmacyDetails(pid) },
                 loadingState = viewModel.loadingState
             )

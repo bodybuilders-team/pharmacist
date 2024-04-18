@@ -9,6 +9,9 @@ import kotlinx.coroutines.yield
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
+import pt.ulisboa.ist.pharmacist.ui.screens.addPharmacy.AddPharmacyViewModel.AddPharmacyLoadingState.LOADED
+import pt.ulisboa.ist.pharmacist.ui.screens.addPharmacy.AddPharmacyViewModel.AddPharmacyLoadingState.LOADING
+import pt.ulisboa.ist.pharmacist.ui.screens.addPharmacy.AddPharmacyViewModel.AddPharmacyLoadingState.NOT_LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
 
 /**
@@ -25,7 +28,7 @@ class AddPharmacyViewModel(
     sessionManager: SessionManager
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
 
-    private var _loadingState by mutableStateOf(AddPharmacyLoadingState.NOT_LOADING)
+    private var _loadingState by mutableStateOf(NOT_LOADING)
     private var _state: AddPharmacyState by mutableStateOf(AddPharmacyState.IDLE)
 
     val loadingState: AddPharmacyLoadingState
@@ -50,7 +53,7 @@ class AddPharmacyViewModel(
      * @param clazz the activity class to navigate to
      */
     fun <T> navigateTo(clazz: Class<T>) {
-        _loadingState = AddPharmacyLoadingState.LOADING
+        _loadingState = LOADING
 
         viewModelScope.launch {
             while (state !in listOf(AddPharmacyState.ADD_PHARMACY_LOADED))
@@ -73,7 +76,7 @@ class AddPharmacyViewModel(
      * Sets the loading state to [LOADED].
      */
     fun setLoadingStateToLoaded() {
-        _loadingState = AddPharmacyLoadingState.LOADED
+        _loadingState = LOADED
     }
 
 

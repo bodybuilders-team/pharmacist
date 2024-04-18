@@ -5,15 +5,15 @@ import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import java.io.IOException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.isFailure
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
 import pt.ulisboa.ist.pharmacist.service.connection.UnexpectedResponseException
 import pt.ulisboa.ist.pharmacist.service.connection.isFailure
 import pt.ulisboa.ist.pharmacist.service.media.Problem
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.isFailure
+import java.io.IOException
 
 const val RETRY_DELAY = 1000L
 

@@ -1,7 +1,5 @@
 package pt.ulisboa.ist.pharmacist.service.utils
 
-import java.net.URI
-
 /**
  * The URIs of the API.
  */

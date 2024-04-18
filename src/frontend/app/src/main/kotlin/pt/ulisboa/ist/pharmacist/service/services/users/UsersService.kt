@@ -7,8 +7,8 @@ import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
 import pt.ulisboa.ist.pharmacist.service.services.users.models.getUsers.GetUsersOutput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.login.LoginInput
-import pt.ulisboa.ist.pharmacist.service.services.users.models.login.LogoutInput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.login.LoginOutput
+import pt.ulisboa.ist.pharmacist.service.services.users.models.login.LogoutInput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.logout.LogoutOutput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.refreshToken.RefreshTokenInput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.refreshToken.RefreshTokenOutput

@@ -35,7 +35,7 @@ fun AuthenticationTextField(
         label = {
             Text(
                 text = "$label${if (required) " *" else ""}" +
-                    if (errorMessage != null) " - $errorMessage" else ""
+                        if (errorMessage != null) " - $errorMessage" else ""
             )
         },
         value = value,

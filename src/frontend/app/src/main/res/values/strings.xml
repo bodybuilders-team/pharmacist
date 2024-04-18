@@ -5,8 +5,14 @@
     <string name="backButton_text">Go Back</string>
     <string name="defaultLoading_text">Loading…</string>
 
-    <!-- Home -->
+    <!-- Pharmacy Map -->
+    <string name="pharmacyMap_location_permission_title">Location Permission Required</string>
+    <string name="pharmacyMap_location_permission_button">Grant Location Permission</string>
 
+    <string name="pharmacyMap_detailsButton_text">Details</string>
+    <string name="pharmacyMap_detailsButton_description">Button to pharmacy details screen</string>
+
+    <!-- Home -->
     <string name="home_loginButton_text">Login</string>
     <string name="home_loginButton_description">Button to login screen</string>
 
@@ -32,14 +38,12 @@
     <string name="home_welcome_guest_text">Welcome, to PharmacIST!</string>
 
     <!-- Authentication (Both Login and Register) -->
-
     <string name="authentication_message_invalidUsername">Username should have at least 3 characters.</string>
     <string name="authentication_message_invalidPassword">Password should have at least 8 characters.</string>
     <string name="authentication_usernameTextField_label">Username</string>
     <string name="authentication_passwordTextField_label">Password</string>
 
     <!-- Login -->
-
     <string name="login_title">Login</string>
     <string name="login_loginButton_text">Login</string>
     <string name="login_loginButton_description">Button to login</string>
@@ -59,10 +63,10 @@
     <string name="register_message_successful">User registered successfully.</string>
 
     <!-- About -->
-
     <string name="about_title">Authors</string>
     <string name="about_authorImage_contentDescription">Author Image</string>
     <string name="about_repoGithub_text">"The code for this app is available at: "</string>
     <string name="about_githubLogo_contentDescription">Github Logo</string>
     <string name="about_emailIcon_contentDescription">Email Icon</string>
+    <string name="google_maps_key">AIzaSyAGLB3LgU6a1M8WhPLP_UyddHXx64075zw</string>
 </resources>

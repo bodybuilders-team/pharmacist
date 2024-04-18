@@ -3,8 +3,14 @@
     <string name="backButton_text">Voltar</string>
     <string name="defaultLoading_text" tools:ignore="TypographyEllipsis">Carregando...</string>
 
-    <!-- Main Menu -->
+    <!-- Pharmacy Map -->
+    <string name="pharmacyMap_location_permission_title">Permissão de Localização Necessária</string>
+    <string name="pharmacyMap_location_permission_button">Conceder Permissão de Localização</string>
 
+    <string name="pharmacyMap_detailsButton_text">Detalhes</string>
+    <string name="pharmacyMap_detailsButton_description">Botão para o ecrã de detalhes da farmácia</string>
+
+    <!-- Home -->
     <string name="home_loginButton_text">Entrar</string>
     <string name="home_loginButton_description">Botão para o ecrã de início de sessão</string>
 
@@ -30,14 +36,12 @@
     <string name="home_welcome_guest_text">Bem-vindo ao PharmacIST!</string>
 
     <!-- Authentication (Both Login and Register) -->
-
     <string name="authentication_message_invalidUsername">Username deve ter pelo menos 3 caracteres.</string>
     <string name="authentication_message_invalidPassword">Palavra-passe deve ter pelo menos 8 caracteres.</string>
     <string name="authentication_usernameTextField_label">Nome de Utilizador</string>
     <string name="authentication_passwordTextField_label">Palavra-passe</string>
 
     <!-- Login -->
-
     <string name="login_title">Iniciar Sessão</string>
     <string name="login_loginButton_text">Iniciar Sessão</string>
     <string name="login_loginButton_description">Botão para iniciar sessão</string>
@@ -47,7 +51,6 @@
     <string name="login_message_successful">Início de sessão realizado um sucesso.</string>
 
     <!-- Register -->
-
     <string name="register_title">Registar</string>
     <string name="register_registerButton_text">Registar</string>
     <string name="register_registerButton_description">Botão para registar</string>
@@ -57,7 +60,6 @@
     <string name="register_message_successful">Utilizador registado com sucesso.</string>
 
     <!-- About -->
-
     <string name="about_title">Autores</string>
     <string name="about_authorImage_contentDescription">Imagem do Autor</string>
     <string name="about_repoGithub_text">"O código desta aplicação está disponível aqui: "</string>
