@@ -9,7 +9,6 @@ import pt.ulisboa.ist.pharmacist.service.services.users.models.AuthenticationOut
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.IDLE
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.LINKS_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.SUCCESS
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.launchAndExecuteRequest
@@ -41,7 +40,7 @@ open class AuthenticationViewModel(
         username: String,
         getAuthenticationResult: suspend () -> APIResult<AuthenticationOutput>
     ) {
-        check(_state == LINKS_LOADED) { "The view model is not in the links loaded state." }
+        check(_state == IDLE) { "The view model is not in the idle state." }
 
         _state = LOADING
 
@@ -57,7 +56,7 @@ open class AuthenticationViewModel(
                 _state = SUCCESS
             },
             retryOnApiResultFailure = {
-                _state = LINKS_LOADED
+                _state = IDLE
                 false
             }
         )
@@ -67,13 +66,11 @@ open class AuthenticationViewModel(
      * The state of an authentication process.
      *
      * @property IDLE the initial state
-     * @property LINKS_LOADED the state when the links are loaded
      * @property LOADING the state of the authentication process while it is loading
      * @property SUCCESS the state of the authentication process when it is successful
      */
     enum class AuthenticationState {
         IDLE,
-        LINKS_LOADED,
         LOADING,
         SUCCESS
     }

@@ -14,11 +14,20 @@
     <string name="home_aboutButton_text">Sobre</string>
     <string name="home_aboutButton_description">Botón de pantalla con información del desarrollador.</string>
 
+    <string name="home_pharmacyMapButton_text">Mapa de Farmacias</string>
+    <string name="home_pharmacyMapButton_description">Botón para la pantalla del mapa de farmacias</string>
+
+    <string name="home_addPharmacyButton_description">Botón para agregar farmacia</string>
+    <string name="home_addPharmacyButton_text">Agregar Farmacia</string>
+
+    <string name="home_searchMedicineButton_description">Botón para buscar medicamento</string>
+    <string name="home_searchMedicineButton_text">Buscar Medicamento</string>
+
     <string name="home_logoutButton_description">Botón para cerrar sesión</string>
     <string name="home_logoutButton_text">Cerrar sesión</string>
 
-    <string name="home_welcome_text">Bienvenido, %s!</string>
-    <string name="home_welcome_guest_text">Bienvenido, ¡necesitas iniciar sesión para jugar!</string>
+    <string name="home_welcome_text">Bienvenido a PharmacIST, %s!</string>
+    <string name="home_welcome_guest_text">Bienvenido a PharmacIST!</string>
 
     <!-- Authentication (Both Login and Register) -->
 

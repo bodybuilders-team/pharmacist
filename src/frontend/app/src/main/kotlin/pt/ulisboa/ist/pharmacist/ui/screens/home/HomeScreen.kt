@@ -19,13 +19,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeLoadingState
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 
 private const val LOGO_MAX_WIDTH_FACTOR = 0.6f
 private const val LOGO_MAX_HEIGHT_FACTOR = 0.5f
-private const val BUTTON_MAX_WIDTH_FACTOR = 0.5f
+private const val BUTTON_MAX_WIDTH_FACTOR = 0.6f
 
 private const val WELCOME_TEXT_PADDING = 14
 private const val WELCOME_TEXT_WIDTH_FACTOR = 0.9f
@@ -38,6 +37,9 @@ private const val WELCOME_TEXT_WIDTH_FACTOR = 0.9f
  * @param onLoginClick callback to be invoked when the user clicks on the login button
  * @param onRegisterClick callback to be invoked when the user clicks on the register button
  * @param onLogoutClick callback to be invoked when the user clicks on the logout button
+ * @param onPharmacyMapClick callback to be invoked when the user clicks on the pharmacy map button
+ * @param onAddPharmacyClick callback to be invoked when the user clicks on the add pharmacy button
+ * @param onSearchMedicineClick callback to be invoked when the user clicks on the search medicine button
  * @param onAboutClick callback to be invoked when the user clicks on the about button
  * @param loadingState the current state of the loading operation
  */
@@ -49,7 +51,10 @@ fun HomeScreen(
     onRegisterClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onAboutClick: () -> Unit,
-    loadingState: HomeLoadingState
+    onPharmacyMapClick: () -> Unit,
+    onAddPharmacyClick: () -> Unit,
+    onSearchMedicineClick: () -> Unit,
+    loadingState: HomeViewModel.HomeLoadingState
 ) {
     PharmacistScreen {
         Column(
@@ -58,7 +63,7 @@ fun HomeScreen(
         ) {
             Text(
                 text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -72,13 +77,13 @@ fun HomeScreen(
                         .fillMaxHeight(LOGO_MAX_HEIGHT_FACTOR)
                 )
 
-                if (loadingState == HomeLoadingState.LOADING)
+                if (loadingState == HomeViewModel.HomeLoadingState.LOADING)
                     Box(modifier = Modifier.align(Alignment.BottomCenter)) {
                         LoadingSpinner()
                     }
             }
 
-            /*Text(
+            Text(
                 text = if (loggedIn)
                     stringResource(R.string.home_welcome_text, username!!)
                 else
@@ -88,13 +93,13 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth(WELCOME_TEXT_WIDTH_FACTOR)
                     .padding(bottom = WELCOME_TEXT_PADDING.dp)
-            )*/
+            )
 
 
             if (!loggedIn) {
                 IconButton(
                     onClick = onLoginClick,
-                    enabled = loadingState != HomeLoadingState.LOADING,
+                    enabled = loadingState != HomeViewModel.HomeLoadingState.LOADING,
                     painter = painterResource(R.drawable.ic_round_login_24),
                     contentDescription = stringResource(R.string.home_loginButton_description),
                     text = stringResource(R.string.home_loginButton_text),
@@ -103,7 +108,7 @@ fun HomeScreen(
 
                 IconButton(
                     onClick = onRegisterClick,
-                    enabled = loadingState != HomeLoadingState.LOADING,
+                    enabled = loadingState != HomeViewModel.HomeLoadingState.LOADING,
                     painter = painterResource(R.drawable.ic_round_person_add_24),
                     contentDescription = stringResource(R.string.home_registerButton_description),
                     text = stringResource(R.string.home_registerButton_text),
@@ -112,7 +117,7 @@ fun HomeScreen(
             } else {
                 IconButton(
                     onClick = onLogoutClick,
-                    enabled = loadingState != HomeLoadingState.LOADING,
+                    enabled = loadingState != HomeViewModel.HomeLoadingState.LOADING,
                     painter = painterResource(R.drawable.ic_round_logout_24),
                     contentDescription = stringResource(R.string.home_logoutButton_description),
                     text = stringResource(R.string.home_logoutButton_text),
@@ -121,8 +126,35 @@ fun HomeScreen(
             }
 
             IconButton(
+                onClick = onPharmacyMapClick,
+                enabled = loadingState != HomeViewModel.HomeLoadingState.LOADING,
+                painter = painterResource(R.drawable.round_map_24),
+                contentDescription = stringResource(R.string.home_pharmacyMapButton_description),
+                text = stringResource(R.string.home_pharmacyMapButton_text),
+                modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
+            )
+
+            IconButton(
+                onClick = onAddPharmacyClick,
+                enabled = loadingState != HomeViewModel.HomeLoadingState.LOADING,
+                painter = painterResource(R.drawable.round_add_24),
+                contentDescription = stringResource(R.string.home_addPharmacyButton_description),
+                text = stringResource(R.string.home_addPharmacyButton_text),
+                modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
+            )
+
+            IconButton(
+                onClick = onSearchMedicineClick,
+                enabled = loadingState != HomeViewModel.HomeLoadingState.LOADING,
+                painter = painterResource(R.drawable.ic_round_search_24),
+                contentDescription = stringResource(R.string.home_searchMedicineButton_description),
+                text = stringResource(R.string.home_searchMedicineButton_text),
+                modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
+            )
+
+            IconButton(
                 onClick = onAboutClick,
-                enabled = loadingState != HomeLoadingState.LOADING,
+                enabled = loadingState != HomeViewModel.HomeLoadingState.LOADING,
                 painter = painterResource(R.drawable.ic_round_info_24),
                 contentDescription = stringResource(R.string.home_aboutButton_description),
                 text = stringResource(R.string.home_aboutButton_text),
@@ -142,7 +174,10 @@ private fun HomeScreenPreview() {
         onRegisterClick = {},
         onLogoutClick = {},
         onAboutClick = {},
-        loadingState = HomeLoadingState.LOADED
+        onAddPharmacyClick = {},
+        onPharmacyMapClick = {},
+        onSearchMedicineClick = {},
+        loadingState = HomeViewModel.HomeLoadingState.LOADED
     )
 }
 
@@ -156,6 +191,9 @@ private fun UserHomeScreenPreview() {
         onRegisterClick = {},
         onLogoutClick = {},
         onAboutClick = {},
-        loadingState = HomeLoadingState.LOADED
+        onAddPharmacyClick = {},
+        onPharmacyMapClick = {},
+        onSearchMedicineClick = {},
+        loadingState = HomeViewModel.HomeLoadingState.LOADED
     )
 }

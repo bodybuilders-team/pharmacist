@@ -34,6 +34,14 @@
         <activity
             android:name=".ui.screens.authentication.register.RegisterActivity"
             android:theme="@style/Theme.Pharmacist" />
+
+        <activity
+            android:name=".ui.screens.pharmacyMap.PharmacyMapActivity"
+            android:theme="@style/Theme.Pharmacist" />
+
+        <activity
+            android:name=".ui.screens.addPharmacy.AddPharmacyActivity"
+            android:theme="@style/Theme.Pharmacist" />
     </application>
 
 </manifest>

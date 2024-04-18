@@ -11,10 +11,9 @@ import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.about.AboutActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.LoginActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeEvent
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.IDLE
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ToastDuration
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateToForResult
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 
@@ -24,14 +23,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 class HomeActivity : PharmacistActivity() {
 
     private val viewModel by getViewModel(::HomeViewModel)
-
-    private val userHomeForResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val resultIntent = result.data ?: return@registerForActivityResult
-        // This callback runs on the main thread
-        viewModel.loadUserHome()
-    }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +42,9 @@ class HomeActivity : PharmacistActivity() {
                 onRegisterClick = { viewModel.navigateTo<RegisterActivity>() },
                 onLogoutClick = { viewModel.logout() },
                 onAboutClick = { viewModel.navigateTo<AboutActivity>() },
+                onPharmacyMapClick = { viewModel.navigateToPharmacyMap() },
+                onAddPharmacyClick = { viewModel.navigateToAddPharmacy() },
+                onSearchMedicineClick = { viewModel.navigateToSearchMedicine() },
                 loadingState = viewModel.loadingState
             )
         }
@@ -64,12 +58,8 @@ class HomeActivity : PharmacistActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     private suspend fun handleEvent(event: Event) {
         when (event) {
-            is HomeEvent.Navigate -> {
-                navigateToForResult(
-                    activityResultLauncher = userHomeForResult,
-                    clazz = event.clazz
-                )
-
+            is HomeViewModel.HomeEvent.Navigate -> {
+                navigateTo(event.clazz)
                 viewModel.setLoadingStateToLoaded()
             }
             is Event.Error -> showToast(event.message, ToastDuration.LONG)

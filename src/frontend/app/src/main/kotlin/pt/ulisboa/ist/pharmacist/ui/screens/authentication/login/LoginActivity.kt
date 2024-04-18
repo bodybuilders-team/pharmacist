@@ -21,6 +21,7 @@ class LoginActivity : PharmacistActivity() {
 
     private val viewModel by getViewModel(::LoginViewModel)
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,7 +37,7 @@ class LoginActivity : PharmacistActivity() {
                 onLogin = { username, password ->
                     viewModel.login(username = username, password = password)
                 },
-                onLoginSuccessful = {
+                onLoginSuccessful = { // TODO: maybe this is not necessary
                     val resultIntent = Intent()
                     setResult(RESULT_OK, resultIntent)
                     finish()

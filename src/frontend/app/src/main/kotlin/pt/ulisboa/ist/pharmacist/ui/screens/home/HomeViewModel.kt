@@ -5,22 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.LINKS_LOADED
+import pt.ulisboa.ist.pharmacist.ui.screens.addPharmacy.AddPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeLoadingState.LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeLoadingState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeLoadingState.NOT_LOADING
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.HOME_LOADED
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.IDLE
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.LOADING_HOME
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.LOADING_USER_HOME
-import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeViewModel.HomeState.USER_HOME_LOADED
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.launchAndExecuteRequest
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.launchAndExecuteRequestThrowing
 
 /**
  * View model for the [HomeActivity].
@@ -29,53 +23,22 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.launchAndExecuteRequestThrowi
  * @property sessionManager the manager used to handle the user session
  *
  * @property loadingState the current loading state of the view model
- * @property state the current state of the view model
  */
 class HomeViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
-
     private var _loadingState by mutableStateOf(NOT_LOADING)
-    private var _state: HomeState by mutableStateOf(IDLE)
-    private var _isLoggedIn: Boolean by mutableStateOf(false)
+    private var _isLoggedIn: Boolean by mutableStateOf(sessionManager.isLoggedIn())
 
     val loadingState: HomeLoadingState
         get() = _loadingState
-
-    val state
-        get() = _state
 
     val isLoggedIn
         get() = _isLoggedIn
 
     val username
         get() = sessionManager.username
-
-    /**
-     * Loads the home page.
-     */
-    fun loadHome() {
-        check(state == IDLE) { "The view model is not in the idle state." }
-
-        _state = LOADING_HOME
-
-        if (sessionManager.isLoggedIn()) {
-            loadUserHome()
-            return
-        }
-    }
-
-    /**
-     * Loads the user home links.
-     */
-    fun loadUserHome() {
-        check(state == LOADING_HOME) { "The view model is not in the home links loaded state." }
-
-        _state = LOADING_USER_HOME
-        _state = USER_HOME_LOADED
-        _isLoggedIn = true
-    }
 
     /**
      * Logs out the user.
@@ -97,6 +60,18 @@ class HomeViewModel(
         )
     }
 
+    fun navigateToPharmacyMap() {
+        navigateTo(PharmacyMapActivity::class.java)
+    }
+
+    fun navigateToAddPharmacy() {
+        navigateTo(AddPharmacyActivity::class.java)
+    }
+
+    fun navigateToSearchMedicine() {
+        //TODO: navigateTo(SearchMedicineActivity::class.java)
+    }
+
     /**
      * Navigates to the given activity.
      *
@@ -106,9 +81,6 @@ class HomeViewModel(
         _loadingState = LOADING
 
         viewModelScope.launch {
-            while (state !in listOf(HOME_LOADED, USER_HOME_LOADED))
-                yield()
-
             _events.emit(HomeEvent.Navigate(clazz))
         }
     }
@@ -127,25 +99,6 @@ class HomeViewModel(
      */
     fun setLoadingStateToLoaded() {
         _loadingState = LOADED
-    }
-
-    /**
-     * The state of the [HomeViewModel].
-     *
-     * @property IDLE the initial state
-     * @property LINKS_LOADED the state when the links are loaded
-     * @property LOADING_HOME the home screen is loading
-     * @property HOME_LOADED the home screen is loaded
-     * @property USER_HOME_LINKS_LOADED the user home links are loaded
-     * @property LOADING_USER_HOME the user home screen is loading
-     * @property USER_HOME_LOADED the user home screen is loaded
-     */
-    enum class HomeState {
-        IDLE,
-        LOADING_HOME,
-        HOME_LOADED,
-        LOADING_USER_HOME,
-        USER_HOME_LOADED
     }
 
     /**

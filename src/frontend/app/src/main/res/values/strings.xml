@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Pharmacist</string>
+    <string name="app_name" translatable="false">PharmacIST</string>
     <string name="logo_content_description" translatable="false">Pharmacist Logo</string>
 
     <string name="backButton_text">Go Back</string>
@@ -16,11 +16,20 @@
     <string name="home_aboutButton_text">About</string>
     <string name="home_aboutButton_description">Button to about screen</string>
 
+    <string name="home_pharmacyMapButton_text">Pharmacy Map</string>
+    <string name="home_pharmacyMapButton_description">Button to pharmacy map screen</string>
+
+    <string name="home_addPharmacyButton_description">Button to add pharmacy screen</string>
+    <string name="home_addPharmacyButton_text">Add Pharmacy</string>
+
+    <string name="home_searchMedicineButton_description">Button to search medicine screen</string>
+    <string name="home_searchMedicineButton_text">Search Medicine</string>
+
     <string name="home_logoutButton_text">Logout</string>
     <string name="home_logoutButton_description">Button to logout</string>
 
-    <string name="home_welcome_text">Welcome, %s!</string>
-    <string name="home_welcome_guest_text">Welcome, you need to be logged in to play!</string>
+    <string name="home_welcome_text">Welcome, to PharmacIST, %s!</string>
+    <string name="home_welcome_guest_text">Welcome, to PharmacIST!</string>
 
     <!-- Authentication (Both Login and Register) -->
 
