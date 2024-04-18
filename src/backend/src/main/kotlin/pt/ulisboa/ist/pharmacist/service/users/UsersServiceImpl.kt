@@ -1,13 +1,10 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import pt.ulisboa.ist.pharmacist.domain.users.RefreshToken
-import pt.ulisboa.ist.pharmacist.domain.users.RevokedAccessToken
+import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
-import pt.ulisboa.ist.pharmacist.repository.users.RefreshTokensRepository
-import pt.ulisboa.ist.pharmacist.repository.users.RevokedAccessTokensRepository
+import pt.ulisboa.ist.pharmacist.repository.users.AccessTokensRepository
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.AuthenticationException
@@ -15,12 +12,10 @@ import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPaginationParamsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
-import pt.ulisboa.ist.pharmacist.service.exceptions.RefreshTokenExpiredException
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDTO
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDTO
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginInputDTO
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.refreshToken.RefreshTokenOutputDTO
 import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterInputDTO
 import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDTO
 import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
@@ -29,13 +24,11 @@ import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
 import pt.ulisboa.ist.pharmacist.utils.JwtProvider
 import pt.ulisboa.ist.pharmacist.utils.ServerConfiguration
 import java.sql.Timestamp
-import java.time.Instant
 
 /**
  * Service that handles the business logic of the users.
  *
  * @property usersRepository the repository of the users
- * @property refreshTokensRepository the repository of the refresh tokens
  * @property hashingUtils the utils for password operations
  * @property jwtProvider the JWT provider
  * @property config the server configuration
@@ -44,8 +37,7 @@ import java.time.Instant
 @Transactional(rollbackFor = [Exception::class])
 class UsersServiceImpl(
     private val usersRepository: UsersRepository,
-    private val revokedAccessTokensRepository: RevokedAccessTokensRepository,
-    private val refreshTokensRepository: RefreshTokensRepository,
+    private val AccessTokensRepository: AccessTokensRepository,
     private val hashingUtils: HashingUtils,
     private val jwtProvider: JwtProvider,
     private val config: ServerConfiguration
@@ -96,12 +88,11 @@ class UsersServiceImpl(
             )
         )
 
-        val (accessToken, refreshToken) = createTokens(user = user)
+        val accessToken = createToken(user = user)
 
         return RegisterOutputDTO(
             username = registerInputDTO.username,
-            accessToken = accessToken,
-            refreshToken = refreshToken
+            accessToken = accessToken
         )
     }
 
@@ -118,50 +109,17 @@ class UsersServiceImpl(
             )
         ) throw InvalidLoginException("Invalid username or password")
 
-        val (accessToken, refreshToken) = createTokens(user = user)
+        val accessToken = createToken(user = user)
 
         return LoginOutputDTO(
-            accessToken = accessToken,
-            refreshToken = refreshToken
+            accessToken = accessToken
         )
     }
 
     override fun logout(accessToken: String, refreshToken: String) {
         val user = getUserAndRevokeAccessToken(accessToken = accessToken)
 
-        val refreshTokenEntity = refreshTokensRepository
-            .findByUserAndTokenHash(
-                user = user,
-                tokenHash = hashingUtils.hashToken(token = refreshToken)
-            )
-            ?: throw NotFoundException("Refresh token not found")
-
-        refreshTokensRepository.delete(refreshTokenEntity)
-    }
-
-    override fun refreshToken(accessToken: String, refreshToken: String): RefreshTokenOutputDTO {
-        val user = getUserAndRevokeAccessToken(accessToken = accessToken)
-
-        val refreshTokenHash = hashingUtils.hashToken(token = refreshToken)
-
-        val refreshTokenEntity = refreshTokensRepository
-            .findByUserAndTokenHash(
-                user = user,
-                tokenHash = refreshTokenHash
-            )
-            ?: throw NotFoundException("Refresh token not found")
-
-        refreshTokensRepository.delete(refreshTokenEntity)
-
-        if (refreshTokenEntity.expirationDate.before(Timestamp.from(Instant.now())))
-            throw RefreshTokenExpiredException("Refresh token expired")
-
-        val (accessToken, newRefreshToken) = createTokens(user = user)
-
-        return RefreshTokenOutputDTO(
-            accessToken = accessToken,
-            refreshToken = newRefreshToken
-        )
+        //TODO: Revoke access token?
     }
 
     /**
@@ -174,17 +132,17 @@ class UsersServiceImpl(
         val user = usersRepository.findByUsername(username = accessTokenPayload.username)
             ?: throw NotFoundException("User not found")
 
-        val revokedAccessTokenEntity = RevokedAccessToken(
+        val accessTokenEntity = AccessToken(
             tokenHash = hashingUtils.hashToken(token = accessToken),
             user = user,
             expirationDate = Timestamp.from(accessTokenPayload.claims.expiration.toInstant())
         )
 
-        revokedAccessTokensRepository.save(revokedAccessTokenEntity)
+        AccessTokensRepository.save(accessTokenEntity)
         return user
     }
 
-    override fun getUser(userId: String): UserDTO {
+    override fun getUser(userId: Long): UserDTO {
         val user = usersRepository
             .findById(userId)
             ?: throw NotFoundException("User with id $userId not found")
@@ -193,41 +151,16 @@ class UsersServiceImpl(
     }
 
     /**
-     * Creates the access and refresh tokens for the given user.
+     * Creates the access token for the given user.
      *
      * @param user the user to create the tokens for
-     * @return the access and refresh tokens
+     * @return the access tokens
      */
-    private fun createTokens(user: User): Tokens {
-        if (refreshTokensRepository.countByUser(user = user) >= config.maxRefreshTokens) {
-            refreshTokensRepository
-                .getRefreshTokensOfUserOrderedByExpirationDate(
-                    user = user,
-                    pageable = PageRequest.of(/* page = */ 0, /* size = */ 1)
-                )
-                .get()
-                .findFirst()
-                .ifPresent { refreshTokensRepository.delete(it) }
-        }
-
+    private fun createToken(user: User): String {
         val jwtPayload = JwtProvider.JwtPayload.fromData(username = user.username)
         val accessToken = jwtProvider.createAccessToken(jwtPayload = jwtPayload)
-        val (refreshToken, expirationDate) = jwtProvider.createRefreshToken(jwtPayload = jwtPayload)
 
-        val refreshTokenHash = hashingUtils.hashToken(token = refreshToken)
-
-        refreshTokensRepository.save(
-            RefreshToken(
-                user = user,
-                tokenHash = refreshTokenHash,
-                expirationDate = expirationDate
-            )
-        )
-
-        return Tokens(
-            accessToken = accessToken,
-            refreshToken = refreshToken
-        )
+        return accessToken
     }
 
     /**

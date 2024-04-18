@@ -15,7 +15,7 @@ interface UsersRepository {
 
     fun findByEmail(email: String): User?
 
-    fun findById(id: String): User?
+    fun findById(id: Long): User?
 
     fun findAll(pageable: OffsetPageRequest): Page<User>
 
@@ -28,4 +28,5 @@ interface UsersRepository {
     fun existsByEmail(email: String): Boolean
 
     fun findByUserAndTokenHash(user: User, tokenHash: String): User?
+
 }

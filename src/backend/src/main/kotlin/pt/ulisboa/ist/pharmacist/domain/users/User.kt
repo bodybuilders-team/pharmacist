@@ -1,6 +1,8 @@
 package pt.ulisboa.ist.pharmacist.domain.users
 
 import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidUserException
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 
 /**
  * The User entity.
@@ -11,10 +13,13 @@ import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidUserException
  * @property passwordHash the hashed password of the user
  */
 data class User(
-    var id: String? = null,
+    var id: Long,
     val username: String,
     val email: String,
-    val passwordHash: String
+    val passwordHash: String,
+    val suspended: Boolean = false,
+    val favoritePharmacies: List<Pharmacy> = mutableListOf(),
+    val medicinesToNotify: List<MedicineStock> = mutableListOf(),
 ) {
     init {
         if (username.length !in MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH)

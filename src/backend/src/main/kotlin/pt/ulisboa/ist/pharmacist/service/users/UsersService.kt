@@ -61,19 +61,6 @@ interface UsersService {
     fun logout(accessToken: String, refreshToken: String)
 
     /**
-     * Refreshes the JWT token of a user.
-     *
-     * @param accessToken the access token of the user
-     * @param refreshToken the refresh token of the user
-     *
-     * @return the new JWT token for the user
-     * @throws NotFoundException if the refresh token does not exist
-     * @throws RefreshTokenExpiredException if the refresh token is expired
-     * @throws AuthenticationException if the refresh token is invalid
-     */
-    fun refreshToken(accessToken: String, refreshToken: String): RefreshTokenOutputDTO
-
-    /**
      * Gets the user with the given id.
      *
      * @param userId the id of the user
@@ -81,5 +68,5 @@ interface UsersService {
      * @return the DTO with the user's data
      * @throws NotFoundException if the user does not exist
      */
-    fun getUser(userId: String): UserDTO
+    fun getUser(userId: Long): UserDTO
 }

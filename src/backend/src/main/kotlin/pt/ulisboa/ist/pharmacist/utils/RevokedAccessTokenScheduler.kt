@@ -3,19 +3,19 @@ package pt.ulisboa.ist.pharmacist.utils
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import pt.ulisboa.ist.pharmacist.repository.users.RevokedAccessTokensRepository
+import pt.ulisboa.ist.pharmacist.repository.users.AccessTokensRepository
 import java.sql.Timestamp
 import java.time.Instant
 
 @Component
-class RevokedAccessTokenScheduler(
-    private val revokedAccessTokensRepository: RevokedAccessTokensRepository
+class AccessTokenScheduler(
+    private val AccessTokensRepository: AccessTokensRepository
 ) {
 
     @Scheduled(fixedRate = REVOKED_ACCESS_TOKEN_CLEANUP_INTERVAL)
     @Transactional(rollbackFor = [Exception::class])
     fun removeExpiredTokens() {
-        revokedAccessTokensRepository.deleteAllByExpirationDateBefore(Timestamp.from(Instant.now()))
+        AccessTokensRepository.deleteAllByExpirationDateBefore(Timestamp.from(Instant.now()))
     }
 
     companion object {

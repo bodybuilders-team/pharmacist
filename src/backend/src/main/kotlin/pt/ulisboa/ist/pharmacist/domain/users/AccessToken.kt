@@ -4,14 +4,14 @@ import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidRefreshTokenException
 import java.sql.Timestamp
 
 /**
- * The RefreshToken entity.
+ * The AccessToken entity.
  *
- * @property id the id of the RefreshToken
+ * @property id the id of the AccessToken
  * @property user the user that owns the refresh token
- * @property tokenHash the hashed refresh token
- * @property expirationDate the expiration date of the refresh token
+ * @property tokenHash the revoked access token
+ * @property expirationDate the token's expiration date
  */
-data class RefreshToken(
+data class AccessToken(
     private var id: Int? = null,
     val user: User,
     val tokenHash: String,
