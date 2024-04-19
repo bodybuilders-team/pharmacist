@@ -49,5 +49,12 @@
         <activity
             android:name=".ui.screens.addPharmacy.AddPharmacyActivity"
             android:theme="@style/Theme.Pharmacist" />
+
+        <activity
+            android:name=".ui.screens.pharmacy.PharmacyActivity"
+            android:theme="@style/Theme.Pharmacist" />
+        <activity
+            android:name=".ui.screens.medicineSearch.MedicineSearchActivity"
+            android:theme="@style/Theme.Pharmacist" />
     </application>
 </manifest>

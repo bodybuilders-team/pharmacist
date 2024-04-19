@@ -44,22 +44,22 @@ open class AuthenticationViewModel(
 
         _state = LOADING
 
-        launchAndExecuteRequest(
-            request = { getAuthenticationResult() },
-            events = _events,
-            onSuccess = { authenticationData ->
-                sessionManager.setSession(
-                    accessToken = authenticationData.accessToken,
-                    refreshToken = authenticationData.refreshToken,
-                    username = username
-                )
-                _state = SUCCESS
-            },
-            retryOnApiResultFailure = {
-                _state = IDLE
-                false
-            }
-        )
+//        launchAndExecuteRequest(
+//            request = { getAuthenticationResult() },
+//            events = _events,
+//            onSuccess = { authenticationData ->
+//                sessionManager.setSession(
+//                    accessToken = authenticationData.accessToken,
+//                    refreshToken = authenticationData.refreshToken,
+//                    username = username
+//                )
+//                _state = SUCCESS
+//            },
+//            retryOnApiResultFailure = {
+//                _state = IDLE
+//                false
+//            }
+//        )
     }
 
     /**

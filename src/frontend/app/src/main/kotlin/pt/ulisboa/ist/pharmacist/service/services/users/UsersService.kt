@@ -100,29 +100,6 @@ class UsersService(
      * @throws IOException if there is an error while sending the request
      */
     suspend fun logout(
-        refreshToken: String
-    ): APIResult<LogoutOutput> =
-        post(
-            link = API_ENDPOINT + Uris.USERS_LOGOUT,
-            body = LogoutInput(refreshToken)
-        )
+    ): APIResult<LogoutOutput> = TODO()
 
-    /**
-     * Refreshes the access token of the user.
-     *
-     * @param refreshTokenLink the link to the refresh token endpoint
-     * @param refreshToken the refresh token of the user
-     *
-     * @return the API result of the refresh token request
-     *
-     * @throws UnexpectedResponseException if there is an unexpected response from the server
-     * @throws IOException if there is an error while sending the request
-     */
-    suspend fun refreshToken(
-        refreshToken: String
-    ): APIResult<RefreshTokenOutput> =
-        post(
-            link = API_ENDPOINT + Uris.USERS_REFRESH_TOKEN,
-            body = RefreshTokenInput(refreshToken)
-        )
 }

@@ -13,14 +13,8 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
  *
  * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
- * @property events the events that occurred in the view model
  */
 abstract class PharmacistViewModel(
     val pharmacistService: PharmacistService,
     protected val sessionManager: SessionManager
-) : ViewModel() {
-
-    @Suppress("PropertyName")
-    protected val _events = MutableSharedFlow<Event>()
-    val events: SharedFlow<Event> = _events
-}
+) : ViewModel()

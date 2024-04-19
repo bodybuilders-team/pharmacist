@@ -20,15 +20,9 @@ class LoginActivity : PharmacistActivity() {
 
     private val viewModel by getViewModel(::LoginViewModel)
 
-    @RequiresApi(Build.VERSION_CODES.R)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        lifecycleScope.launch {
-            viewModel.events.collect {
-                handleEvent(it)
-            }
-        }
 
         setContent {
             LoginScreen(
@@ -54,7 +48,7 @@ class LoginActivity : PharmacistActivity() {
      *
      * @param event the event to handle
      */
-    @RequiresApi(Build.VERSION_CODES.R)
+
     private suspend fun handleEvent(event: Event) {
         when (event) {
             is Event.Error -> showToast(event.message)

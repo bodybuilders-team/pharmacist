@@ -7,7 +7,6 @@ object Uris {
     const val USERS = "/users"
     const val USERS_LOGIN = "/users/login"
     const val USERS_LOGOUT = "/users/logout"
-    const val USERS_REFRESH_TOKEN = "/users/refresh-token"
     const val USERS_GET_BY_ID = "/users/{uid}"
     const val USERS_FAVORITE_PHARMACIES = "/users/{uid}/favorite-pharmacies"
 
@@ -17,4 +16,12 @@ object Uris {
 
     const val MEDICINES = "/medicines"
     const val MEDICINES_GET_BY_ID = "/medicines/{mid}"
+
+    fun getMedicines(limit: Long, offset: Long): String {
+        return "$MEDICINES?limit=$limit&offset=$offset"
+    }
+
+    fun getPharmaciesById(id: Long): String {
+        return PHARMACIES_GET_BY_ID.replace("{pid}", id.toString())
+    }
 }

@@ -48,31 +48,6 @@ class AddPharmacyViewModel(
     }
 
     /**
-     * Navigates to the given activity.
-     *
-     * @param clazz the activity class to navigate to
-     */
-    fun <T> navigateTo(clazz: Class<T>) {
-        _loadingState = LOADING
-
-        viewModelScope.launch {
-            while (state !in listOf(AddPharmacyState.ADD_PHARMACY_LOADED))
-                yield()
-
-            _events.emit(AddPharmacyEvent.Navigate(clazz))
-        }
-    }
-
-    /**
-     * Navigates to the given activity.
-     *
-     * @param T the type of the activity to navigate to
-     */
-    inline fun <reified T> navigateTo() {
-        navigateTo(T::class.java)
-    }
-
-    /**
      * Sets the loading state to [LOADED].
      */
     fun setLoadingStateToLoaded() {

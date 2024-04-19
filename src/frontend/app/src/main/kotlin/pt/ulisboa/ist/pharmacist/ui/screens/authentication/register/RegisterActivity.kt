@@ -23,11 +23,6 @@ class RegisterActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            viewModel.events.collect {
-                handleEvent(it)
-            }
-        }
 
         setContent {
             RegisterScreen(
@@ -54,7 +49,7 @@ class RegisterActivity : PharmacistActivity() {
      *
      * @param event the event to handle
      */
-    @RequiresApi(Build.VERSION_CODES.R)
+
     private suspend fun handleEvent(event: Event) {
         when (event) {
             is Event.Error -> showToast(event.message)

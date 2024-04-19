@@ -24,7 +24,7 @@ enum class ToastDuration(val duration: Int) {
  * @param toastDuration the duration of the toast
  * @param onDismissed the callback to be invoked when the toast is dismissed
  */
-@RequiresApi(Build.VERSION_CODES.R)
+
 suspend fun Context.showToast(
     errorMessage: String,
     toastDuration: ToastDuration = ToastDuration.SHORT,

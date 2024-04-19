@@ -24,7 +24,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.MapScreen
  *
  * @param hasLocationPermission true if the app has the necessary permissions, false otherwise
  * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
- * @param loadingState the current state of the loading operation
  */
 @Composable
 fun PharmacyMapScreen(
@@ -32,8 +31,7 @@ fun PharmacyMapScreen(
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
-    onPharmacyDetailsClick: (String) -> Unit,
-    loadingState: PharmacyMapViewModel.PharmacyMapNavigationState
+    onPharmacyDetailsClick: (Long) -> Unit,
 ) {
 
     Log.d("Pharmacy 2", pharmacies.size.toString())
@@ -48,7 +46,6 @@ fun PharmacyMapScreen(
 
             if (hasPermission)
                 MapScreen(
-                    loadingMap = loadingState == PharmacyMapViewModel.PharmacyMapNavigationState.LOADING,
                     mapProperties = mapProperties,
                     cameraPositionState = cameraPositionState,
                     onPharmacyDetailsClick = onPharmacyDetailsClick,
@@ -69,6 +66,5 @@ private fun PharmacyMapScreenPreview() {
         pharmacies = listOf(),
         mapProperties = MapProperties(),
         cameraPositionState = rememberCameraPositionState(),
-        loadingState = PharmacyMapViewModel.PharmacyMapNavigationState.LOADED
     )
 }

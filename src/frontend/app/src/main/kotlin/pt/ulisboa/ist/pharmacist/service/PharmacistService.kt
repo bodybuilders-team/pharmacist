@@ -2,6 +2,8 @@ package pt.ulisboa.ist.pharmacist.service
 
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
+import pt.ulisboa.ist.pharmacist.service.services.medicines.MedicinesService
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService
 import pt.ulisboa.ist.pharmacist.service.services.users.UsersService
 
 /**
@@ -22,6 +24,6 @@ class PharmacistService(
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
     val usersService = UsersService(apiEndpoint, httpClient, jsonEncoder)
-    //val pharmaciesService = PharmaciesService(apiEndpoint, httpClient, jsonEncoder)
-    //val medicinesService = MedicinesService(apiEndpoint, httpClient, jsonEncoder)
+    val pharmaciesService = PharmaciesService(apiEndpoint, httpClient, jsonEncoder)
+    val medicinesService = MedicinesService(apiEndpoint, httpClient, jsonEncoder)
 }

@@ -18,15 +18,9 @@ class AddPharmacyActivity : PharmacistActivity() {
 
     private val viewModel by getViewModel(::AddPharmacyViewModel)
 
-    @RequiresApi(Build.VERSION_CODES.R)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        lifecycleScope.launch {
-            viewModel.events.collect {
-                handleEvent(it)
-            }
-        }
 
         setContent {
             AddPharmacyScreen(
@@ -40,7 +34,7 @@ class AddPharmacyActivity : PharmacistActivity() {
      *
      * @param event the event to handle
      */
-    @RequiresApi(Build.VERSION_CODES.R)
+
     private suspend fun handleEvent(event: Event) {
         when (event) {
             is AddPharmacyViewModel.AddPharmacyEvent.Navigate -> {
