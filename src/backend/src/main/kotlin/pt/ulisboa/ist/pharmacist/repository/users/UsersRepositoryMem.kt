@@ -3,6 +3,7 @@ package pt.ulisboa.ist.pharmacist.repository.users
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
 import java.util.UUID
 
@@ -10,12 +11,14 @@ import java.util.UUID
  * Repository for the [User] entity using an in-memory data structure.
  */
 @Repository
-class UsersRepositoryMem : UsersRepository {
+class UsersRepositoryMem(dataSource: MemDataSource) : UsersRepository {
 
-    private val users = mutableMapOf<String, User>()
+    private val users = dataSource.users
 
-    override fun save(user: User): User {
-        users[user.id ?: UUID.randomUUID().toString()] = user
+    override fun create(username: String, email: String, passwordHash: String): User {
+        val id = UUID.randomUUID().toString()
+        val user = User(id, username, email, passwordHash)
+        users[id] = user
         return user
     }
 

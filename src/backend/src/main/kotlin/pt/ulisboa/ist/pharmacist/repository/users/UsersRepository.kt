@@ -9,13 +9,13 @@ import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
  */
 interface UsersRepository {
 
-    fun save(user: User): User
+    fun create(username: String, email: String, passwordHash: String): User
 
     fun findByUsername(username: String): User?
 
     fun findByEmail(email: String): User?
 
-    fun findById(id: Long): User?
+    fun findById(id: String): User?
 
     fun findAll(pageable: OffsetPageRequest): Page<User>
 

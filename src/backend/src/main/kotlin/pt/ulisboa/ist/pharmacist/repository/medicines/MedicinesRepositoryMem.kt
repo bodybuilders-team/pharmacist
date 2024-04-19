@@ -2,14 +2,15 @@ package pt.ulisboa.ist.pharmacist.repository.medicines
 
 import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 
 @Repository
-class MedicinesRepositoryMem : MedicinesRepository {
+class MedicinesRepositoryMem(dataSource: MemDataSource) : MedicinesRepository {
 
-    private val medicines = mutableMapOf<Int, Medicine>()
+    private val medicines = dataSource.medicines
 
     override fun save(medicine: Medicine): Medicine {
-        medicines[medicine.id ?: medicines.size] = medicine
+        medicines[medicine.id] = medicine
         return medicine
     }
 
@@ -18,7 +19,7 @@ class MedicinesRepositoryMem : MedicinesRepository {
     }
 
     override fun findById(id: Long): Medicine? {
-        return medicines[id.toInt()]
+        return medicines[id]
     }
 
     override fun findAll(): List<Medicine> {

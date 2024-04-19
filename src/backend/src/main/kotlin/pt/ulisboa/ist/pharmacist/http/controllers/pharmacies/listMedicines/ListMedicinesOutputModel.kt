@@ -4,7 +4,7 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesO
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
 
 /**
- * An Add Pharmacy Output Model.
+ * The output model of the 'List Available Medicines' operation.
  *
  * @property count the number of medicines
  * @property medicines the list of medicines

@@ -13,7 +13,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
  * @property passwordHash the hashed password of the user
  */
 data class User(
-    var id: Long,
+    val id: String,
     val username: String,
     val email: String,
     val passwordHash: String,

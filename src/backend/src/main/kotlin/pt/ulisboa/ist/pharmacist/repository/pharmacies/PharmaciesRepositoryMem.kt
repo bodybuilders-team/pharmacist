@@ -2,14 +2,15 @@ package pt.ulisboa.ist.pharmacist.repository.pharmacies
 
 import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 
 @Repository
-class PharmaciesRepositoryMem : PharmaciesRepository {
+class PharmaciesRepositoryMem(dataSource: MemDataSource) : PharmaciesRepository {
 
-    private val pharmacies = mutableMapOf<Long, Pharmacy>()
+    private val pharmacies = dataSource.pharmacies
 
     override fun save(pharmacy: Pharmacy): Pharmacy {
-        pharmacies[pharmacy.id ?: pharmacies.size.toLong()] = pharmacy
+        pharmacies[pharmacy.id] = pharmacy
         return pharmacy
     }
 

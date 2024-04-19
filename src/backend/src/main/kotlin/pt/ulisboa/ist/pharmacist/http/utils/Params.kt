@@ -11,6 +11,10 @@ object Params {
 
     const val USERNAME_PARAM = "username"
 
+    const val LOCATION_PARAM = "location"
+    const val RANGE_PARAM = "range"
+    const val MEDICINE_PARAM = "medicine"
+
     const val OFFSET_DEFAULT = 0
     const val LIMIT_DEFAULT = 10
 
