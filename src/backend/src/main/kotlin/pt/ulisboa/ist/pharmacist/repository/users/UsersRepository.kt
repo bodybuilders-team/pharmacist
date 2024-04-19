@@ -9,7 +9,7 @@ import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
  */
 interface UsersRepository {
 
-    fun create(username: String, email: String, passwordHash: String): User
+    fun create(userId: String, username: String, email: String, passwordHash: String): User
 
     fun findByUsername(username: String): User?
 
@@ -27,6 +27,5 @@ interface UsersRepository {
 
     fun existsByEmail(email: String): Boolean
 
-    fun findByUserAndTokenHash(user: User, tokenHash: String): User?
-
+    /*fun findByUserAndTokenHash(user: User, tokenHash: String): User?*/
 }

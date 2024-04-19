@@ -14,6 +14,7 @@ object Params {
     const val LOCATION_PARAM = "location"
     const val RANGE_PARAM = "range"
     const val MEDICINE_PARAM = "medicine"
+    const val SUBSTRING_PARAM = "substring"
 
     const val OFFSET_DEFAULT = 0
     const val LIMIT_DEFAULT = 10

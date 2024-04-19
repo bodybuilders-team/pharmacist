@@ -5,7 +5,6 @@ import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.Register
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterInputModel.Companion.MAX_USERNAME_LENGTH
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterInputModel.Companion.MIN_PASSWORD_LENGTH
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterInputModel.Companion.MIN_USERNAME_LENGTH
-import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginInputDTO
 
 /**
  * A Login Input Model.
@@ -27,15 +26,4 @@ data class LoginInputModel(
         message = "Password must be between $MIN_PASSWORD_LENGTH and $MAX_PASSWORD_LENGTH characters long."
     )
     val password: String
-) {
-
-    /**
-     * Converts this model to a service DTO.
-     *
-     * @return the service DTO
-     */
-    fun toLoginInputDTO() = LoginInputDTO(
-        username = username,
-        password = password
-    )
-}
+)

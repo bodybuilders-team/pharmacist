@@ -2,7 +2,6 @@ package pt.ulisboa.ist.pharmacist.service.users
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.repository.users.AccessTokensRepository
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
@@ -12,18 +11,16 @@ import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPaginationParamsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
-import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginInputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterInputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDTO
+import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
+import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDto
+import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
+import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
 import pt.ulisboa.ist.pharmacist.utils.JwtProvider
-import pt.ulisboa.ist.pharmacist.utils.ServerConfiguration
 import java.sql.Timestamp
+import java.util.UUID
 
 /**
  * Service that handles the business logic of the users.
@@ -31,26 +28,24 @@ import java.sql.Timestamp
  * @property usersRepository the repository of the users
  * @property hashingUtils the utils for password operations
  * @property jwtProvider the JWT provider
- * @property config the server configuration
  */
 @Service
 @Transactional(rollbackFor = [Exception::class])
 class UsersServiceImpl(
     private val usersRepository: UsersRepository,
-    private val AccessTokensRepository: AccessTokensRepository,
+    private val accessTokensRepository: AccessTokensRepository,
     private val hashingUtils: HashingUtils,
-    private val jwtProvider: JwtProvider,
-    private val config: ServerConfiguration
+    private val jwtProvider: JwtProvider
 ) : UsersService {
 
-    override fun getUsers(offset: Int, limit: Int, orderBy: UsersOrder, ascending: Boolean): UsersDTO {
+    override fun getUsers(offset: Int, limit: Int, orderBy: UsersOrder, ascending: Boolean): UsersDto {
         if (offset < 0 || limit < 0)
             throw InvalidPaginationParamsException("Offset and limit must be positive")
 
         if (limit > MAX_USERS_LIMIT)
             throw InvalidPaginationParamsException("Limit must be less or equal than $MAX_USERS_LIMIT")
 
-        return UsersDTO(
+        return UsersDto(
             users = usersRepository
                 .let {
                     val pageable = OffsetPageRequest(
@@ -62,62 +57,63 @@ class UsersServiceImpl(
                     usersRepository.findAll(/* pageable = */ pageable)
                 }
                 .toList()
-                .map(::UserDTO),
+                .map(::UserDto),
             totalCount = usersRepository.count().toInt()
         )
     }
 
-    override fun register(registerInputDTO: RegisterInputDTO): RegisterOutputDTO {
-        if (usersRepository.existsByUsername(username = registerInputDTO.username))
-            throw AlreadyExistsException("User with username ${registerInputDTO.username} already exists")
+    override fun register(username: String, email: String, password: String): RegisterOutputDto {
+        if (usersRepository.existsByUsername(username = username))
+            throw AlreadyExistsException("User with username $username already exists")
 
-        if (usersRepository.existsByEmail(email = registerInputDTO.email))
-            throw AlreadyExistsException("User with email ${registerInputDTO.email} already exists")
+        if (usersRepository.existsByEmail(email = email))
+            throw AlreadyExistsException("User with email $email already exists")
 
-        if (registerInputDTO.password.length < MIN_PASSWORD_LENGTH)
+        if (password.length < MIN_PASSWORD_LENGTH)
             throw InvalidPasswordException("Password must be at least $MIN_PASSWORD_LENGTH characters long")
 
-        val user = usersRepository.save(
-            User(
-                username = registerInputDTO.username,
-                email = registerInputDTO.email,
-                passwordHash = hashingUtils.hashPassword(
-                    username = registerInputDTO.username,
-                    password = registerInputDTO.password
-                )
+        val userId = UUID.randomUUID().toString()
+
+        val user = usersRepository.create(
+            userId = userId,
+            username = username,
+            email = email,
+            passwordHash = hashingUtils.hashPassword(
+                username = username,
+                password = password
             )
         )
 
         val accessToken = createToken(user = user)
 
-        return RegisterOutputDTO(
-            username = registerInputDTO.username,
+        return RegisterOutputDto(
+            username = username,
             accessToken = accessToken
         )
     }
 
-    override fun login(loginInputDTO: LoginInputDTO): LoginOutputDTO {
+    override fun login(username: String, password: String): LoginOutputDto {
         val user = usersRepository
-            .findByUsername(username = loginInputDTO.username)
+            .findByUsername(username = username)
             ?: throw InvalidLoginException("Invalid username or password")
 
         if (
             !hashingUtils.checkPassword(
-                username = loginInputDTO.username,
-                password = loginInputDTO.password,
+                username = username,
+                password = password,
                 passwordHash = user.passwordHash
             )
         ) throw InvalidLoginException("Invalid username or password")
 
         val accessToken = createToken(user = user)
 
-        return LoginOutputDTO(
+        return LoginOutputDto(
             accessToken = accessToken
         )
     }
 
-    override fun logout(accessToken: String, refreshToken: String) {
-        val user = getUserAndRevokeAccessToken(accessToken = accessToken)
+    override fun logout(accessToken: String) {
+        //val user = getUserAndRevokeAccessToken(accessToken = accessToken)
 
         //TODO: Revoke access token?
     }
@@ -132,22 +128,20 @@ class UsersServiceImpl(
         val user = usersRepository.findByUsername(username = accessTokenPayload.username)
             ?: throw NotFoundException("User not found")
 
-        val accessTokenEntity = AccessToken(
+        accessTokensRepository.create(
             tokenHash = hashingUtils.hashToken(token = accessToken),
             user = user,
             expirationDate = Timestamp.from(accessTokenPayload.claims.expiration.toInstant())
         )
-
-        AccessTokensRepository.save(accessTokenEntity)
         return user
     }
 
-    override fun getUser(userId: Long): UserDTO {
+    override fun getUser(userId: String): UserDto {
         val user = usersRepository
             .findById(userId)
             ?: throw NotFoundException("User with id $userId not found")
 
-        return UserDTO(user = user)
+        return UserDto(user = user)
     }
 
     /**
@@ -162,17 +156,6 @@ class UsersServiceImpl(
 
         return accessToken
     }
-
-    /**
-     * The tokens of a user.
-     *
-     * @property accessToken the access token
-     * @property refreshToken the refresh token
-     */
-    private data class Tokens(
-        val accessToken: String,
-        val refreshToken: String
-    )
 
     companion object {
         private const val MAX_USERS_LIMIT = 100

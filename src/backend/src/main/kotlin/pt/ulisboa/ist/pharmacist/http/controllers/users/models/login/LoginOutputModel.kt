@@ -1,19 +1,16 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.users.models.login
 
-import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDTO
+import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
 
 /**
  * A Login Output Model.
  *
  * @property accessToken the access token of the user
- * @property refreshToken the refresh token of the user
  */
 data class LoginOutputModel(
-    val accessToken: String,
-    val refreshToken: String
+    val accessToken: String
 ) {
-    constructor(loginOutputDTO: LoginOutputDTO) : this(
-        accessToken = loginOutputDTO.accessToken,
-        refreshToken = loginOutputDTO.refreshToken
+    constructor(loginOutputDto: LoginOutputDto) : this(
+        accessToken = loginOutputDto.accessToken
     )
 }

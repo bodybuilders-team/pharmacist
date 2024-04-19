@@ -1,11 +1,11 @@
 package pt.ulisboa.ist.pharmacist.repository.users
 
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
-import java.util.UUID
 
 /**
  * Repository for the [User] entity using an in-memory data structure.
@@ -15,10 +15,9 @@ class UsersRepositoryMem(dataSource: MemDataSource) : UsersRepository {
 
     private val users = dataSource.users
 
-    override fun create(username: String, email: String, passwordHash: String): User {
-        val id = UUID.randomUUID().toString()
-        val user = User(id, username, email, passwordHash)
-        users[id] = user
+    override fun create(userId: String, username: String, email: String, passwordHash: String): User {
+        val user = User(userId, username, email, passwordHash)
+        users[userId] = user
         return user
     }
 
@@ -39,7 +38,7 @@ class UsersRepositoryMem(dataSource: MemDataSource) : UsersRepository {
         val fromIndex = pageable.offset.toInt()
         val toIndex = (pageable.offset + pageable.pageSize).toInt()
         val pagedList = usersList.subList(fromIndex, toIndex)
-        return Page(pagedList, pageable, usersList.size.toLong())
+        return PageImpl(pagedList, pageable, usersList.size.toLong())
     }
 
     override fun delete(user: User) {
@@ -58,8 +57,7 @@ class UsersRepositoryMem(dataSource: MemDataSource) : UsersRepository {
         return users.values.any { it.email == email }
     }
 
-    override fun findByUserAndTokenHash(user: User, tokenHash: String): User? {
+    /*override fun findByUserAndTokenHash(user: User, tokenHash: String): User? {
         return users.values.find { it == user && it.tokenHash == tokenHash }
-    }
-
+    }*/
 }

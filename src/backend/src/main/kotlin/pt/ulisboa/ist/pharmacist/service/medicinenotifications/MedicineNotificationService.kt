@@ -4,5 +4,8 @@ import pt.ulisboa.ist.pharmacist.domain.medicinenotifications.MedicineNotificati
 import pt.ulisboa.ist.pharmacist.domain.users.User
 
 interface MedicineNotificationService {
+
     fun findNotifications(user: User): List<MedicineNotification>
+
+    fun tryToNotifyUser(user: User, notifyAction: (MedicineNotification) -> Unit)
 }

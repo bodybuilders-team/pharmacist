@@ -35,8 +35,6 @@ class PharmaciesController(
 ) {
     // TODO: Authentication in endpoints (use @Authenticated)
 
-    // TODO: Implement the method that handles the request to get the pharmacies
-
     /**
      * Handles the request to get pharmacies.
      *
@@ -51,16 +49,16 @@ class PharmaciesController(
         @RequestParam(Params.OFFSET_PARAM, defaultValue = Params.OFFSET_DEFAULT.toString()) offset: Int,
         @RequestParam(Params.LIMIT_PARAM, defaultValue = Params.LIMIT_DEFAULT.toString()) limit: Int
     ): GetPharmaciesOutputModel {
-        val getPharmaciesOutputDto = pharmaciesService.getPharmacies(
-            location = location,
-            range = range,
-            medicine = medicine,
-            orderBy = orderBy,
-            offset = offset,
-            limit = limit
+        return GetPharmaciesOutputModel(
+            pharmaciesService.getPharmacies(
+                location = location,
+                range = range,
+                medicine = medicine,
+                orderBy = orderBy,
+                offset = offset,
+                limit = limit
+            )
         )
-
-        return GetPharmaciesOutputModel(getPharmaciesOutputDto)
     }
 
     /**
@@ -90,6 +88,7 @@ class PharmaciesController(
      * @param pid the id of the pharmacy
      * @param limit the maximum number of medicines to return
      * @param offset the number of medicines to skip
+     * @return the list of available medicines
      */
     @GetMapping(Uris.PHARMACY_MEDICINES)
     fun listAvailableMedicines(
@@ -107,7 +106,12 @@ class PharmaciesController(
     }
 
     /**
-     * Handles the request to add a medicine.
+     * Handles the request to add a new medicine to a pharmacy.
+     *
+     * @param pid the id of the pharmacy
+     * @param mid the id of the medicine
+     * @param inputModel the input model of the request
+     * @return information about the added medicine
      */
     @PutMapping(Uris.PHARMACY_MEDICINES_GET_BY_ID)
     fun addNewMedicine(
@@ -115,17 +119,22 @@ class PharmaciesController(
         @PathVariable mid: Long,
         @Valid @RequestBody inputModel: AddNewMedicineInputModel
     ): AddNewMedicineOutputModel {
-        val addNewMedicineOutputDto = pharmaciesService.addNewMedicine(
-            pharmacyId = pid,
-            medicineId = mid,
-            quantity = inputModel.quantity
+        return AddNewMedicineOutputModel(
+            pharmaciesService.addNewMedicine(
+                pharmacyId = pid,
+                medicineId = mid,
+                quantity = inputModel.quantity
+            )
         )
-
-        return AddNewMedicineOutputModel(addNewMedicineOutputDto)
     }
 
     /**
      * Handles the request to change a medicine stock (add or remove).
+     *
+     * @param pid the id of the pharmacy
+     * @param mid the id of the medicine
+     * @param inputModel the input model of the request
+     * @return information about the changed medicine stock
      */
     @PatchMapping(Uris.PHARMACY_MEDICINES_GET_BY_ID)
     fun changeMedicineStock(
@@ -133,13 +142,13 @@ class PharmaciesController(
         @PathVariable mid: Long,
         @Valid @RequestBody inputModel: ChangeMedicineStockInputModel
     ): ChangeMedicineStockOutputModel {
-        val changeMedicineStockOutputDto = pharmaciesService.changeMedicineStock(
-            pharmacyId = pid,
-            medicineId = mid,
-            operation = inputModel.operation,
-            quantity = inputModel.quantity
+        return ChangeMedicineStockOutputModel(
+            pharmaciesService.changeMedicineStock(
+                pharmacyId = pid,
+                medicineId = mid,
+                operation = inputModel.operation,
+                quantity = inputModel.quantity
+            )
         )
-
-        return ChangeMedicineStockOutputModel(changeMedicineStockOutputDto)
     }
 }

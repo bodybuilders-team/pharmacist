@@ -2,7 +2,7 @@ package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies
 
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
 
-data class PharmacyModel (
+data class PharmacyModel(
     val id: Long,
     val name: String,
     val location: String,

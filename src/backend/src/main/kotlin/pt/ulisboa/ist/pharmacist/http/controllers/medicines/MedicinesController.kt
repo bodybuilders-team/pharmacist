@@ -1,17 +1,71 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.medicines
 
+import jakarta.validation.Valid
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineInputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines.GetMedicinesWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.http.utils.Params
+import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.medicines.MedicinesService
 
 /**
  * Controller that handles the requests related to the medicines.
  *
- * @property usersService the service that handles the business logic related to the medicines
+ * @property medicinesService the service that handles the operations related to the medicines
  */
 @RestController
 @RequestMapping(produces = ["application/json"])
 class MedicinesController(private val medicinesService: MedicinesService) {
 
     // TODO: Implement the method that handles the request to get the pharmacies
+
+    /**
+     * Handles the request to get pharmacies.
+     *
+     * @return the list of pharmacies
+     */
+    @GetMapping(Uris.MEDICINES)
+    fun getMedicines(
+        @RequestParam(Params.SUBSTRING_PARAM) substring: String,
+        @RequestParam(Params.LOCATION_PARAM) location: String,
+        @RequestParam(Params.OFFSET_PARAM, defaultValue = Params.OFFSET_DEFAULT.toString()) offset: Int,
+        @RequestParam(Params.LIMIT_PARAM, defaultValue = Params.LIMIT_DEFAULT.toString()) limit: Int
+    ): GetMedicinesWithClosestPharmacyOutputModel {
+        return GetMedicinesWithClosestPharmacyOutputModel(
+            medicinesService.getMedicinesWithClosestPharmacy(
+                substring = substring,
+                location = location,
+                offset = offset,
+                limit = limit
+            )
+        )
+    }
+
+    /**
+     * Handles the request to create a medicine.
+     *
+     * @param inputModel the input model of the request
+     * @return information about the added pharmacy
+     */
+    @PostMapping(Uris.MEDICINES)
+    fun createMedicine(
+        @Valid @RequestBody inputModel: CreateMedicineInputModel
+    ): ResponseEntity<CreateMedicineOutputModel> {
+        val createdMedicine = medicinesService.createMedicine(
+            name = inputModel.name,
+            description = inputModel.description,
+            boxPhoto = inputModel.boxPhoto
+        )
+
+        return ResponseEntity
+            .created(Uris.pharmacyById(createdMedicine.medicineId))
+            .body(CreateMedicineOutputModel(createdMedicine))
+    }
 }

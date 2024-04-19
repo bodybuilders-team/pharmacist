@@ -1,11 +1,13 @@
 package pt.ulisboa.ist.pharmacist.repository.users
 
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
+import pt.ulisboa.ist.pharmacist.domain.users.User
+import java.sql.Timestamp
 
 /**
  * Repository for the [AccessToken] entity.
  */
-interface AccessTokensRepository  {
+interface AccessTokensRepository {
 
     /**
      * Finds a revoked access token by its token.
@@ -16,12 +18,12 @@ interface AccessTokensRepository  {
     fun findByToken(token: String): AccessToken?
 
     /**
-     * Saves a revoked access token.
+     * Creates a revoked access token.
      *
      * @param accessToken the revoked access token to be saved
      * @return the saved revoked access token
      */
-    fun save(accessToken: AccessToken): AccessToken
+    fun create(user: User, tokenHash: String, expirationDate: Timestamp): AccessToken
 
     /**
      * Deletes a revoked access token.

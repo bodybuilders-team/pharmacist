@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addNewMedicine
 
 /**
- * The input model of the 'Add New Medicine' operation.
+ * The input model of the 'Add New Medicine' endpoint.
  *
  * @property pharmacyId the id of the pharmacy
  * @property name the name of the medicine
@@ -14,5 +14,5 @@ data class AddNewMedicineInputModel(
     val name: String,
     val boxPhoto: String,
     val description: String,
-    val quantity: Int
+    val quantity: Long
 )

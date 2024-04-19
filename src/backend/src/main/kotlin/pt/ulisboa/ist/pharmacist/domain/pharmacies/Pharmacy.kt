@@ -5,5 +5,5 @@ data class Pharmacy(
     val name: String,
     val location: String,
     val picture: String,
-    val medicines: List<MedicineStock>
+    val medicines: MutableList<MedicineStock>
 )

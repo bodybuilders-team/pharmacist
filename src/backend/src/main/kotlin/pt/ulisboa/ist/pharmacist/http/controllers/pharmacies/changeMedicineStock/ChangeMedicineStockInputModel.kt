@@ -8,5 +8,5 @@ package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStoc
  */
 data class ChangeMedicineStockInputModel(
     val operation: String,
-    val quantity: Int
+    val quantity: Long
 )

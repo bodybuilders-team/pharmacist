@@ -1,12 +1,9 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
-import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginInputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.refreshToken.RefreshTokenOutputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterInputDTO
-import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDTO
+import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
+import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDto
+import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
+import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 
 /**
@@ -25,40 +22,39 @@ interface UsersService {
      * @return the DTO with the information of the users
      * @throws InvalidPaginationParamsException if the offset or limit are invalid
      */
-    fun getUsers(offset: Int, limit: Int, orderBy: UsersOrder, ascending: Boolean): UsersDTO
+    fun getUsers(offset: Int, limit: Int, orderBy: UsersOrder, ascending: Boolean): UsersDto
 
     /**
      * Registers a new user.
      *
-     * @param registerInputDTO the DTO with the data to create the user
+     * @param username the name of the user
+     * @param email the email of the user
+     * @param password the password of the user
      *
      * @return the JWT token for the new user
      * @throws AlreadyExistsException if the user already exists
      * @throws InvalidPasswordException if the password is invalid
      */
-    fun register(registerInputDTO: RegisterInputDTO): RegisterOutputDTO
+    fun register(username: String, email: String, password: String): RegisterOutputDto
 
     /**
      * Logs a user in.
      *
-     * @param loginInputDTO the DTO with the data to log the user in
+     * @param username the name of the user
+     * @param password the password of the user
      *
      * @return the JWT token for the user
      * @throws NotFoundException if the user does not exist
      * @throws InvalidLoginException if the password is incorrect
      */
-    fun login(loginInputDTO: LoginInputDTO): LoginOutputDTO
+    fun login(username: String, password: String): LoginOutputDto
 
     /**
      * Logs a user out.
      *
      * @param accessToken the access token of the user
-     * @param refreshToken the refresh token of the user
-     *
-     * @throws NotFoundException if the refresh token does not exist or if it is expired
-     * @throws AuthenticationException if the refresh token is invalid
      */
-    fun logout(accessToken: String, refreshToken: String)
+    fun logout(accessToken: String)
 
     /**
      * Gets the user with the given id.
@@ -68,5 +64,5 @@ interface UsersService {
      * @return the DTO with the user's data
      * @throws NotFoundException if the user does not exist
      */
-    fun getUser(userId: Long): UserDTO
+    fun getUser(userId: String): UserDto
 }

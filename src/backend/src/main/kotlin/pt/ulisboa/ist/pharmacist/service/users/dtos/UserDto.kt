@@ -9,7 +9,7 @@ import pt.ulisboa.ist.pharmacist.domain.users.User
  * @property username the username of the user
  * @property email the email of the user
  */
-data class UserDTO(
+data class UserDto(
     val username: String,
     val email: String
 ) {

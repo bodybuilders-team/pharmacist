@@ -6,7 +6,7 @@ package pt.ulisboa.ist.pharmacist.service.users.dtos
  * @property users the list of users DTOs
  * @property totalCount the total number of users
  */
-data class UsersDTO(
-    val users: List<UserDTO>,
+data class UsersDto(
+    val users: List<UserDto>,
     val totalCount: Int
 )

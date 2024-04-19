@@ -7,7 +7,7 @@ package pt.ulisboa.ist.pharmacist.service.users.dtos.register
  * @property accessToken the access token
  * @property refreshToken the refresh token
  */
-data class RegisterOutputDTO(
+data class RegisterOutputDto(
     val username: String,
     val accessToken: String
 )

@@ -2,7 +2,6 @@ package pt.ulisboa.ist.pharmacist.http.controllers.users.models.register
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Size
-import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterInputDTO
 
 /**
  * A Register Input Model.
@@ -29,18 +28,6 @@ data class RegisterInputModel(
     )
     val password: String
 ) {
-
-    /**
-     * Converts this model to a service DTO.
-     *
-     * @return the service DTO
-     */
-    fun toRegisterInputDTO() = RegisterInputDTO(
-        username = username,
-        email = email,
-        password = password
-    )
-
     companion object {
         const val MIN_USERNAME_LENGTH = 3
         const val MAX_USERNAME_LENGTH = 40

@@ -55,7 +55,7 @@ interface PharmaciesService {
      * @param medicineId the id of the medicine
      * @param quantity the quantity of the medicine to add immediately
      */
-    fun addNewMedicine(pharmacyId: Long, medicineId: Long, quantity: Int): AddNewMedicineOutputDto
+    fun addNewMedicine(pharmacyId: Long, medicineId: Long, quantity: Long): AddNewMedicineOutputDto
 
     /**
      * Changes the stock of a medicine in a pharmacy.
@@ -69,6 +69,6 @@ interface PharmaciesService {
         pharmacyId: Long,
         medicineId: Long,
         operation: String,
-        quantity: Int
+        quantity: Long
     ): ChangeMedicineStockOutputDto
 }

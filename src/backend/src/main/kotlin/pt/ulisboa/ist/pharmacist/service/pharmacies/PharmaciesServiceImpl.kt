@@ -2,18 +2,15 @@ package pt.ulisboa.ist.pharmacist.service.pharmacies
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
-import pt.ulisboa.ist.pharmacist.repository.users.AccessTokensRepository
-import pt.ulisboa.ist.pharmacist.service.medicines.MedicinesService
+import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
-import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
-import pt.ulisboa.ist.pharmacist.utils.JwtProvider
-import pt.ulisboa.ist.pharmacist.utils.ServerConfiguration
 
 /**
  * Service that handles the business logic of the pharmacies.
@@ -36,30 +33,72 @@ class PharmaciesServiceImpl(
         offset: Int,
         limit: Int
     ): GetPharmaciesOutputDto {
-        val pharmacies = pharmaciesRepository.getPharmacies(location, range, medicine, orderBy, offset, limit)
+        if (offset < 0) throw IllegalArgumentException("Offset must be a positive integer")
+        if (limit < 0) throw IllegalArgumentException("Limit must be a positive integer")
+
+        val pharmacies = pharmaciesRepository.getPharmacies(
+            location = location,
+            range = range,
+            medicine = medicine,
+            orderBy = orderBy,
+            offset = offset,
+            limit = limit
+        )
         return GetPharmaciesOutputDto(pharmacies)
     }
 
     override fun addPharmacy(name: String, location: String, picture: String): PharmacyDto {
-        TODO("Not yet implemented")
+        val pharmacy = pharmaciesRepository.create(name = name, location = location, picture = picture)
+        return PharmacyDto(pharmacy)
     }
 
     override fun listAvailableMedicines(pharmacyId: Long, offset: Int, limit: Int): ListAvailableMedicinesOutputDto {
-        pharmaciesRepository.
+        pharmaciesRepository.findById(pharmacyId)
+            ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
+        if (offset < 0) throw IllegalArgumentException("Offset must be a positive integer")
+        if (limit < 0) throw IllegalArgumentException("Limit must be a positive integer")
 
-        TODO("Not yet implemented")
+        val medicines = pharmaciesRepository.listAvailableMedicines(
+            pharmacyId = pharmacyId,
+            offset = offset,
+            limit = limit
+        )
+        return ListAvailableMedicinesOutputDto(medicines)
     }
 
-    override fun addNewMedicine(pharmacyId: Long, medicineId: Long, quantity: Int): AddNewMedicineOutputDto {
-        TODO("Not yet implemented")
+    override fun addNewMedicine(pharmacyId: Long, medicineId: Long, quantity: Long): AddNewMedicineOutputDto {
+        pharmaciesRepository.findById(pharmacyId)
+            ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
+        medicinesRepository.findById(medicineId)
+            ?: throw NotFoundException("Medicine with id $medicineId does not exist")
+        if (quantity < 0L) throw IllegalArgumentException("Quantity must be a non-negative number")
+
+        val medicineStock = pharmaciesRepository.addNewMedicine(
+            pharmacyId = pharmacyId,
+            medicineId = medicineId,
+            quantity = quantity
+        )
+        return AddNewMedicineOutputDto(medicineStock)
     }
 
     override fun changeMedicineStock(
         pharmacyId: Long,
         medicineId: Long,
         operation: String,
-        quantity: Int
+        quantity: Long
     ): ChangeMedicineStockOutputDto {
-        TODO("Not yet implemented")
+        pharmaciesRepository.findById(pharmacyId)
+            ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
+        medicinesRepository.findById(medicineId)
+            ?: throw NotFoundException("Medicine with id $medicineId does not exist")
+        if (quantity < 0L) throw IllegalArgumentException("Quantity must be a positive integer")
+
+        val medicineStock = pharmaciesRepository.changeMedicineStock(
+            pharmacyId = pharmacyId,
+            medicineId = medicineId,
+            operation = MedicineStock.Operation(operation),
+            quantity = quantity
+        )
+        return ChangeMedicineStockOutputDto(medicineStock)
     }
 }

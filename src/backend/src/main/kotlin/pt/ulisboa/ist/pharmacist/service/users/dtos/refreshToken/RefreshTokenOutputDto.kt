@@ -6,7 +6,7 @@ package pt.ulisboa.ist.pharmacist.service.users.dtos.refreshToken
  * @property accessToken the access token
  * @property refreshToken the refresh token
  */
-data class RefreshTokenOutputDTO(
+data class RefreshTokenOutputDto(
     val accessToken: String,
     val refreshToken: String
 )

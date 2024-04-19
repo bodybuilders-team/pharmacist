@@ -7,7 +7,7 @@ package pt.ulisboa.ist.pharmacist.service.users.dtos.register
  * @property email email of the user
  * @property password password of the user
  */
-data class RegisterInputDTO(
+data class RegisterInputDto(
     val username: String,
     val email: String,
     val password: String
