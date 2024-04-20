@@ -1,9 +1,7 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.shared
 
 import android.content.Context
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 

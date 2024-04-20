@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
 
 /**
  * Activity for the [PharmacyMapScreen].

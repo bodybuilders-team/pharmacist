@@ -3,8 +3,6 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
 
@@ -39,7 +37,7 @@ class PharmacyActivity : PharmacistActivity() {
         super.onCreate(savedInstanceState)
 
         if (viewModel.loadingState == PharmacyViewModel.PharmacyLoadingState.NOT_LOADED)
-                viewModel.loadPharmacy(pharmacyId)
+            viewModel.loadPharmacy(pharmacyId)
 
         setContent {
             PharmacyScreen(

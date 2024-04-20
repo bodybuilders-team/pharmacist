@@ -1,11 +1,8 @@
 package pt.ulisboa.ist.pharmacist.ui.screens
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.Event
 
 /**
  * View model for the [PharmacistActivity].

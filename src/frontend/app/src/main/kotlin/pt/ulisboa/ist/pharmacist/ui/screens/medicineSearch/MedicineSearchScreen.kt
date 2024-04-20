@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewModel.MedicineLoadingState.LOADING
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 
 
 /**

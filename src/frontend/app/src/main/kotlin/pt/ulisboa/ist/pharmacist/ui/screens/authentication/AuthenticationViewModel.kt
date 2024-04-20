@@ -11,7 +11,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.IDLE
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.SUCCESS
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.launchAndExecuteRequest
 
 /**
  * View model for both authentication methods (login and register).

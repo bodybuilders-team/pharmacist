@@ -4,10 +4,8 @@ import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.PharmacistApplication.Companion.API_ENDPOINT
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
-import pt.ulisboa.ist.pharmacist.service.services.users.models.getUsers.GetUsersOutput
 import pt.ulisboa.ist.pharmacist.service.utils.Uris
 
 class MedicinesService(

@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens
 
-import android.app.Activity
 import androidx.activity.ComponentActivity
 import pt.ulisboa.ist.pharmacist.DependenciesContainer
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
