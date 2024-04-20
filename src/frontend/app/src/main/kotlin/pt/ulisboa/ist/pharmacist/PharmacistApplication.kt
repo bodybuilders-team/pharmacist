@@ -28,8 +28,7 @@ class PharmacistApplication : DependenciesContainer, Application() {
     )
 
     companion object {
-        const val API_ENDPOINT =
-            " https://a409-2001-8a0-6370-f300-fcd0-2e04-8396-8ee5.eu.ngrok.io"
+        private const val API_ENDPOINT = "https://localhost:80"
         const val TAG = "PharmacistApp"
     }
 }

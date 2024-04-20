@@ -13,7 +13,6 @@ object Uris {
     const val USERS_GET_BY_ID = "/users/{uid}"
     const val USER_FAVORITE_PHARMACIES = "/users/{uid}/favorite-pharmacies"
     const val USER_FAVORITE_PHARMACIES_GET_BY_ID = "/users/{uid}/favorite-pharmacies/{pid}"
-    // const val USERS_REFRESH_TOKEN = "/users/refresh-token"
 
     const val PHARMACIES = "/pharmacies"
     const val PHARMACIES_GET_BY_ID = "/pharmacies/{pid}"
@@ -29,7 +28,6 @@ object Uris {
     fun usersLogout(): URI = URI(USERS_LOGOUT)
     fun userById(uid: Long): URI = UriTemplate(USERS_GET_BY_ID).expand(uid)
     fun userFavoritePharmacies(uid: Long): URI = UriTemplate(USER_FAVORITE_PHARMACIES).expand(uid)
-    // fun usersRefreshToken(): URI = URI(USERS_REFRESH_TOKEN)
 
     fun pharmacies(): URI = URI(PHARMACIES)
     fun pharmacyById(pid: Long): URI = UriTemplate(PHARMACIES_GET_BY_ID).expand(pid)
