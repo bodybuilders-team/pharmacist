@@ -4,6 +4,8 @@ import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.repository.MemDataSource
+import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
+import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
 
 @Repository
@@ -24,9 +26,10 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
     }
 
     override fun listAvailableMedicines(pharmacyId: Long, offset: Int, limit: Int): List<MedicineStock> {
-        return pharmacies[pharmacyId]?.medicines?.let {
-            it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size))
-        } ?: emptyList()
+        return pharmacies[pharmacyId]?.medicines
+            ?.ifEmpty { null }
+            ?.let { it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size)) }
+            ?: emptyList()
     }
 
     override fun addNewMedicine(pharmacyId: Long, medicineId: Long, quantity: Long): MedicineStock {
@@ -34,7 +37,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
         val medicine =
             dataSource.medicines[medicineId] ?: throw NotFoundException("Medicine with id $medicineId does not exist")
         pharmacy.medicines.find { it.medicine.id == medicineId }?.let {
-            throw IllegalArgumentException("Medicine with id $medicineId already exists in pharmacy with id $pharmacyId")
+            throw AlreadyExistsException("Medicine with id $medicineId already exists in pharmacy with id $pharmacyId")
         }
 
         val medicineStock = MedicineStock(medicine, quantity)
@@ -57,7 +60,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
             MedicineStock.Operation.ADD -> medicineStock.add(quantity)
             MedicineStock.Operation.REMOVE -> {
                 if (medicineStock.stock < quantity) {
-                    throw IllegalArgumentException("Cannot remove more medicine than available")
+                    throw InvalidArgumentException("Cannot remove more medicine than available")
                 }
                 medicineStock.remove(quantity)
             }
@@ -67,7 +70,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
     }
 
     override fun create(name: String, location: String, picture: String): Pharmacy {
-        val pharmacyId = dataSource.pharmaciesCounter.incrementAndGet()
+        val pharmacyId = dataSource.pharmaciesCounter.getAndIncrement()
         val pharmacy = Pharmacy(pharmacyId, name, location, picture, mutableListOf())
         pharmacies[pharmacyId] = pharmacy
         return pharmacy

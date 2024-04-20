@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
+import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutputDto
@@ -33,8 +34,8 @@ class PharmaciesServiceImpl(
         offset: Int,
         limit: Int
     ): GetPharmaciesOutputDto {
-        if (offset < 0) throw IllegalArgumentException("Offset must be a positive integer")
-        if (limit < 0) throw IllegalArgumentException("Limit must be a positive integer")
+        if (offset < 0) throw InvalidArgumentException("Offset must be a positive integer")
+        if (limit < 0) throw InvalidArgumentException("Limit must be a positive integer")
 
         val pharmacies = pharmaciesRepository.getPharmacies(
             location = location,
@@ -55,8 +56,8 @@ class PharmaciesServiceImpl(
     override fun listAvailableMedicines(pharmacyId: Long, offset: Int, limit: Int): ListAvailableMedicinesOutputDto {
         pharmaciesRepository.findById(pharmacyId)
             ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
-        if (offset < 0) throw IllegalArgumentException("Offset must be a positive integer")
-        if (limit < 0) throw IllegalArgumentException("Limit must be a positive integer")
+        if (offset < 0) throw InvalidArgumentException("Offset must be a positive integer")
+        if (limit < 0) throw InvalidArgumentException("Limit must be a positive integer")
 
         val medicines = pharmaciesRepository.listAvailableMedicines(
             pharmacyId = pharmacyId,
@@ -71,7 +72,7 @@ class PharmaciesServiceImpl(
             ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
         medicinesRepository.findById(medicineId)
             ?: throw NotFoundException("Medicine with id $medicineId does not exist")
-        if (quantity < 0L) throw IllegalArgumentException("Quantity must be a non-negative number")
+        if (quantity < 0L) throw InvalidArgumentException("Quantity must be a non-negative number")
 
         val medicineStock = pharmaciesRepository.addNewMedicine(
             pharmacyId = pharmacyId,
@@ -91,7 +92,7 @@ class PharmaciesServiceImpl(
             ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
         medicinesRepository.findById(medicineId)
             ?: throw NotFoundException("Medicine with id $medicineId does not exist")
-        if (quantity < 0L) throw IllegalArgumentException("Quantity must be a positive integer")
+        if (quantity < 0L) throw InvalidArgumentException("Quantity must be a positive integer")
 
         val medicineStock = pharmaciesRepository.changeMedicineStock(
             pharmacyId = pharmacyId,

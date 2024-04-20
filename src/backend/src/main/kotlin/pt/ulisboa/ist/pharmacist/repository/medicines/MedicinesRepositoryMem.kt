@@ -19,7 +19,9 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
         limit: Int
     ): List<MedicineWithClosestPharmacyDto> {
         val filteredMedicines = medicines.values.filter { it.name.contains(substring) }
-            .subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(medicines.size))
+            .ifEmpty { null }
+            ?.let { it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size)) }
+            ?: emptyList()
 
         return filteredMedicines.map { medicine ->
             MedicineWithClosestPharmacyDto(
@@ -37,11 +39,13 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
 
     override fun getMedicines(substring: String, offset: Int, limit: Int): List<Medicine> {
         return medicines.values.filter { it.name.contains(substring) }
-            .subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(medicines.size))
+            .ifEmpty { null }
+            ?.let { it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size)) }
+            ?: emptyList()
     }
 
     override fun create(name: String, description: String, boxPhoto: String): Medicine {
-        val medicineId = dataSource.medicinesCounter.incrementAndGet()
+        val medicineId = dataSource.medicinesCounter.getAndIncrement()
         val medicine = Medicine(medicineId, name, description, boxPhoto)
         medicines[medicineId] = medicine
         return medicine

@@ -12,6 +12,22 @@ import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 interface UsersService {
 
     /**
+     * Adds a favorite pharmacy to the user.
+     *
+     * @param userId the id of the user
+     * @param pharmacyId the id of the pharmacy
+     */
+    fun addFavoritePharmacy(userId: String, pharmacyId: Long)
+
+    /**
+     * Removes a favorite pharmacy from the user.
+     *
+     * @param userId the id of the user
+     * @param pharmacyId the id of the pharmacy
+     */
+    fun removeFavoritePharmacy(userId: String, pharmacyId: Long)
+
+    /**
      * Gets all users.
      *
      * @param offset the offset of the pagination

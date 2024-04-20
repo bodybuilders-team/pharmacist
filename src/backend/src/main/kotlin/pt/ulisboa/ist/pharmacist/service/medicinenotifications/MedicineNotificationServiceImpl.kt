@@ -25,7 +25,7 @@ class MedicineNotificationServiceImpl : MedicineNotificationService {
 
         user.favoritePharmacies.forEach { pharmacy ->
             medicineNotifications.addAll(pharmacy.medicines
-                .filter { it in user.medicinesToNotify }
+                .filter { it.medicine in user.medicinesToNotify }
                 .map { MedicineNotification(it, pharmacy.id) })
         }
 

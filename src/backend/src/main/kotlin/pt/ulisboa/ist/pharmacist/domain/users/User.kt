@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.pharmacist.domain.users
 
 import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidUserException
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
+import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 
 /**
@@ -17,9 +17,9 @@ data class User(
     val username: String,
     val email: String,
     val passwordHash: String,
-    val suspended: Boolean = false,
-    val favoritePharmacies: List<Pharmacy> = mutableListOf(),
-    val medicinesToNotify: List<MedicineStock> = mutableListOf(),
+    val suspended: Boolean,
+    val favoritePharmacies: MutableSet<Pharmacy>,
+    val medicinesToNotify: MutableSet<Medicine>,
 ) {
     init {
         if (username.length !in MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH)

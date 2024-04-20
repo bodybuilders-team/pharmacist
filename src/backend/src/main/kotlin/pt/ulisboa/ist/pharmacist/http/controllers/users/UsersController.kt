@@ -1,10 +1,11 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.users
 
-import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -21,6 +22,7 @@ import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.Register
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
+import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.users.UsersService
 import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 import pt.ulisboa.ist.pharmacist.utils.JwtProvider
@@ -58,7 +60,7 @@ class UsersController(private val usersService: UsersService) {
             ascending = when (sortDirection) {
                 Params.SORT_DIR_ASCENDING -> true
                 Params.SORT_DIR_DESCENDING -> false
-                else -> throw IllegalArgumentException(
+                else -> throw InvalidArgumentException(
                     "Invalid sort order, must be ${Params.SORT_DIR_ASCENDING} or ${Params.SORT_DIR_DESCENDING}"
                 )
             }
@@ -96,8 +98,7 @@ class UsersController(private val usersService: UsersService) {
     @PostMapping(Uris.USERS_LOGIN)
     fun login(
         @Valid @RequestBody
-        userData: LoginInputModel,
-        response: HttpServletResponse
+        userData: LoginInputModel
     ): LoginOutputModel {
         return LoginOutputModel(
             usersService.login(
@@ -105,6 +106,36 @@ class UsersController(private val usersService: UsersService) {
                 password = userData.password
             )
         )
+    }
+
+    /**
+     * Handles the request to add a pharmacy to the user's favorite pharmacies.
+     *
+     * @param uid the id of the user to add the pharmacy to
+     * @param pid the id of the pharmacy to be added
+     * @return the response to the request
+     */
+    @PutMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
+    fun addFavoritePharmacy(
+        @PathVariable uid: String,
+        @PathVariable pid: Long
+    ) {
+        usersService.addFavoritePharmacy(userId = uid, pharmacyId = pid)
+    }
+
+    /**
+     * Handles the request to remove a pharmacy from the user's favorite pharmacies.
+     *
+     * @param uid the id of the user to add the pharmacy to
+     * @param pid the id of the pharmacy to be added
+     * @return the response to the request
+     */
+    @DeleteMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
+    fun removeFavoritePharmacy(
+        @PathVariable uid: String,
+        @PathVariable pid: Long
+    ) {
+        usersService.removeFavoritePharmacy(userId = uid, pharmacyId = pid)
     }
 
     /**
@@ -118,8 +149,7 @@ class UsersController(private val usersService: UsersService) {
     fun logout(
         @Valid @RequestBody(required = false)
         logoutUserInputModel: LogoutUserInputModel?,
-        @RequestAttribute(JwtProvider.ACCESS_TOKEN_ATTRIBUTE) accessToken: String,
-        response: HttpServletResponse
+        @RequestAttribute(JwtProvider.ACCESS_TOKEN_ATTRIBUTE) accessToken: String
     ): LogoutUserOutputModel {
         usersService.logout(accessToken = accessToken)
 

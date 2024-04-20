@@ -1,6 +1,8 @@
 package pt.ulisboa.ist.pharmacist
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,18 +17,18 @@ import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInte
  *
  * @property authInterceptor the authentication interceptor
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = [DataSourceAutoConfiguration::class, SqlInitializationAutoConfiguration::class])
 class PharmacistApplication(val authInterceptor: AuthenticationInterceptor) : WebMvcConfigurer {
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(/* interceptor = */ authInterceptor)
+        // registry.addInterceptor(/* interceptor = */ authInterceptor)
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-            .allowCredentials(true)
-            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-            .allowedOrigins("http://localhost:3000", "http://localhost")
+//        registry.addMapping("/**")
+//            .allowCredentials(true)
+//            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+//            .allowedOrigins("http://localhost:3000", "http://localhost")
     }
 }
 

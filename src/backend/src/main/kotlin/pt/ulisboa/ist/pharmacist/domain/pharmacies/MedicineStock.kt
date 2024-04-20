@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.domain.pharmacies
 
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 
 data class MedicineStock(
     val medicine: Medicine,
@@ -23,9 +24,9 @@ data class MedicineStock(
 
         companion object {
             operator fun invoke(operation: String): Operation = when (operation) {
-                "ADD" -> ADD
-                "REMOVE" -> REMOVE
-                else -> throw IllegalArgumentException("Invalid operation: $operation")
+                "add", "ADD" -> ADD
+                "remove", "REMOVE" -> REMOVE
+                else -> throw InvalidArgumentException("Invalid operation: $operation")
             }
         }
     }

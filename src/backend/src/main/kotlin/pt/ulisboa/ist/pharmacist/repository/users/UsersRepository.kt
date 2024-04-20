@@ -11,6 +11,10 @@ interface UsersRepository {
 
     fun create(userId: String, username: String, email: String, passwordHash: String): User
 
+    fun addFavoritePharmacy(userId: String, pharmacyId: Long)
+
+    fun removeFavoritePharmacy(userId: String, pharmacyId: Long)
+
     fun findByUsername(username: String): User?
 
     fun findByEmail(email: String): User?

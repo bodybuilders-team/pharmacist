@@ -24,10 +24,8 @@ import pt.ulisboa.ist.pharmacist.service.medicines.MedicinesService
 @RequestMapping(produces = ["application/json"])
 class MedicinesController(private val medicinesService: MedicinesService) {
 
-    // TODO: Implement the method that handles the request to get the pharmacies
-
     /**
-     * Handles the request to get pharmacies.
+     * Handles the request to get medicines.
      *
      * @return the list of pharmacies
      */

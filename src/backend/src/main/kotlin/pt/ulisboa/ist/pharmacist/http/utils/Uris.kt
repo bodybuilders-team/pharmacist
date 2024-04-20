@@ -12,6 +12,7 @@ object Uris {
     const val USERS_LOGOUT = "/users/logout"
     const val USERS_GET_BY_ID = "/users/{uid}"
     const val USER_FAVORITE_PHARMACIES = "/users/{uid}/favorite-pharmacies"
+    const val USER_FAVORITE_PHARMACIES_GET_BY_ID = "/users/{uid}/favorite-pharmacies/{pid}"
     // const val USERS_REFRESH_TOKEN = "/users/refresh-token"
 
     const val PHARMACIES = "/pharmacies"

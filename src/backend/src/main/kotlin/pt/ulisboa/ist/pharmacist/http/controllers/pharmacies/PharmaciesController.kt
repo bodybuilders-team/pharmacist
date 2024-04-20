@@ -93,8 +93,8 @@ class PharmaciesController(
     @GetMapping(Uris.PHARMACY_MEDICINES)
     fun listAvailableMedicines(
         @PathVariable pid: Long,
-        @RequestParam(Params.OFFSET_PARAM) offset: Int,
-        @RequestParam(Params.LIMIT_PARAM) limit: Int
+        @RequestParam(Params.OFFSET_PARAM, defaultValue = Params.OFFSET_DEFAULT.toString()) offset: Int,
+        @RequestParam(Params.LIMIT_PARAM, defaultValue = Params.LIMIT_DEFAULT.toString()) limit: Int
     ): ListAvailableMedicinesOutputModel {
         return ListAvailableMedicinesOutputModel(
             pharmaciesService.listAvailableMedicines(

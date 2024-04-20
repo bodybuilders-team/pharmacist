@@ -3,10 +3,12 @@ package pt.ulisboa.ist.pharmacist.service.users
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
 import pt.ulisboa.ist.pharmacist.repository.users.AccessTokensRepository
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.AuthenticationException
+import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPaginationParamsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
@@ -33,29 +35,42 @@ import java.util.UUID
 @Transactional(rollbackFor = [Exception::class])
 class UsersServiceImpl(
     private val usersRepository: UsersRepository,
+    private val pharmaciesRepository: PharmaciesRepository,
     private val accessTokensRepository: AccessTokensRepository,
     private val hashingUtils: HashingUtils,
     private val jwtProvider: JwtProvider
 ) : UsersService {
 
+    override fun addFavoritePharmacy(userId: String, pharmacyId: Long) {
+        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+        pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
+
+        usersRepository.addFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
+    }
+
+    override fun removeFavoritePharmacy(userId: String, pharmacyId: Long) {
+        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+        pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
+
+
+        usersRepository.removeFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
+    }
+
     override fun getUsers(offset: Int, limit: Int, orderBy: UsersOrder, ascending: Boolean): UsersDto {
-        if (offset < 0 || limit < 0)
-            throw InvalidPaginationParamsException("Offset and limit must be positive")
+        if (offset < 0) throw InvalidArgumentException("Offset must be a positive integer")
+        if (limit < 0) throw InvalidArgumentException("Limit must be a positive integer")
 
         if (limit > MAX_USERS_LIMIT)
             throw InvalidPaginationParamsException("Limit must be less or equal than $MAX_USERS_LIMIT")
 
         return UsersDto(
-            users = usersRepository
-                .let {
-                    val pageable = OffsetPageRequest(
-                        offset = offset.toLong(),
-                        limit = limit,
-                        sort = orderBy.toSort(ascending)
-                    )
-
-                    usersRepository.findAll(/* pageable = */ pageable)
-                }
+            users = usersRepository.findAll(
+                OffsetPageRequest(
+                    offset = offset.toLong(),
+                    limit = limit,
+                    sort = orderBy.toSort(ascending)
+                )
+            )
                 .toList()
                 .map(::UserDto),
             totalCount = usersRepository.count().toInt()
@@ -87,7 +102,7 @@ class UsersServiceImpl(
         val accessToken = createToken(user = user)
 
         return RegisterOutputDto(
-            username = username,
+            userId = userId,
             accessToken = accessToken
         )
     }

@@ -5,20 +5,38 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.repository.MemDataSource
+import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
 
 /**
  * Repository for the [User] entity using an in-memory data structure.
  */
 @Repository
-class UsersRepositoryMem(dataSource: MemDataSource) : UsersRepository {
+class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepository {
 
     private val users = dataSource.users
 
     override fun create(userId: String, username: String, email: String, passwordHash: String): User {
-        val user = User(userId, username, email, passwordHash)
+        val user = User(
+            id = userId, username = username, email = email, passwordHash = passwordHash,
+            suspended = false,
+            favoritePharmacies = mutableSetOf(),
+            medicinesToNotify = mutableSetOf()
+        )
         users[userId] = user
         return user
+    }
+
+    override fun addFavoritePharmacy(userId: String, pharmacyId: Long) {
+        val user = users[userId] ?: throw NotFoundException("User not found")
+        user.favoritePharmacies.add(dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found"))
+    }
+
+    override fun removeFavoritePharmacy(userId: String, pharmacyId: Long) {
+        val user = users[userId] ?: throw NotFoundException("User not found")
+        user.favoritePharmacies.remove(
+            dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
+        )
     }
 
     override fun findByUsername(username: String): User? {

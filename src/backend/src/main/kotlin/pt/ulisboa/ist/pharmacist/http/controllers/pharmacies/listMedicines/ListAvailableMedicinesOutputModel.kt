@@ -1,7 +1,6 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.listMedicines
 
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesOutputDto
-import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
 
 /**
  * The output model of the 'List Available Medicines' endpoint.
@@ -11,10 +10,10 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
  */
 data class ListAvailableMedicinesOutputModel(
     val count: Int,
-    val medicines: List<MedicineDto>
+    val medicines: List<MedicineStockModel>
 ) {
     constructor(listAvailableMedicinesOutputDto: ListAvailableMedicinesOutputDto) : this(
         count = listAvailableMedicinesOutputDto.count,
-        medicines = listAvailableMedicinesOutputDto.medicines.map { it.medicine }
+        medicines = listAvailableMedicinesOutputDto.medicines.map { MedicineStockModel(it) }
     )
 }

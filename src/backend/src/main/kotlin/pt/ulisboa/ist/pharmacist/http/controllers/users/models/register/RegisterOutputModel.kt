@@ -8,9 +8,11 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
  * @property accessToken the access token of the user
  */
 data class RegisterOutputModel(
+    val userId: String,
     val accessToken: String
 ) {
     constructor(registerOutputDto: RegisterOutputDto) : this(
+        userId = registerOutputDto.userId,
         accessToken = registerOutputDto.accessToken
     )
 }
