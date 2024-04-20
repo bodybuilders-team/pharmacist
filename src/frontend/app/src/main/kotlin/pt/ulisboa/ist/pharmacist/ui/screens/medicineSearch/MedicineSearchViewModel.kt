@@ -5,10 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.services.medicines.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewModel.MedicineLoadingState.LOADED
@@ -27,43 +27,63 @@ class MedicineSearchViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
-    var loadingState by mutableStateOf(NOT_LOADED)
-        private set
-
-    var items: List<Medicine> by mutableStateOf(emptyList())
-        private set
-
-    fun loadMoreMedicines() = viewModelScope.launch {
-        loadingState = LOADING
-
-//        val result = pharmacistService.medicinesService.getMedicines(LOAD_MORE_COUNT, items.size.toLong())
-//        if(result.isSuccess())
-//            items = items + result.data
-        Log.d("Medicines", items.toString())
-        delay(1000)
-
-        items += listOf(
-            Medicine(
-                id = 1L + items.size,
-                name = "Medicine " + (1 + items.size),
-                purpose = "Purpose 1",
-                boxPhoto = "boxPhoto 1"
-            ),
-            Medicine(
-                id = 2L + items.size,
-                name = "Medicine " + (2 + items.size),
-                purpose = "Purpose 2",
-                boxPhoto = "boxPhoto 2"
-            ),
-            Medicine(
-                id = 3L + items.size,
-                name = "Medicine " + (3 + items.size),
-                purpose = "Purpose 3",
-                boxPhoto = "boxPhoto 3"
-            ),
+    var medicineSearchData by mutableStateOf(
+        MedicineSearchData(
+            emptyList(),
+            NOT_LOADED,
+            false
         )
+    )
+        private set
+    private var searchValue by mutableStateOf("")
 
-        loadingState = LOADED
+
+    fun loadMoreMedicines() {
+        if (medicineSearchData.loadingState == LOADING || medicineSearchData.reachedBottomOfQuery)
+            return
+
+        Log.d("MEDICINES_SCROLL", "A")
+        viewModelScope.launch {
+            medicineSearchData = medicineSearchData.copy(loadingState = LOADING)
+            Log.d("MEDICINES_SCROLL", "B")
+
+            val result = pharmacistService.medicinesService.getMedicines(
+                searchValue,
+                "",
+                LOAD_MORE_COUNT,
+                medicineSearchData.medicines.size.toLong()
+            )
+
+            if (result.isSuccess()) {
+                if (result.data.medicines.isEmpty()) {
+                    medicineSearchData = medicineSearchData.copy(
+                        loadingState = LOADED,
+                        reachedBottomOfQuery = true
+                    )
+                    return@launch
+                }
+
+                medicineSearchData = medicineSearchData.copy(
+                    medicines = medicineSearchData.medicines + result.data.medicines,
+                )
+
+                Log.d(
+                    "MEDICINES_SCROLL",
+                    "Loaded ${result.data.medicines.size} more medicines, total: ${medicineSearchData.medicines.size}"
+                )
+            }
+
+            medicineSearchData = medicineSearchData.copy(loadingState = LOADED)
+            Log.d("MEDICINES_SCROLL", "C")
+        }
+    }
+
+    fun searchMedicines(searchValue: String) {
+        if (medicineSearchData.loadingState == LOADING)
+            return
+
+        this.searchValue = searchValue
+        medicineSearchData = MedicineSearchData(emptyList(), LOADING, false)
     }
 
 
@@ -74,7 +94,12 @@ class MedicineSearchViewModel(
     }
 
     companion object {
-        const val LOAD_MORE_COUNT: Long = 3
+        const val LOAD_MORE_COUNT: Long = 2
     }
-
 }
+
+data class MedicineSearchData(
+    val medicines: List<MedicineWithClosestPharmacyOutputModel>,
+    val loadingState: MedicineSearchViewModel.MedicineLoadingState,
+    val reachedBottomOfQuery: Boolean
+)

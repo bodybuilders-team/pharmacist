@@ -1,12 +1,12 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewModel.MedicineLoadingState.LOADING
 
 /**
- * Activity for the [MedicineScreen].
+ * Activity for the [MedicineSearchScreen].
  */
 class MedicineSearchActivity : PharmacistActivity() {
 
@@ -16,18 +16,14 @@ class MedicineSearchActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (viewModel.items.isEmpty() && viewModel.loadingState != LOADING) {
-            for (i in 0 until 10)
-                viewModel.loadMoreMedicines()
-        }
-
         setContent {
-            MedicineScreen(
-                medicines = viewModel.items,
+            MedicineSearchScreen(
+                medicines = viewModel.medicineSearchData.medicines,
                 loadMoreMedicines = {
                     viewModel.loadMoreMedicines()
                 },
-                loadingState = viewModel.loadingState
+                onSearch = { viewModel.searchMedicines(it) },
+                loadingState = viewModel.medicineSearchData.loadingState
             )
         }
     }

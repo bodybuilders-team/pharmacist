@@ -17,7 +17,7 @@ interface MedicinesRepository {
 
     fun getMedicines(substring: String, offset: Int, limit: Int): List<Medicine>
 
-    fun create(name: String, description: String, boxPhoto: String): Medicine
+    fun create(name: String, description: String, boxPhotoUrl: String): Medicine
 
     fun findByName(name: String): Medicine?
 

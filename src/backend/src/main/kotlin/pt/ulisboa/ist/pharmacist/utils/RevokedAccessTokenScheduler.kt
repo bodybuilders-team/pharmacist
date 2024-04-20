@@ -9,8 +9,7 @@ class AccessTokenScheduler(
 ) {
 
     /*@Scheduled(fixedRate = REVOKED_ACCESS_TOKEN_CLEANUP_INTERVAL)
-    @Transactional(rollbackFor = [Exception::class])
-    fun removeExpiredTokens() {
+        fun removeExpiredTokens() {
         AccessTokensRepository.deleteAllByExpirationDateBefore(Timestamp.from(Instant.now()))
     }
 

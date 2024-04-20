@@ -59,7 +59,7 @@ class MedicinesController(private val medicinesService: MedicinesService) {
         val createdMedicine = medicinesService.createMedicine(
             name = inputModel.name,
             description = inputModel.description,
-            boxPhoto = inputModel.boxPhoto
+            boxPhotoUrl = inputModel.boxPhotoUrl
         )
 
         return ResponseEntity

@@ -32,7 +32,6 @@ import java.util.UUID
  * @property jwtProvider the JWT provider
  */
 @Service
-@Transactional(rollbackFor = [Exception::class])
 class UsersServiceImpl(
     private val usersRepository: UsersRepository,
     private val pharmaciesRepository: PharmaciesRepository,

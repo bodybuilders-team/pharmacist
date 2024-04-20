@@ -6,12 +6,12 @@ data class MedicineDto(
     val medicineId: Long,
     val name: String,
     val description: String,
-    val boxPhoto: String
+    val boxPhotoUrl: String
 ) {
     constructor(medicine: Medicine) : this(
-        medicineId = medicine.id,
+        medicineId = medicine.medicineId,
         name = medicine.name,
         description = medicine.description,
-        boxPhoto = medicine.boxPhoto
+        boxPhotoUrl = medicine.boxPhotoUrl
     )
 }

@@ -11,6 +11,6 @@ data class AddPharmacyOutputModel(
     val pharmacyId: Long
 ) {
     constructor(pharmacy: PharmacyDto) : this(
-        pharmacyId = pharmacy.id
+        pharmacyId = pharmacy.pharmacyId
     )
 }

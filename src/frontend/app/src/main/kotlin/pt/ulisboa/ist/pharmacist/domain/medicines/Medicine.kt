@@ -1,8 +1,8 @@
 package pt.ulisboa.ist.pharmacist.domain.medicines
 
 data class Medicine(
-    var id: Long,
+    var medicineId: Long,
     val name: String,
     val purpose: String,
-    val boxPhoto: String
+    val boxPhotoUrl: String
 )

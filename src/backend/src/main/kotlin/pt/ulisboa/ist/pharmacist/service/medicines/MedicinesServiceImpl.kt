@@ -13,7 +13,6 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
  * @property medicinesRepository the repository of the medicines
  */
 @Service
-@Transactional(rollbackFor = [Exception::class])
 class MedicinesServiceImpl(
     private val medicinesRepository: MedicinesRepository
 ) : MedicinesService {
@@ -33,11 +32,12 @@ class MedicinesServiceImpl(
             offset = offset,
             limit = limit
         )
-        return GetMedicinesWithClosestPharmacyOutputDto(medicines.size, medicines)
+
+        return GetMedicinesWithClosestPharmacyOutputDto(0, medicines)
     }
 
-    override fun createMedicine(name: String, description: String, boxPhoto: String): MedicineDto {
-        val medicine = medicinesRepository.create(name, description, boxPhoto)
+    override fun createMedicine(name: String, description: String, boxPhotoUrl: String): MedicineDto {
+        val medicine = medicinesRepository.create(name, description, boxPhotoUrl)
         return MedicineDto(medicine)
     }
 }

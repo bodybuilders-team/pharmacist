@@ -20,7 +20,6 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
  * @property medicinesRepository the repository of the medicines
  */
 @Service
-@Transactional(rollbackFor = [Exception::class])
 class PharmaciesServiceImpl(
     private val pharmaciesRepository: PharmaciesRepository,
     private val medicinesRepository: MedicinesRepository

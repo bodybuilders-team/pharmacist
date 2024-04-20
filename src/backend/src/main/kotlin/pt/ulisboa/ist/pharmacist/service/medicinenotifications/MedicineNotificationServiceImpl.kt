@@ -26,7 +26,7 @@ class MedicineNotificationServiceImpl : MedicineNotificationService {
         user.favoritePharmacies.forEach { pharmacy ->
             medicineNotifications.addAll(pharmacy.medicines
                 .filter { it.medicine in user.medicinesToNotify }
-                .map { MedicineNotification(it, pharmacy.id) })
+                .map { MedicineNotification(it, pharmacy.pharmacyId) })
         }
 
         return medicineNotifications
@@ -43,7 +43,7 @@ class MedicineNotificationServiceImpl : MedicineNotificationService {
             for (notification in notifications) {
                 val previousStock = previousStocks.put(
                     MedicinePharmacyPair(
-                        medicineId = notification.medicineStock.medicine.id,
+                        medicineId = notification.medicineStock.medicine.medicineId,
                         pharmacyId = notification.pharmacyId
                     ),
                     notification.medicineStock.stock

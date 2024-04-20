@@ -27,7 +27,7 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
             MedicineWithClosestPharmacyDto(
                 medicine = MedicineDto(medicine),
                 closestPharmacy = dataSource.pharmacies.values.filter { pharmacy ->
-                    pharmacy.medicines.map { it.medicine.id }.contains(medicine.id)
+                    pharmacy.medicines.map { it.medicine.medicineId }.contains(medicine.medicineId)
                 }.minByOrNull { //pharmacy ->
                     // TODO calculate location distances
                     // pharmacy.location.distanceTo(currentLocation)
@@ -44,9 +44,9 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
             ?: emptyList()
     }
 
-    override fun create(name: String, description: String, boxPhoto: String): Medicine {
+    override fun create(name: String, description: String, boxPhotoUrl: String): Medicine {
         val medicineId = dataSource.medicinesCounter.getAndIncrement()
-        val medicine = Medicine(medicineId, name, description, boxPhoto)
+        val medicine = Medicine(medicineId, name, description, boxPhotoUrl)
         medicines[medicineId] = medicine
         return medicine
     }
@@ -64,6 +64,6 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
     }
 
     override fun delete(medicine: Medicine) {
-        medicines.remove(medicine.id)
+        medicines.remove(medicine.medicineId)
     }
 }

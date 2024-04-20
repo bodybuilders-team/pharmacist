@@ -18,7 +18,7 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
 
     override fun create(userId: String, username: String, email: String, passwordHash: String): User {
         val user = User(
-            id = userId, username = username, email = email, passwordHash = passwordHash,
+            userId = userId, username = username, email = email, passwordHash = passwordHash,
             suspended = false,
             favoritePharmacies = mutableSetOf(),
             medicinesToNotify = mutableSetOf()
@@ -60,7 +60,7 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
     }
 
     override fun delete(user: User) {
-        users.remove(user.id)
+        users.remove(user.userId)
     }
 
     override fun count(): Long {

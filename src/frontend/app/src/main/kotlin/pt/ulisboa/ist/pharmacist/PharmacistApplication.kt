@@ -28,7 +28,7 @@ class PharmacistApplication : DependenciesContainer, Application() {
     )
 
     companion object {
-        private const val API_ENDPOINT = "https://localhost:80"
+        private const val API_ENDPOINT = "http://10.0.2.2:8080"
         const val TAG = "PharmacistApp"
     }
 }

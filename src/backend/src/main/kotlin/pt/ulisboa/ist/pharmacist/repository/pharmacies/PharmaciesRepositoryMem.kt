@@ -36,7 +36,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
         val pharmacy = pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
         val medicine =
             dataSource.medicines[medicineId] ?: throw NotFoundException("Medicine with id $medicineId does not exist")
-        pharmacy.medicines.find { it.medicine.id == medicineId }?.let {
+        pharmacy.medicines.find { it.medicine.medicineId == medicineId }?.let {
             throw AlreadyExistsException("Medicine with id $medicineId already exists in pharmacy with id $pharmacyId")
         }
 
@@ -53,7 +53,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
     ): MedicineStock {
         val pharmacy = pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
         dataSource.medicines[medicineId] ?: throw NotFoundException("Medicine with id $medicineId does not exist")
-        val medicineStock = pharmacy.medicines.find { it.medicine.id == medicineId }
+        val medicineStock = pharmacy.medicines.find { it.medicine.medicineId == medicineId }
             ?: throw NotFoundException("Medicine with id $medicineId does not exist in pharmacy with id $pharmacyId")
 
         when (operation) {
@@ -89,6 +89,6 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
     }
 
     override fun delete(pharmacy: Pharmacy) {
-        pharmacies.remove(pharmacy.id)
+        pharmacies.remove(pharmacy.pharmacyId)
     }
 }

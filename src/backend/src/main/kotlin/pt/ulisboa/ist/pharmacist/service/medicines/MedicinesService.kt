@@ -30,8 +30,8 @@ interface MedicinesService {
      *
      * @param name the name of the medicine
      * @param description the description of the medicine
-     * @param boxPhoto the box photo of the medicine
+     * @param boxPhotoUrl the box photo of the medicine
      * @return the medicine created
      */
-    fun createMedicine(name: String, description: String, boxPhoto: String): MedicineDto
+    fun createMedicine(name: String, description: String, boxPhotoUrl: String): MedicineDto
 }

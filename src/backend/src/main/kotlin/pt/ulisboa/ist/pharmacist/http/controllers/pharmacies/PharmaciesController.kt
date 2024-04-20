@@ -78,7 +78,7 @@ class PharmaciesController(
         )
 
         return ResponseEntity
-            .created(Uris.pharmacyById(addedPharmacy.id))
+            .created(Uris.pharmacyById(addedPharmacy.pharmacyId))
             .body(AddPharmacyOutputModel(addedPharmacy))
     }
 

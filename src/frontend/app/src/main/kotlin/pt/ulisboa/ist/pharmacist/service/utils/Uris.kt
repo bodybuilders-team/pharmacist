@@ -1,5 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service.utils
 
+import com.google.android.gms.maps.model.LatLng
+
 /**
  * The URIs of the API.
  */
@@ -20,8 +22,8 @@ object Uris {
     const val MEDICINES = "/medicines"
     const val MEDICINES_GET_BY_ID = "/medicines/{mid}"
 
-    fun getMedicines(limit: Long, offset: Long): String {
-        return "$MEDICINES?limit=$limit&offset=$offset"
+    fun getMedicines(substring:String, location: String, limit: Long, offset: Long): String {
+        return "$MEDICINES?substring=$substring&location=$location&limit=$limit&offset=$offset"
     }
 
     fun getPharmaciesById(id: Long): String {

@@ -37,7 +37,7 @@ fun MapScreen(
             MarkerInfoWindowContent(
                 state = MarkerState(position = pharmacy.location),
                 title = pharmacy.name,
-                onInfoWindowClick = { onPharmacyDetailsClick(pharmacy.id) }
+                onInfoWindowClick = { onPharmacyDetailsClick(pharmacy.pharmacyId) }
             ) { marker ->
                 Column {
                     Text(

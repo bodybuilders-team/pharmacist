@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +19,7 @@ import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
+import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
 import pt.ulisboa.ist.pharmacist.ui.utils.assertNotNull
 
 /**
@@ -49,8 +48,8 @@ fun PharmacyScreen(pharmacy: Pharmacy?, loadingState: PharmacyViewModel.Pharmacy
 
                 Text(text = pharmacy.location.toString())
 
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                MeteredAsyncImage(
+                    url = pharmacy.pictureUrl,
                     contentDescription = "Pharmacy picture",
                     modifier = Modifier
                         .fillMaxWidth()
