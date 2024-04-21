@@ -23,9 +23,7 @@ class MedicineSearchActivity : PharmacistActivity() {
         viewModel.checkForLocationAccessPermission(this)
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.startObtainingLocation(this@MedicineSearchActivity)
-            }
+            viewModel.startObtainingLocation(this@MedicineSearchActivity)
         }
 
         setContent {

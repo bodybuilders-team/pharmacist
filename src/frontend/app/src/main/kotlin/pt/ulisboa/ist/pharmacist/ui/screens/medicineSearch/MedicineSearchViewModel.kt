@@ -69,10 +69,8 @@ class MedicineSearchViewModel(
     suspend fun startObtainingLocation(context: Context) {
         val locationService = LocationService(context)
 
-        Log.d("MedicineSearchViewModel", "Starting location updates")
         locationService.requestLocationUpdates()
             .map {
-                Log.d("MedicineSearchViewModel", "Location: $it")
                 locationFlow.emit(Location(it.latitude, it.longitude))
             }
             .collect()

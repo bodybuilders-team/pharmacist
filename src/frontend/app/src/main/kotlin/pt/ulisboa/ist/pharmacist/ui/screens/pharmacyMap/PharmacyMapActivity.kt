@@ -26,7 +26,6 @@ class PharmacyMapActivity : PharmacistActivity() {
         setContent {
             viewModel.loadPharmacyMap()
 
-            viewModel.state
             PharmacyMapScreen(
                 hasLocationPermission = viewModel.hasLocationPermission,
                 mapProperties = viewModel.mapProperties,

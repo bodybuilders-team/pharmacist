@@ -53,7 +53,7 @@ fun MedicineSearchScreen(
             mutableStateOf(hasLocationPermission)
         }
 
-        if (!hasLocationPermission) {
+        if (!hasPermission) {
             LocationPermissionScreen(onPermissionGranted = { hasPermission = true })
             return@PharmacistScreen
         }
