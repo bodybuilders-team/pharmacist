@@ -27,6 +27,7 @@ class PharmacyMapActivity : PharmacistActivity() {
             viewModel.loadPharmacyMap()
 
             PharmacyMapScreen(
+                followMyLocation = viewModel.followMyLocation,
                 hasLocationPermission = viewModel.hasLocationPermission,
                 mapProperties = viewModel.mapProperties,
                 cameraPositionState = viewModel.cameraPositionState,
@@ -34,7 +35,9 @@ class PharmacyMapActivity : PharmacistActivity() {
                 onPharmacyDetailsClick = { pid ->
                     PharmacyActivity.navigate(this, pid)
                 },
-                toggleFollowMyLocation = { viewModel.toggleFollowMyLocation() }
+                setFollowMyLocation = { followMyLocation ->
+                    viewModel.followMyLocation = followMyLocation
+                }
             )
         }
     }

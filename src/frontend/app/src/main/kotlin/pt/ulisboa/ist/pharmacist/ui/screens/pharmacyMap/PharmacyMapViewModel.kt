@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
@@ -47,7 +48,7 @@ class PharmacyMapViewModel(
     var cameraPositionState by mutableStateOf(CameraPositionState())
         private set
 
-    private var followMyLocation by mutableStateOf(true)
+    var followMyLocation by mutableStateOf(true)
 
     val mapProperties by mutableStateOf(
         MapProperties(
@@ -83,12 +84,19 @@ class PharmacyMapViewModel(
             .collect { location ->
                 val latLng = LatLng(location.latitude, location.longitude)
                 Log.d("PharmacyMapViewModel", "Location: $latLng")
-                if(followMyLocation) {
-                    cameraPositionState.animate(
-                        CameraUpdateFactory.newCameraPosition(
-                            CameraPosition.fromLatLngZoom(latLng, DEFAULT_ZOOM)
+                if (followMyLocation) {
+                    try {
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newCameraPosition(
+                                CameraPosition.fromLatLngZoom(latLng, DEFAULT_ZOOM)
+                            )
                         )
-                    )
+                    } catch (e: CancellationException) {
+                        Log.d("PharmacyMapViewModel", "Camera animation cancelled")
+                        throw e
+                    } catch (e: Exception) {
+                        Log.d("PharmacyMapViewModel", "Camera animation failed")
+                    }
                 }
             }
     }
@@ -100,10 +108,6 @@ class PharmacyMapViewModel(
      */
     fun checkForLocationAccessPermission(context: Context) {
         hasLocationPermission = context.hasLocationPermission()
-    }
-
-    fun toggleFollowMyLocation() {
-        followMyLocation = !followMyLocation
     }
 
     enum class PharmacyMapState {

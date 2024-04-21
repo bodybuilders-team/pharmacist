@@ -1,19 +1,22 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components
 
+import android.util.Log
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 
 /**
@@ -25,17 +28,30 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
  */
 @Composable
 fun MapScreen(
+    followMyLocation: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
-    toggleFollowMyLocation: () -> Unit
+    setFollowMyLocation: (Boolean) -> Unit,
 ) {
 
+    LaunchedEffect(cameraPositionState.cameraMoveStartedReason) {
+        if (cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
+            Log.d("MapScreen", "Camera moved by user, disabling followMyLocation")
+            setFollowMyLocation(false)
+        }
+    }
+
     GoogleMap(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         cameraPositionState = cameraPositionState,
         properties = mapProperties,
+        onMyLocationButtonClick = {
+            setFollowMyLocation(!followMyLocation)
+            false
+        }
     ) {
         pharmacies.forEach { pharmacy ->
             MarkerInfoWindowContent(
