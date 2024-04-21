@@ -85,7 +85,11 @@ fun MedicineSearchScreen(
             LazyColumn(modifier = Modifier.fillMaxWidth(TEXT_FIELD_WIDTH_FACTOR)) {
                 items(medicinePagingItems.itemCount) { index ->
                     val (medicine, closestPharmacy) = medicinePagingItems[index]!!
-                    MedicineEntry(medicine, closestPharmacy, onMedicineClicked)
+                    MedicineEntry(
+                        medicine = medicine,
+                        closestPharmacy = closestPharmacy,
+                        onMedicineClicked = onMedicineClicked
+                    )
                 }
 
                 medicinePagingItems.apply {

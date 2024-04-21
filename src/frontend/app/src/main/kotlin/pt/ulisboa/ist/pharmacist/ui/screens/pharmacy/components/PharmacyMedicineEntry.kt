@@ -1,15 +1,22 @@
-package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.components
+package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components
 
 import android.view.MotionEvent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,28 +31,38 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
 import kotlin.math.min
 
 /**
- * A medicine entry in the search medicine result list.
+ * A medicine entry in the pharmacy medicine list.
  *
  * @param medicine the Medicine
- * @param closestPharmacy the closest pharmacy where the medicine is available
- * @param onMedicineClicked function to be executed when the medicine is clicked
+ * @param stock the stock of the medicine
+ * @param onMedicineClick function to be executed when the medicine is clicked
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun MedicineEntry(
+fun PharmacyMedicineEntry(
     medicine: Medicine,
-    closestPharmacy: Pharmacy? = null,
-    onMedicineClicked: (Long) -> Unit,
+    stock: Long,
+    onMedicineClick: (Long) -> Unit,
+    onAddStockClick: (Long) -> Unit,
+    onRemoveStockClick: (Long) -> Unit
 ) {
     var isHovered by remember { mutableStateOf(false) }
 
-    Box(
+    Row(
         modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(bottom = 8.dp)
+            .background(
+                color = Color(0xAAE0E0E0),
+                shape = MaterialTheme.shapes.medium
+            )
+    ) {
+        Row(modifier = Modifier
             .pointerInteropFilter {
                 when (it.action) {
                     MotionEvent.ACTION_HOVER_ENTER -> isHovered = true
@@ -53,17 +70,11 @@ fun MedicineEntry(
                 }
                 false
             }
+            .weight(0.9f)
             .background(if (isHovered) Color.LightGray else Color.Transparent)
             .clickable {
-                onMedicineClicked(medicine.medicineId)
-            }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(bottom = 8.dp)
-        ) {
+                onMedicineClick(medicine.medicineId)
+            }) {
             MeteredAsyncImage(
                 url = medicine.boxPhotoUrl,
                 contentDescription = "Pharmacy picture",
@@ -74,32 +85,54 @@ fun MedicineEntry(
             )
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .align(Alignment.CenterVertically)
             ) {
                 Text(
                     text = medicine.name,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(0.1f)
+                    modifier = Modifier
                 )
                 Text(
-                    text = medicine.description.substring(0, min(100, medicine.description.length))
+                    text = medicine.description.substring(
+                        0,
+                        min(100, medicine.description.length)
+                    )
                         .plus(if (medicine.description.length > 100) "..." else ""),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(0.1f)
                 )
-                if (closestPharmacy != null)
-                    Text(
-                        text = closestPharmacy.name,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.weight(0.1f)
-                    )
-                else
-                    Text(
-                        text = "No pharmacy available",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.weight(0.1f)
-                    )
+            }
+        }
+        Column(modifier = Modifier
+            .width(40.dp)
+            .height(200.dp)
+            .align(Alignment.CenterVertically)
+        ) {
+            IconButton(
+                onClick = { onAddStockClick(medicine.medicineId) },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Icon(
+                    Icons.Rounded.Add,
+                    contentDescription = "Add stock",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            Text(
+                text = "$stock",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            IconButton(
+                onClick = { onRemoveStockClick(medicine.medicineId) },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Icon(
+                    Icons.Rounded.Remove,
+                    contentDescription = "Remove stock",
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
         }
     }

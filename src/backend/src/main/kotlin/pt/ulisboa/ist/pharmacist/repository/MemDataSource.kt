@@ -163,7 +163,7 @@ class MemDataSource {
                 0,
                 "Farmácia São João",
                 Location(38.736946, -9.133621),
-                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png",
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[0L]!!, 100),
                     MedicineStock(medicines[1L]!!, 50),
@@ -174,7 +174,7 @@ class MemDataSource {
                 1,
                 "Farmácia do Chiado",
                 Location(38.7106, -9.1401),
-                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png",
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[3L]!!, 100),
                     MedicineStock(medicines[4L]!!, 50),
@@ -191,25 +191,25 @@ class MemDataSource {
                 3,
                 "Farmácia do Restelo",
                 Location(38.7014, -9.2094),
-                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
             ),
             4L to Pharmacy(
                 4,
                 "Farmácia do Areeiro",
                 Location(38.7425, -9.1321),
-                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
             ),
             5L to Pharmacy(
                 5,
                 "Farmácia do Lumiar",
                 Location(38.7706, -9.1601),
-                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
             ),
             6L to Pharmacy(
                 6,
                 "Farmácia do Parque",
                 Location(38.7606, -9.1501),
-                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
             )
         )
         pharmaciesCounter.set(pharmacies.size.toLong())

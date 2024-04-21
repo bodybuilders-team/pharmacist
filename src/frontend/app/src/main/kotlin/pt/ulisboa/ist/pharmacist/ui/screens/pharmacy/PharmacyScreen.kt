@@ -1,16 +1,20 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,10 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.StarRatingBar
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
@@ -41,10 +46,10 @@ fun PharmacyScreen(
     pharmacy: Pharmacy?,
     loadingState: PharmacyViewModel.PharmacyLoadingState,
     onNavigateToPharmacyClick: (Location) -> Unit,
-    /*medicinesState: Flow<PagingData<Medicine>>,*/
-    onMedicineClick: (Medicine) -> Unit
+    medicinesState: Flow<PagingData<MedicineStockModel>>,
+    onMedicineClick: (Long) -> Unit
 ) {
-    /*val medicines = medicinesState.collectAsLazyPagingItems()*/
+    val medicinesStock = medicinesState.collectAsLazyPagingItems()
 
     if (loadingState == PharmacyViewModel.PharmacyLoadingState.LOADED && pharmacy != null) {
         PharmacistScreen {
@@ -103,28 +108,45 @@ fun PharmacyScreen(
                     onRatingChanged = { /*TODO*/ }
                 )
 
-                /*Text(
-                    text = "${medicines.itemCount} medicines available",
+                Text(
+                    text = "${medicinesStock.itemCount} medicines available",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(8.dp)
                 )
+
+                Button(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier,
+                    shape = CircleShape,
+                ) {
+                    Icon(
+                        Icons.Rounded.Add,
+                        contentDescription = "Add medicine"
+                    )
+                    Text(
+                        text = "Add New Medicine",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
                 LazyColumn(
                     modifier = Modifier
                         .weight(0.1f)
-                        .padding(bottom = 8.dp)
+                        .padding(20.dp)
                 ) {
 
-                    items(medicines.itemCount) { index ->
-                        val medicine = medicines[index]!!
-                        Box(modifier = Modifier
-                            .clickable {
-                                onMedicineClick(medicine)
-                            }) {
-                            Text(text = medicine.name)
-                        }
+                    items(medicinesStock.itemCount) { index ->
+                        val (medicine, stock) = medicinesStock[index]!!
+                        PharmacyMedicineEntry(
+                            medicine,
+                            stock,
+                            onMedicineClick = onMedicineClick,
+                            onAddStockClick = { /*TODO*/ },
+                            onRemoveStockClick = { /*TODO*/ }
+                        )
                     }
-                }*/
+                }
             }
         }
     } else

@@ -43,9 +43,9 @@ class PharmacyActivity : PharmacistActivity() {
                     val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
                     startActivity(mapIntent)
                 },
-                /*medicinesState = viewModel.medicinesState,*/
-                onMedicineClick = { medicine ->
-                    MedicineActivity.navigate(this, medicine.medicineId)
+                medicinesState = viewModel.medicinesState,
+                onMedicineClick = { medicineId ->
+                    MedicineActivity.navigate(this, medicineId)
                 }
             )
         }

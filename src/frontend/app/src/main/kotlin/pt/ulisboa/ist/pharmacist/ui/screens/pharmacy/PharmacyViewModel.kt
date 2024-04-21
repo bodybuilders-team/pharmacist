@@ -36,21 +36,21 @@ class PharmacyViewModel(
     var pharmacy by mutableStateOf<Pharmacy?>(null)
         private set
 
-    /*private val _medicinesState = Pager(
+    private val _medicinesState = Pager(
         config = PagingConfig(
             pageSize = PAGE_SIZE,
             prefetchDistance = PREFETCH_DISTANCE
         ),
         pagingSourceFactory = {
             PharmacyMedicinesPagingSource(
-                medicinesService = pharmacistService.medicinesService,
+                pharmaciesService = pharmacistService.pharmaciesService,
                 pageSize = PAGE_SIZE,
                 pid = pharmacyId
             )
         }
     ).flow.cachedIn(viewModelScope)
 
-    val medicinesState get() = _medicinesState*/
+    val medicinesState get() = _medicinesState
 
     fun loadPharmacy(pid: Long) = viewModelScope.launch {
         loadingState = LOADING
