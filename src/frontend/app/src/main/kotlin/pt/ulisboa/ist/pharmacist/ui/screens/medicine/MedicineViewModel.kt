@@ -42,8 +42,9 @@ class MedicineViewModel(
         ),
         pagingSourceFactory = {
             PharmaciesPagingSource(
-                pharmacistService.pharmaciesService,
-                medicineId
+                pharmaciesService = pharmacistService.pharmaciesService,
+                pageSize = PAGE_SIZE,
+                mid = medicineId
             )
         },
     ).flow.cachedIn(viewModelScope)

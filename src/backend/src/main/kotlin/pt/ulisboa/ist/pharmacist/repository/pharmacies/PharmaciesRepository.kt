@@ -10,7 +10,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 interface PharmaciesRepository {
 
     fun getPharmacies(
-        location: String?,
+        location: Location?,
         range: Int?,
         medicine: Long?,
         orderBy: String?,

@@ -10,26 +10,37 @@ import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesW
 class MedicinePagingSource(
     private val medicinesService: MedicinesService,
     private val query: String,
+    private val pageSize: Int,
     private val location: Location?
 ) : PagingSource<Int, MedicineWithClosestPharmacyOutputModel>() {
     override fun getRefreshKey(state: PagingState<Int, MedicineWithClosestPharmacyOutputModel>): Int? {
-        return state.anchorPosition
+        return null
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MedicineWithClosestPharmacyOutputModel> {
-        val currentPage = params.key ?: 0
+        val currentPage = params.key ?: 1
+        val offset =
+            if (params.key != null) ((currentPage - 1) * pageSize) + 1 else INITIAL_LOAD_SIZE
+
         val result = medicinesService.getMedicinesWithClosestPharmacy(
-            query, location,
-            params.loadSize.toLong(), currentPage.toLong()
+            substring = query,
+            location = location,
+            limit = params.loadSize.toLong(),
+            offset = offset.toLong() - 1
         )
 
-        return if (result.isSuccess())
+        return if (result.isSuccess()) {
             LoadResult.Page(
                 data = result.data.medicines,
-                prevKey = if (currentPage == 0) null else currentPage - 1,  //TODO: Check if there is no bug with the indices and pages
-                nextKey = if (result.data.medicines.isEmpty()) null else currentPage + 1
+                prevKey = null,
+                nextKey = if (result.data.medicines.isEmpty()) null else currentPage + (params.loadSize / pageSize)
             )
-        else
+        } else {
             LoadResult.Error(Exception("Error loading data"))
+        }
+    }
+
+    companion object {
+        const val INITIAL_LOAD_SIZE = 1
     }
 }

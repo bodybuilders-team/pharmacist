@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addNewMedicine.AddNewMedicineInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addNewMedicine.AddNewMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addPharmacy.AddPharmacyInputModel
@@ -51,7 +52,7 @@ class PharmaciesController(
     ): GetPharmaciesOutputModel {
         return GetPharmaciesOutputModel(
             pharmaciesService.getPharmacies(
-                location = location,
+                location = if (location == null) null else Location.parse(location),
                 range = range,
                 medicine = medicine,
                 orderBy = orderBy,

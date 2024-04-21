@@ -2,6 +2,7 @@ package pt.ulisboa.ist.pharmacist.repository.medicines
 
 import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineWithClosestPharmacyDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
@@ -14,7 +15,7 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
 
     override fun getMedicinesWithClosestPharmacy(
         substring: String,
-        location: String?,
+        location: Location?,
         offset: Int,
         limit: Int
     ): List<MedicineWithClosestPharmacyDto> {
@@ -28,10 +29,10 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
                 medicine = MedicineDto(medicine),
                 closestPharmacy = dataSource.pharmacies.values.filter { pharmacy ->
                     pharmacy.medicines.map { it.medicine.medicineId }.contains(medicine.medicineId)
-                }.minByOrNull { //pharmacy ->
-                    // TODO calculate location distances
-                    // pharmacy.location.distanceTo(currentLocation)
-                    1
+                }.minByOrNull { pharmacy ->
+                    if (location == null) return@minByOrNull 0.0
+
+                    pharmacy.location.distanceTo(location)
                 }?.let { closestPharmacy -> PharmacyDto(closestPharmacy) }
             )
         }

@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service.medicines
 
 import org.springframework.stereotype.Service
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicinesWithClosestPharmacyOutputDto
@@ -18,7 +19,7 @@ class MedicinesServiceImpl(
 
     override fun getMedicinesWithClosestPharmacy(
         substring: String,
-        location: String?,
+        location: Location?,
         offset: Int,
         limit: Int
     ): GetMedicinesWithClosestPharmacyOutputDto {

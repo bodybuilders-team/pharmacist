@@ -77,6 +77,7 @@ fun MedicineEntry(
                     .fillMaxWidth()
                     .align(Alignment.CenterVertically)
             ) {
+                Text(text = medicine.medicineId.toString(), style = MaterialTheme.typography.bodySmall)
                 Text(
                     text = medicine.name,
                     style = MaterialTheme.typography.titleMedium,

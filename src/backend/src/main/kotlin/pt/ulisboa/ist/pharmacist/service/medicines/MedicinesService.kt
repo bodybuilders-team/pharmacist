@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service.medicines
 
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicinesWithClosestPharmacyOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
 
@@ -20,7 +21,7 @@ interface MedicinesService {
      */
     fun getMedicinesWithClosestPharmacy(
         substring: String,
-        location: String?,
+        location: Location?,
         offset: Int,
         limit: Int
     ): GetMedicinesWithClosestPharmacyOutputDto

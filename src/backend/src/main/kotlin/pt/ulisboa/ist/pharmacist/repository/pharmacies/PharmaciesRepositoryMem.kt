@@ -14,7 +14,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
     private val pharmacies = dataSource.pharmacies
 
     override fun getPharmacies(
-        location: String?,
+        location: Location?,
         range: Int?,
         medicine: Long?,
         orderBy: String?,
@@ -22,8 +22,36 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
         limit: Int
     ): List<Pharmacy> {
         if (offset < 0) throw InvalidArgumentException("Offset must be a positive integer")
+        if (limit < 0) throw InvalidArgumentException("Limit must be a positive integer")
 
-        return pharmacies.values.toList()
+
+        return pharmacies.values.toList().let {
+            if (location != null && range != null) {
+                it.filter { pharmacy -> pharmacy.location.distanceTo(location) <= range }
+            } else {
+                it
+            }
+        }.let { pharmacies ->
+            if (medicine != null) {
+                pharmacies.filter { pharmacy -> pharmacy.medicines.any { it.medicine.medicineId == medicine } }
+            } else {
+                pharmacies
+            }
+        }.let { pharmacies ->
+            if (orderBy != null) {
+                when (orderBy) {
+                    "distance" -> {
+                        if (location == null) throw InvalidArgumentException("Location must be provided to order by distance")
+
+                        pharmacies.sortedBy { it.location.distanceTo(location) }
+                    }
+
+                    else -> throw InvalidArgumentException("Invalid orderBy field")
+                }
+            } else {
+                pharmacies
+            }
+        }.let { it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size)) }
     }
 
     override fun listAvailableMedicines(pharmacyId: Long, offset: Int, limit: Int): List<MedicineStock> {

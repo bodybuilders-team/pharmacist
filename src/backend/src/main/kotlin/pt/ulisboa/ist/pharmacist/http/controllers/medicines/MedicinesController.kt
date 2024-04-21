@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines.GetMedicineOutputModel
@@ -41,7 +42,7 @@ class MedicinesController(private val medicinesService: MedicinesService) {
         return GetMedicinesWithClosestPharmacyOutputModel(
             medicinesService.getMedicinesWithClosestPharmacy(
                 substring = substring,
-                location = location,
+                location = if (location != null) Location.parse(location)!! else null,
                 offset = offset,
                 limit = limit
             )

@@ -26,7 +26,7 @@ class PharmaciesServiceImpl(
 ) : PharmaciesService {
 
     override fun getPharmacies(
-        location: String?,
+        location: Location?,
         range: Int?,
         medicine: Long?,
         orderBy: String?,
