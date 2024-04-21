@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.authentication.register
 
+import android.net.sip.SipSession.State.REGISTERING
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -14,8 +15,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel.AuthenticationState.SUCCESS
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterViewModel.RegisterState
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterViewModel.RegisterState.REGISTERED
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.components.RegisterButton
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.components.RegisterTextFields
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validateEmail
@@ -28,20 +29,12 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
  *
  * @param state Authentication state
  * @param onRegister callback to be invoked when the register button is clicked
- * @param onRegisterSuccessful callback to be invoked when the register process is successful
- * @param onBackButtonClicked callback to be invoked when the back button is clicked
  */
 @Composable
 fun RegisterScreen(
-    state: AuthenticationState,
-    onRegister: (String, String, String) -> Unit,
-    onRegisterSuccessful: () -> Unit,
-    onBackButtonClicked: () -> Unit
+    state: RegisterState,
+    onRegister: (String, String, String) -> Unit
 ) {
-    LaunchedEffect(state) {
-        if (state == SUCCESS)
-            onRegisterSuccessful()
-    }
 
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -68,7 +61,7 @@ fun RegisterScreen(
                 onPasswordChangeCallback = { password = it }
             )
 
-            RegisterButton(enabled = state != AuthenticationState.LOADING) {
+            RegisterButton(enabled = state != REGISTERED) {
                 if (invalidFields)
                     return@RegisterButton
 
@@ -78,13 +71,3 @@ fun RegisterScreen(
     }
 }
 
-@Preview
-@Composable
-private fun RegisterScreenPreview() {
-    RegisterScreen(
-        state = AuthenticationState.IDLE,
-        onRegister = { _, _, _ -> },
-        onRegisterSuccessful = { },
-        onBackButtonClicked = { }
-    )
-}

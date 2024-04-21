@@ -1,8 +1,17 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.authentication.register
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewModel
+import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.LoginViewModel
 
 /**
  * View model for the [RegisterActivity].
@@ -12,7 +21,12 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationViewMod
 class RegisterViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager
-) : AuthenticationViewModel(pharmacistService, sessionManager) {
+) : PharmacistViewModel(pharmacistService, sessionManager) {
+    var registerState by mutableStateOf(RegisterState.NOT_REGISTERED)
+        private set
+
+    private val _events = MutableSharedFlow<LoginViewModel.Event>()
+    val events: SharedFlow<LoginViewModel.Event> = _events
 
     /**
      * Attempts to register the user with the given credentials.
@@ -21,13 +35,31 @@ class RegisterViewModel(
      * @param username the username of the user
      * @param password the password of the user
      */
-    fun register(email: String, username: String, password: String) {
-        executeAuthenticationRequest(username = username) {
-            pharmacistService.usersService.register(
-                email = email,
-                username = username,
-                password = password
-            )
+    fun register(email: String, username: String, password: String) = viewModelScope.launch {
+        registerState = RegisterState.REGISTERING
+
+        val result = pharmacistService.usersService.register(
+            email = email,
+            username = username,
+            password = password
+        )
+
+        registerState = if (result.isSuccess()) {
+            sessionManager.setSession(result.data.accessToken, username)
+            RegisterState.REGISTERED
+        } else {
+            _events.emit(LoginViewModel.Event.ShowToast(result.error.title))
+            RegisterState.NOT_REGISTERED
         }
+    }
+
+    enum class RegisterState {
+        NOT_REGISTERED,
+        REGISTERING,
+        REGISTERED
+    }
+
+    sealed class Event {
+        class ShowToast(val message: String) : Event()
     }
 }

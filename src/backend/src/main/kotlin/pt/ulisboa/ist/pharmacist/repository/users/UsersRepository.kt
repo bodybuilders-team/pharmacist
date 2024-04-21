@@ -31,5 +31,5 @@ interface UsersRepository {
 
     fun existsByEmail(email: String): Boolean
 
-    /*fun findByUserAndTokenHash(user: User, tokenHash: String): User?*/
+    fun findByAccessTokenHash(accessToken: String): User?
 }

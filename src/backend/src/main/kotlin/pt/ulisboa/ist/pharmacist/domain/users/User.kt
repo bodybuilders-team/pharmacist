@@ -20,6 +20,7 @@ data class User(
     val suspended: Boolean,
     val favoritePharmacies: MutableSet<Pharmacy>,
     val medicinesToNotify: MutableSet<Medicine>,
+    val accessTokens: MutableSet<AccessToken>
 ) {
     init {
         if (username.length !in MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH)

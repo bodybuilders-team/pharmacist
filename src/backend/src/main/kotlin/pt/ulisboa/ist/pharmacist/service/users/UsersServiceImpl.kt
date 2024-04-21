@@ -1,12 +1,12 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
+import java.util.UUID
 import org.springframework.stereotype.Service
+import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
-import pt.ulisboa.ist.pharmacist.repository.users.AccessTokensRepository
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
-import pt.ulisboa.ist.pharmacist.service.exceptions.AuthenticationException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPaginationParamsException
@@ -19,9 +19,6 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
-import pt.ulisboa.ist.pharmacist.utils.JwtProvider
-import java.sql.Timestamp
-import java.util.UUID
 
 /**
  * Service that handles the business logic of the users.
@@ -34,9 +31,7 @@ import java.util.UUID
 class UsersServiceImpl(
     private val usersRepository: UsersRepository,
     private val pharmaciesRepository: PharmaciesRepository,
-    private val accessTokensRepository: AccessTokensRepository,
     private val hashingUtils: HashingUtils,
-    private val jwtProvider: JwtProvider
 ) : UsersService {
 
     override fun addFavoritePharmacy(userId: String, pharmacyId: Long) {
@@ -96,7 +91,10 @@ class UsersServiceImpl(
             )
         )
 
-        val accessToken = createToken(user = user)
+        val accessToken = UUID.randomUUID().toString()
+        val tokenHash = hashingUtils.hashToken(token = accessToken)
+
+        user.accessTokens.add(AccessToken(tokenHash = tokenHash))
 
         return RegisterOutputDto(
             userId = userId,
@@ -117,35 +115,20 @@ class UsersServiceImpl(
             )
         ) throw InvalidLoginException("Invalid username or password")
 
-        val accessToken = createToken(user = user)
+        val accessToken = UUID.randomUUID().toString()
+        val tokenHash = hashingUtils.hashToken(token = accessToken)
+
+        user.accessTokens.add(AccessToken(tokenHash = tokenHash))
 
         return LoginOutputDto(
             accessToken = accessToken
         )
     }
 
-    override fun logout(accessToken: String) {
-        //val user = getUserAndRevokeAccessToken(accessToken = accessToken)
+    override fun logout(user: User, accessToken: String) {
+        val tokenHash = hashingUtils.hashToken(token = accessToken)
 
-        //TODO: Revoke access token?
-    }
-
-    /**
-     * Gets the user from the access token and revokes it.
-     */
-    private fun getUserAndRevokeAccessToken(accessToken: String): User {
-        val accessTokenPayload = jwtProvider.getAccessTokenPayloadOrNull(token = accessToken)
-            ?: throw AuthenticationException("Invalid access token")
-
-        val user = usersRepository.findByUsername(username = accessTokenPayload.username)
-            ?: throw NotFoundException("User not found")
-
-        accessTokensRepository.create(
-            tokenHash = hashingUtils.hashToken(token = accessToken),
-            user = user,
-            expirationDate = Timestamp.from(accessTokenPayload.claims.expiration.toInstant())
-        )
-        return user
+        user.accessTokens.remove(AccessToken(tokenHash = tokenHash))
     }
 
     override fun getUser(userId: String): UserDto {
@@ -154,19 +137,6 @@ class UsersServiceImpl(
             ?: throw NotFoundException("User with id $userId not found")
 
         return UserDto(user = user)
-    }
-
-    /**
-     * Creates the access token for the given user.
-     *
-     * @param user the user to create the tokens for
-     * @return the access tokens
-     */
-    private fun createToken(user: User): String {
-        val jwtPayload = JwtProvider.JwtPayload.fromData(username = user.username)
-        val accessToken = jwtProvider.createAccessToken(jwtPayload = jwtPayload)
-
-        return accessToken
     }
 
     companion object {

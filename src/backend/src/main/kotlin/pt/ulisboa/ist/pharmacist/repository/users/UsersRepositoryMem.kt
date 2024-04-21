@@ -21,7 +21,8 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
             userId = userId, username = username, email = email, passwordHash = passwordHash,
             suspended = false,
             favoritePharmacies = mutableSetOf(),
-            medicinesToNotify = mutableSetOf()
+            medicinesToNotify = mutableSetOf(),
+            accessTokens = mutableSetOf()
         )
         users[userId] = user
         return user
@@ -75,7 +76,7 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
         return users.values.any { it.email == email }
     }
 
-    /*override fun findByUserAndTokenHash(user: User, tokenHash: String): User? {
-        return users.values.find { it == user && it.tokenHash == tokenHash }
-    }*/
+    override fun findByAccessTokenHash(accessToken: String): User? {
+        return users.values.find { it.accessTokens.any { token -> token.tokenHash == accessToken } }
+    }
 }

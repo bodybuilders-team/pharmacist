@@ -5,8 +5,9 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
+import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.AuthenticationException
-import pt.ulisboa.ist.pharmacist.utils.JwtProvider
+import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
 
 /**
  * Intercepts requests that need authentication.
@@ -16,11 +17,11 @@ import pt.ulisboa.ist.pharmacist.utils.JwtProvider
  * 2. If the token in the header is a bearer token
  * 3. If the token is valid
  *
- * @property jwtProvider the JWT provider
  */
 @Component
 class AuthenticationInterceptor(
-    val jwtProvider: JwtProvider
+    private val usersRepository: UsersRepository,
+    private val hashingUtils: HashingUtils
 ) : HandlerInterceptor {
 
     override fun preHandle(
@@ -36,17 +37,17 @@ class AuthenticationInterceptor(
                     )
         ) return true
 
-        val accessTokenAuthCookie = request.cookies?.firstOrNull { it.name == ACCESS_TOKEN_COOKIE_NAME }?.value
+        val accessToken = parseBearerToken(
+            request.getHeader(AUTHORIZATION_HEADER)
+                ?: throw AuthenticationException("Missing authorization token")
+        ) ?: throw AuthenticationException("Token is not a Bearer Token")
 
-        val accessToken = accessTokenAuthCookie
-            ?: (
-                    jwtProvider.parseBearerToken(
-                        request.getHeader(AUTHORIZATION_HEADER)
-                            ?: throw AuthenticationException("Missing authorization token")
-                    ) ?: throw AuthenticationException("Token is not a Bearer Token")
-                    )
+        val tokenHash = hashingUtils.hashToken(accessToken)
+        val user = usersRepository.findByAccessTokenHash(accessToken = tokenHash)
+            ?: throw AuthenticationException("Invalid access token")
 
-        request.setAttribute(JwtProvider.ACCESS_TOKEN_ATTRIBUTE, accessToken)
+        request.setAttribute(USER_ATTRIBUTE, user)
+        request.setAttribute(ACCESS_TOKEN_ATTRIBUTE, accessToken)
 
         return true
     }
@@ -54,5 +55,21 @@ class AuthenticationInterceptor(
     companion object {
         private const val AUTHORIZATION_HEADER = "Authorization"
         private const val ACCESS_TOKEN_COOKIE_NAME = "access_token"
+        const val USER_ATTRIBUTE = "user"
+        const val ACCESS_TOKEN_ATTRIBUTE = "access_token"
+        private const val BEARER_TOKEN_PREFIX = "Bearer "
+        private const val SECRET_KEY_ALGORITHM = "HmacSHA512"
+
+        /**
+         * Parses the bearer token.
+         *
+         * @param token the token to parse
+         * @return the parsed bearer token or null if the token is not a bearer token
+         */
+        fun parseBearerToken(token: String): String? =
+            if (!token.startsWith(prefix = BEARER_TOKEN_PREFIX))
+                null
+            else
+                token.substringAfter(delimiter = BEARER_TOKEN_PREFIX)
     }
 }

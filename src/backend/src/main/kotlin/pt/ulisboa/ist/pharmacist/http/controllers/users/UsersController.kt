@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.getUser.GetUserOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.getUsers.GetUsersOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.login.LoginInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.login.LoginOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.users.models.logout.LogoutUserInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.logout.LogoutUserOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterOutputModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
+import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor
 import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.users.UsersService
 import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
-import pt.ulisboa.ist.pharmacist.utils.JwtProvider
 
 /**
  * Controller that handles the requests related to the users.
@@ -47,6 +47,7 @@ class UsersController(private val usersService: UsersService) {
      * @return the response to the request with all the users
      */
     @GetMapping(Uris.USERS)
+    @Authenticated
     fun getUsers(
         @RequestParam(Params.OFFSET_PARAM, defaultValue = Params.OFFSET_DEFAULT.toString()) offset: Int,
         @RequestParam(Params.LIMIT_PARAM, defaultValue = Params.LIMIT_DEFAULT.toString()) limit: Int,
@@ -116,6 +117,7 @@ class UsersController(private val usersService: UsersService) {
      * @return the response to the request
      */
     @PutMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
+    @Authenticated
     fun addFavoritePharmacy(
         @PathVariable uid: String,
         @PathVariable pid: Long
@@ -131,6 +133,7 @@ class UsersController(private val usersService: UsersService) {
      * @return the response to the request
      */
     @DeleteMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
+    @Authenticated
     fun removeFavoritePharmacy(
         @PathVariable uid: String,
         @PathVariable pid: Long
@@ -141,17 +144,15 @@ class UsersController(private val usersService: UsersService) {
     /**
      * Handles the request to log out a user.
      *
-     * @param logoutUserInputModel the data of the user to be logged out
      * @return the response to the request
      */
     @PostMapping(Uris.USERS_LOGOUT)
     @Authenticated
     fun logout(
-        @Valid @RequestBody(required = false)
-        logoutUserInputModel: LogoutUserInputModel?,
-        @RequestAttribute(JwtProvider.ACCESS_TOKEN_ATTRIBUTE) accessToken: String
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
+        @RequestAttribute(AuthenticationInterceptor.ACCESS_TOKEN_ATTRIBUTE) accessToken: String
     ): LogoutUserOutputModel {
-        usersService.logout(accessToken = accessToken)
+        usersService.logout(user = user, accessToken = accessToken)
 
         return LogoutUserOutputModel("User logged out successfully")
     }
@@ -163,9 +164,11 @@ class UsersController(private val usersService: UsersService) {
      * @return the response to the request with the user
      */
     @GetMapping(Uris.USERS_GET_BY_ID)
+    @Authenticated
     fun getUser(
         @PathVariable uid: String
     ): GetUserOutputModel {
         return GetUserOutputModel(usersService.getUser(userId = uid))
     }
+
 }

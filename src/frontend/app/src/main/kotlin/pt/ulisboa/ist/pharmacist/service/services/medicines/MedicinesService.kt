@@ -8,11 +8,13 @@ import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
 import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.GetMedicinesWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.service.utils.Uris
+import pt.ulisboa.ist.pharmacist.session.SessionManager
 
 class MedicinesService(
     apiEndpoint: String,
     httpClient: OkHttpClient,
-    jsonEncoder: Gson
+    jsonEncoder: Gson,
+    val sessionManager: SessionManager
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
     suspend fun getMedicinesWithClosestPharmacy(
@@ -27,12 +29,16 @@ class MedicinesService(
                 location,
                 limit,
                 offset
-            )
+            ),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )
     }
 
     suspend fun getMedicineById(pid: Long): APIResult<Medicine> {
-        return get<Medicine>(link = Uris.getMedicineById(pid))
+        return get<Medicine>(
+            link = Uris.getMedicineById(pid),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
+        )
     }
 
 }

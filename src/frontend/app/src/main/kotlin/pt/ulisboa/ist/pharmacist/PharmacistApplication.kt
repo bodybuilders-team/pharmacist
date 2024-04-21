@@ -24,7 +24,8 @@ class PharmacistApplication : DependenciesContainer, Application() {
     override val pharmacistService = PharmacistService(
         apiEndpoint = API_ENDPOINT,
         httpClient = OkHttpClient(),
-        jsonEncoder = jsonEncoder
+        jsonEncoder = jsonEncoder,
+        sessionManager = sessionManager
     )
 
     companion object {

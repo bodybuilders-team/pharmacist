@@ -21,6 +21,8 @@ class HomeActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
         setContent {
             HomeScreen(
                 loggedIn = viewModel.isLoggedIn,
@@ -34,5 +36,10 @@ class HomeActivity : PharmacistActivity() {
                 onSearchMedicineClick = { navigateTo<MedicineSearchActivity>() }
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.checkIfLoggedIn()
     }
 }

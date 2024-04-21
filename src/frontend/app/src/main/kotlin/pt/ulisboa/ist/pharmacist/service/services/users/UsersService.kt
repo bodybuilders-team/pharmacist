@@ -89,6 +89,7 @@ class UsersService(
      * @throws IOException if there is an error while sending the request
      */
     suspend fun logout(
-    ): APIResult<LogoutOutput> = TODO()
+        accessToken: String
+    ): APIResult<LogoutOutput> = post(link=Uris.USERS_LOGOUT, token = accessToken)
 
 }

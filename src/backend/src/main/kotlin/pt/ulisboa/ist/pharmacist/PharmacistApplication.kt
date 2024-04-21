@@ -20,9 +20,8 @@ import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInte
 @SpringBootApplication(exclude = [DataSourceAutoConfiguration::class, SqlInitializationAutoConfiguration::class])
 class PharmacistApplication(val authInterceptor: AuthenticationInterceptor) : WebMvcConfigurer {
 
-    // TODO: Implement authentication
     override fun addInterceptors(registry: InterceptorRegistry) {
-        // registry.addInterceptor(/* interceptor = */ authInterceptor)
+        registry.addInterceptor(authInterceptor)
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {

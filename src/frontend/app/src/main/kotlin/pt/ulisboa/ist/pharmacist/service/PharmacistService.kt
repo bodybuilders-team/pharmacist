@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.service.services.medicines.MedicinesService
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService
 import pt.ulisboa.ist.pharmacist.service.services.users.UsersService
+import pt.ulisboa.ist.pharmacist.session.SessionManager
 
 /**
  * The service that handles the pharmacist requests.
@@ -20,10 +21,11 @@ import pt.ulisboa.ist.pharmacist.service.services.users.UsersService
 class PharmacistService(
     apiEndpoint: String,
     httpClient: OkHttpClient,
-    jsonEncoder: Gson
+    jsonEncoder: Gson,
+    sessionManager: SessionManager
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
     val usersService = UsersService(apiEndpoint, httpClient, jsonEncoder)
-    val pharmaciesService = PharmaciesService(apiEndpoint, httpClient, jsonEncoder)
-    val medicinesService = MedicinesService(apiEndpoint, httpClient, jsonEncoder)
+    val pharmaciesService = PharmaciesService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
+    val medicinesService = MedicinesService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
 }
