@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  pharmacist-service-1:
+    container_name: pharmacist-service-1
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-spring
+    expose:
+      - "8080"
