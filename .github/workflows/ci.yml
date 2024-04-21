@@ -15,12 +15,15 @@ jobs:
   gradle:
     name: Gradle Build
     runs-on: ubuntu-latest
+    defaults:
+        run:
+            working-directory: ./src/backend
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
       - name: Make Gradlew executable
-        run: chmod +x ./src/backend/gradlew
+        run: chmod +x ./gradlew
       - name: Build with Gradle
-        run: ./src/backend/gradlew build
+        run: ./gradlew build
