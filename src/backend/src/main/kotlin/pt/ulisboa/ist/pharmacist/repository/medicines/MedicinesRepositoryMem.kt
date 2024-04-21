@@ -7,6 +7,7 @@ import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineWithClosestPharmacyDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
+import pt.ulisboa.ist.pharmacist.service.utils.paginate
 
 @Repository
 class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesRepository {
@@ -21,7 +22,7 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
     ): List<MedicineWithClosestPharmacyDto> {
         val filteredMedicines = medicines.values.filter { it.name.contains(substring) }
             .ifEmpty { null }
-            ?.let { it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size)) }
+            ?.paginate(limit = limit, offset = offset)
             ?: emptyList()
 
         return filteredMedicines.map { medicine ->
@@ -41,7 +42,7 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
     override fun getMedicines(substring: String, offset: Int, limit: Int): List<Medicine> {
         return medicines.values.filter { it.name.contains(substring) }
             .ifEmpty { null }
-            ?.let { it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size)) }
+            ?.paginate(limit = limit, offset = offset)
             ?: emptyList()
     }
 
@@ -68,3 +69,4 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
         medicines.remove(medicine.medicineId)
     }
 }
+

@@ -59,3 +59,10 @@ data class OffsetPageRequest(
         private const val MIN_LIMIT = 1
     }
 }
+
+fun <E> List<E>.paginate(limit: Int, offset: Int): List<E> {
+    if (offset >= this.size) return emptyList()
+
+    return this.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(this.size))
+}
+

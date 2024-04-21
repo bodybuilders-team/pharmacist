@@ -8,6 +8,7 @@ import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
+import pt.ulisboa.ist.pharmacist.service.utils.paginate
 
 @Repository
 class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : PharmaciesRepository {
@@ -51,13 +52,13 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
             } else {
                 pharmacies
             }
-        }.let { it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size)) }
+        }.paginate(limit, offset)
     }
 
     override fun listAvailableMedicines(pharmacyId: Long, offset: Int, limit: Int): List<MedicineStock> {
         return pharmacies[pharmacyId]?.medicines
             ?.ifEmpty { null }
-            ?.let { it.subList(offset.coerceAtLeast(0), (offset + limit).coerceAtMost(it.size)) }
+            ?.paginate(limit, offset)
             ?: emptyList()
     }
 
