@@ -14,6 +14,7 @@ import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.Creat
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines.GetMedicinesWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.medicines.MedicinesService
@@ -25,6 +26,7 @@ import pt.ulisboa.ist.pharmacist.service.medicines.MedicinesService
  */
 @RestController
 @RequestMapping(produces = ["application/json"])
+@Authenticated
 class MedicinesController(private val medicinesService: MedicinesService) {
 
     /**

@@ -19,4 +19,4 @@ class ServerConfiguration(
     @Value("\${server.config.secrets.token-hash-secret}")
     val tokenHashSecret: String,
 
-)
+    )

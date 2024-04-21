@@ -20,6 +20,7 @@ import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock.ChangeMedicineStockOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.getPharmacies.GetPharmaciesOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.listMedicines.ListAvailableMedicinesOutputModel
+import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.pharmacies.PharmaciesService
@@ -31,10 +32,10 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.PharmaciesService
  */
 @RestController
 @RequestMapping(produces = ["application/json"])
+@Authenticated
 class PharmaciesController(
     private val pharmaciesService: PharmaciesService
 ) {
-    // TODO: Authentication in endpoints (use @Authenticated)
 
     /**
      * Handles the request to get pharmacies.

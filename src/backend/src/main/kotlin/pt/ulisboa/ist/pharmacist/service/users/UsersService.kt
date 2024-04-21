@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
+import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
@@ -68,9 +69,10 @@ interface UsersService {
     /**
      * Logs a user out.
      *
+     * @param user the user to log out
      * @param accessToken the access token of the user
      */
-    fun logout(accessToken: String)
+    fun logout(user: User, accessToken: String)
 
     /**
      * Gets the user with the given id.
