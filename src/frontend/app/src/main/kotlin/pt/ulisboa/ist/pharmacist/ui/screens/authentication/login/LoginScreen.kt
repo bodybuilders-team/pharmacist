@@ -20,7 +20,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.components.Logi
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.components.LoginTextFields
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validatePassword
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validateUsername
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.GoBackButton
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
 
 /**
@@ -70,8 +69,6 @@ fun LoginScreen(
 
                 onLogin(username, password)
             }
-
-            GoBackButton(onClick = onBackButtonClicked)
         }
     }
 }

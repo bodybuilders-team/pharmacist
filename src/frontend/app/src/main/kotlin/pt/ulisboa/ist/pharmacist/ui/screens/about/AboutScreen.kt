@@ -13,13 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.about.components.AuthorInfo
 import pt.ulisboa.ist.pharmacist.ui.screens.about.components.AuthorInfoView
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.GoBackButton
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
 
 const val IMAGE_PADDING = 8
@@ -74,8 +72,6 @@ fun AboutScreen(
                     .clickable { onOpenUrl(githubRepoUrl) }
                     .padding(IMAGE_PADDING.dp)
             )
-
-            GoBackButton(onClick = onBackButtonClicked)
         }
     }
 }
@@ -103,13 +99,3 @@ private val authors = listOf(
         imageId = R.drawable.author_nyckollas_brandao
     )
 )
-
-@Preview
-@Composable
-private fun AboutScreenPreview() {
-    AboutScreen(
-        onOpenUrl = {},
-        onSendEmail = {},
-        onBackButtonClicked = {}
-    )
-}

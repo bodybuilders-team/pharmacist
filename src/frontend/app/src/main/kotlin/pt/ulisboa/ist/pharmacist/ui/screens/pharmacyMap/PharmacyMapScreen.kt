@@ -28,7 +28,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.MapScreen
  */
 @Composable
 fun PharmacyMapScreen(
-    followMyLocation : Boolean,
+    followMyLocation: Boolean,
     hasLocationPermission: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,

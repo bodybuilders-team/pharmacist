@@ -2,18 +2,15 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components
 
 import android.view.MotionEvent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -103,10 +100,11 @@ fun PharmacyMedicineEntry(
                 )
             }
         }
-        Column(modifier = Modifier
-            .width(40.dp)
-            .height(200.dp)
-            .align(Alignment.CenterVertically)
+        Column(
+            modifier = Modifier
+                .width(40.dp)
+                .height(200.dp)
+                .align(Alignment.CenterVertically)
         ) {
             IconButton(
                 onClick = { onAddStockClick(medicine.medicineId) },

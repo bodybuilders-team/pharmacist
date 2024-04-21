@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.about.AboutActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.addPharmacy.AddPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.LoginActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchActivity
@@ -28,12 +27,11 @@ class HomeActivity : PharmacistActivity() {
                 username = viewModel.username,
                 onLoginClick = { navigateTo<LoginActivity>() },
                 onRegisterClick = { navigateTo<RegisterActivity>() },
+                onContinueAsGuestClick = { /*TODO*/ },
                 onLogoutClick = { viewModel.logout() },
                 onAboutClick = { navigateTo<AboutActivity>() },
                 onPharmacyMapClick = { navigateTo<PharmacyMapActivity>() },
-                onAddPharmacyClick = { navigateTo<AddPharmacyActivity>() },
-                onSearchMedicineClick = { navigateTo<MedicineSearchActivity>() },
-                loadingState = viewModel.loadingState
+                onSearchMedicineClick = { navigateTo<MedicineSearchActivity>() }
             )
         }
     }

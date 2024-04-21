@@ -21,7 +21,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.components.R
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validateEmail
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validatePassword
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validateUsername
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.GoBackButton
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
 
 /**
@@ -75,8 +74,6 @@ fun RegisterScreen(
 
                 onRegister(email, username, password)
             }
-
-            GoBackButton(onClick = onBackButtonClicked)
         }
     }
 }
