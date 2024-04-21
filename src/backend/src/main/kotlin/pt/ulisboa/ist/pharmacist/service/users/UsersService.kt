@@ -48,7 +48,7 @@ interface UsersService {
      * @param email the email of the user
      * @param password the password of the user
      *
-     * @return the JWT token for the new user
+     * @return the token for the new user
      * @throws AlreadyExistsException if the user already exists
      * @throws InvalidPasswordException if the password is invalid
      */
@@ -60,7 +60,7 @@ interface UsersService {
      * @param username the name of the user
      * @param password the password of the user
      *
-     * @return the JWT token for the user
+     * @return the token for the user
      * @throws NotFoundException if the user does not exist
      * @throws InvalidLoginException if the password is incorrect
      */
