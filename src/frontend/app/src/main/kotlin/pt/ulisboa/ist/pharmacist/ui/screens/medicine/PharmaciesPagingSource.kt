@@ -2,7 +2,6 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService

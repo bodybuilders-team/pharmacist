@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.home
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue

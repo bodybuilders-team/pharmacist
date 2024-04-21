@@ -4,11 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 data class InfiniteScrollData(
     val totalCount: Int,
@@ -35,7 +31,8 @@ fun InfiniteScrollHandler(
         }
             .collect {
                 if (it.reachedBottom) {
-                    val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                    val lastVisibleItemIndex =
+                        listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                     Log.d("MEDICINES_SCROLL", "Reached bottom $lastVisibleItemIndex")
                     loadMore()
                 }

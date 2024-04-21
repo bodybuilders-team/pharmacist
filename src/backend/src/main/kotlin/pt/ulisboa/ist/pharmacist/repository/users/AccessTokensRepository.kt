@@ -1,8 +1,8 @@
 package pt.ulisboa.ist.pharmacist.repository.users
 
+import java.sql.Timestamp
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
-import java.sql.Timestamp
 
 /**
  * Repository for the [AccessToken] entity.

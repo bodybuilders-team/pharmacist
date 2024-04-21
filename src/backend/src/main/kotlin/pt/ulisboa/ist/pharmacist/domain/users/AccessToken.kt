@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.pharmacist.domain.users
 
-import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidRefreshTokenException
 import java.sql.Timestamp
+import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidRefreshTokenException
 
 /**
  * The AccessToken entity.

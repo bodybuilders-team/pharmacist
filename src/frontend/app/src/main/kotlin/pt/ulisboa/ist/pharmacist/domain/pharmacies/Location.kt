@@ -7,6 +7,7 @@ data class Location(val lat: Double, val lon: Double) {
         return "$lat,$lon"
     }
 }
+
 fun Location.toLatLng(): LatLng {
     return LatLng(lat, lon)
 }

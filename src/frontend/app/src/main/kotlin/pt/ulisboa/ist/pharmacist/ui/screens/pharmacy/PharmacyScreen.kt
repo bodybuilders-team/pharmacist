@@ -20,7 +20,6 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
-import pt.ulisboa.ist.pharmacist.ui.utils.assertNotNull
 
 /**
  * Home screen.

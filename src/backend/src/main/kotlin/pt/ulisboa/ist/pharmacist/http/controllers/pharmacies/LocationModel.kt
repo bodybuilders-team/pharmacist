@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies
 
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.LocationDto
 
 data class LocationModel(

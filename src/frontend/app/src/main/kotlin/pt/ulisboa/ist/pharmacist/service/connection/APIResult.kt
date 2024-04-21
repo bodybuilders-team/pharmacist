@@ -2,9 +2,9 @@
 
 package pt.ulisboa.ist.pharmacist.service.connection
 
-import pt.ulisboa.ist.pharmacist.service.media.Problem
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import pt.ulisboa.ist.pharmacist.service.media.Problem
 
 /**
  * API Response result.

@@ -1,10 +1,10 @@
 package pt.ulisboa.ist.pharmacist.repository.users
 
+import java.sql.Timestamp
 import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.repository.MemDataSource
-import java.sql.Timestamp
 
 @Repository
 class AccessTokensRepositoryMem(dataSource: MemDataSource) : AccessTokensRepository {

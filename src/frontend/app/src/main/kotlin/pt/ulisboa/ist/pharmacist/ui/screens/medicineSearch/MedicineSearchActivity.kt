@@ -5,12 +5,9 @@ import androidx.activity.compose.setContent
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.services.LocationService
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [MedicineSearchScreen].
@@ -37,7 +34,7 @@ class MedicineSearchActivity : PharmacistActivity() {
                 medicinesState = viewModel.medicinesState,
                 onSearch = { viewModel.searchMedicines(it) },
                 onMedicineClicked = { mid ->
-                   MedicineActivity.navigate(this, mid)
+                    MedicineActivity.navigate(this, mid)
                 }
             )
         }

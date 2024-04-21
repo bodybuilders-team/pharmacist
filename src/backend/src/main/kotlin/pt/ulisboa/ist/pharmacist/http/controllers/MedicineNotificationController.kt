@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.http.controllers
 
+import java.util.concurrent.Executors
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -7,7 +8,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.medicinenotifications.MedicineNotificationService
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
-import java.util.concurrent.Executors
 
 @RestController
 @RequestMapping(produces = ["application/json"])

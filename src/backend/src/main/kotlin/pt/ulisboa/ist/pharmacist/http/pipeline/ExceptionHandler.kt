@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import jakarta.servlet.http.HttpServletRequest
+import java.net.URI
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -22,7 +23,6 @@ import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPaginationParamsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
-import java.net.URI
 
 /**
  * Handles exceptions thrown by the controllers.

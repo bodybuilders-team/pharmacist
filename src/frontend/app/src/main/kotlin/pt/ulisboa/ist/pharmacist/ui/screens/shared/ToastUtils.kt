@@ -2,8 +2,8 @@ package pt.ulisboa.ist.pharmacist.ui.screens.shared
 
 import android.content.Context
 import android.widget.Toast
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 /**
  * Defines the duration of a [Toast] message.

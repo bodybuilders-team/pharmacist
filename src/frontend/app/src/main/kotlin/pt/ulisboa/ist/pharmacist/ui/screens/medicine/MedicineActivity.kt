@@ -55,7 +55,7 @@ class MedicineActivity : PharmacistActivity() {
                 loadingState = viewModel.loadingState,
                 pharmaciesState = viewModel.pharmaciesState,
                 onPharmacyClick = { pharmacy ->
-                   PharmacyActivity.navigate(this, pharmacy.pharmacyId)
+                    PharmacyActivity.navigate(this, pharmacy.pharmacyId)
                 }
             )
         }

@@ -1,7 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service.medicines
 
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicinesWithClosestPharmacyOutputDto

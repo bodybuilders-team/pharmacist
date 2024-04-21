@@ -2,6 +2,9 @@ package pt.ulisboa.ist.pharmacist.service.connection
 
 import com.google.gson.Gson
 import com.google.gson.stream.JsonReader
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -9,9 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * Sends a request through the HTTP client and parses the response into a [T].
