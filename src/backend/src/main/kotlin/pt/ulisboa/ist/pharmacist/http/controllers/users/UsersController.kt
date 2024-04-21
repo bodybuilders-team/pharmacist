@@ -125,6 +125,8 @@ class UsersController(private val usersService: UsersService) {
         usersService.addFavoritePharmacy(userId = uid, pharmacyId = pid)
     }
 
+
+
     /**
      * Handles the request to remove a pharmacy from the user's favorite pharmacies.
      *

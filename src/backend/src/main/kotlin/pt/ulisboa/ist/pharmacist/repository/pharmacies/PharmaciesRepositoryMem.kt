@@ -101,7 +101,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
 
     override fun create(name: String, location: Location, pictureUrl: String): Pharmacy {
         val pharmacyId = dataSource.pharmaciesCounter.getAndIncrement()
-        val pharmacy = Pharmacy(pharmacyId, name, location, pictureUrl, mutableListOf())
+        val pharmacy = Pharmacy(pharmacyId, name, location, pictureUrl)
         pharmacies[pharmacyId] = pharmacy
         return pharmacy
     }

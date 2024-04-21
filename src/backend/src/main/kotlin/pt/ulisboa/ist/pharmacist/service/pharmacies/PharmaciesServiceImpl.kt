@@ -3,6 +3,8 @@ package pt.ulisboa.ist.pharmacist.service.pharmacies
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
+import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.domain.users.UserPharmacyRating
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
@@ -12,6 +14,7 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutp
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyWithUserDataDto
 
 /**
  * Service that handles the business logic of the pharmacies.
@@ -102,9 +105,35 @@ class PharmaciesServiceImpl(
         return ChangeMedicineStockOutputDto(medicineStock)
     }
 
-    override fun getPharmacyById(pid: Long): PharmacyDto {
+    override fun getPharmacyById(user: User, pid: Long): PharmacyWithUserDataDto {
         val pharmacy =
             pharmaciesRepository.findById(pid) ?: throw NotFoundException("Pharmacy with id $pid does not exist")
-        return PharmacyDto(pharmacy)
+
+        val userRating = user.ratings[pid]
+        val userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy)
+
+        return PharmacyWithUserDataDto(
+            pharmacy,
+            userRating,
+            userMarkedAsFavorite
+        )
+    }
+
+    override fun ratePharmacy(user: User, pharmacyId: Long, rating: Int, comment: String) {
+        val pharmacy = pharmaciesRepository.findById(pharmacyId)
+            ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
+        if (rating < 0 || rating > 5) throw InvalidArgumentException("Rating must be between 0 and 5")
+
+        val userRating = user.ratings[pharmacyId]
+
+        if (userRating != null) {
+            pharmacy.globalRatingSum -= userRating.rating
+            pharmacy.numberOfRatings--
+        }
+
+        user.ratings[pharmacyId] = UserPharmacyRating(rating, comment)
+
+        pharmacy.globalRatingSum += rating
+        pharmacy.numberOfRatings++
     }
 }

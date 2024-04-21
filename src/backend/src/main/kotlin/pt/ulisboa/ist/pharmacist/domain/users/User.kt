@@ -18,10 +18,12 @@ data class User(
     val email: String,
     val passwordHash: String,
     val suspended: Boolean,
-    val favoritePharmacies: MutableSet<Pharmacy>,
-    val medicinesToNotify: MutableSet<Medicine>,
-    val accessTokens: MutableSet<AccessToken>
+    val favoritePharmacies: MutableSet<Pharmacy> = mutableSetOf(),
+    val medicinesToNotify: MutableSet<Medicine> = mutableSetOf(),
+    val accessTokens: MutableSet<AccessToken> = mutableSetOf(),
+    val ratings: MutableMap<Long, UserPharmacyRating> = mutableMapOf()
 ) {
+
     init {
         if (username.length !in MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH)
             throw InvalidUserException(

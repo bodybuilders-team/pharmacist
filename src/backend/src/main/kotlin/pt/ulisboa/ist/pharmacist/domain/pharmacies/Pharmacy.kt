@@ -14,5 +14,10 @@ data class Pharmacy(
     val name: String,
     val location: Location,
     val pictureUrl: String,
+    var globalRatingSum: Double = 0.0,
+    var numberOfRatings: Int = 0,
     val medicines: MutableList<MedicineStock> = mutableListOf()
-)
+) {
+    val globalRating: Double
+        get() = globalRatingSum / numberOfRatings
+}

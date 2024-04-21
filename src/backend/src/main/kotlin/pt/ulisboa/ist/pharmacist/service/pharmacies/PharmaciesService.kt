@@ -1,11 +1,14 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies
 
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyWithUserDataDto
 
 /**
  * Service that handles the business logic of the pharmacies.
@@ -76,7 +79,14 @@ interface PharmaciesService {
     /**
      * Gets a pharmacy by its id.
      *
+     * @param user the user that is requesting the pharmacy
      * @param pid the id of the pharmacy
      */
-    fun getPharmacyById(pid: Long): PharmacyDto
+    fun getPharmacyById(user: User, pid: Long): PharmacyWithUserDataDto
+
+    /**
+     * Rates a pharmacy.
+     *
+     */
+    fun ratePharmacy(user: User, pharmacyId: Long, rating: Int, comment: String)
 }

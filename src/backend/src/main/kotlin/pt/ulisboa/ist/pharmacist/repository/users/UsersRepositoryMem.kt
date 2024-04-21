@@ -20,9 +20,6 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
         val user = User(
             userId = userId, username = username, email = email, passwordHash = passwordHash,
             suspended = false,
-            favoritePharmacies = mutableSetOf(),
-            medicinesToNotify = mutableSetOf(),
-            accessTokens = mutableSetOf()
         )
         users[userId] = user
         return user

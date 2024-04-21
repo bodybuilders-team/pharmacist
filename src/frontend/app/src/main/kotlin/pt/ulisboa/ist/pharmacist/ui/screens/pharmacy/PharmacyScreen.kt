@@ -41,6 +41,7 @@ import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
  */
 @Composable
 fun PharmacyScreen(
+    myPharmacyRating: Float,
     pharmacy: Pharmacy?,
     loadingState: PharmacyViewModel.PharmacyLoadingState,
     onNavigateToPharmacyClick: (Location) -> Unit,
@@ -102,7 +103,7 @@ fun PharmacyScreen(
                 }
 
                 StarRatingBar(
-                    rating = 3.0f,//pharmacy.rating,
+                    rating = myPharmacyRating,//pharmacy.rating,
                     onRatingChanged = { /*TODO*/ }
                 )
 

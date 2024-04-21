@@ -18,7 +18,7 @@ object Uris {
     const val PHARMACIES_GET_BY_ID = "/pharmacies/{pid}"
     const val PHARMACY_MEDICINES = "/pharmacies/{pid}/medicines"
     const val PHARMACY_MEDICINES_GET_BY_ID = "/pharmacies/{pid}/medicines/{mid}"
-    const val PHARMACY_RATINGS = "/pharmacies/{pid}/ratings"
+    const val PHARMACY_RATE = "/pharmacies/{pid}/rate"
 
     const val MEDICINES = "/medicines"
     const val MEDICINES_GET_BY_ID = "/medicines/{mid}"

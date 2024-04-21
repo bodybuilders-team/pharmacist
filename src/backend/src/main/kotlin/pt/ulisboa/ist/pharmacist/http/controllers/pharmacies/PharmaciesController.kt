@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addNewMedicine.AddNewMedicineInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addNewMedicine.AddNewMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addPharmacy.AddPharmacyInputModel
@@ -20,7 +22,9 @@ import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock.ChangeMedicineStockOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.getPharmacies.GetPharmaciesOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.listMedicines.ListAvailableMedicinesOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.pharmacyRate.PharmacyRatingModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
+import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor
 import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.pharmacies.PharmaciesService
@@ -72,9 +76,10 @@ class PharmaciesController(
      */
     @GetMapping(Uris.PHARMACIES_GET_BY_ID)
     fun getPharmacyById(
-        @PathVariable pid: Long
-    ): ResponseEntity<PharmacyModel> {
-        return ResponseEntity.ok(PharmacyModel(pharmaciesService.getPharmacyById(pid)))
+        @PathVariable pid: Long,
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User
+    ): ResponseEntity<PharmacyWithUserDataModel> {
+        return ResponseEntity.ok(PharmacyWithUserDataModel(pharmaciesService.getPharmacyById(user, pid)))
     }
 
     /**
@@ -141,6 +146,20 @@ class PharmaciesController(
                 medicineId = mid,
                 quantity = inputModel.quantity
             )
+        )
+    }
+
+    @PostMapping(Uris.PHARMACY_RATE)
+    fun ratePharmacy(
+        @PathVariable pid: String,
+        @Valid @RequestBody pharmacyRating: PharmacyRatingModel,
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
+    ) {
+        pharmaciesService.ratePharmacy(
+            user,
+            pharmacyId = pid.toLong(),
+            rating = pharmacyRating.rating,
+            comment = pharmacyRating.comment
         )
     }
 
