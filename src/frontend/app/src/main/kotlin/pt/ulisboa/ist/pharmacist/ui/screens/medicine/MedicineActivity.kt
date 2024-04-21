@@ -10,7 +10,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
- * Activity for the [MedicineSearchScreen].
+ * Activity for the [MedicineScreen].
  */
 class MedicineActivity : PharmacistActivity() {
 

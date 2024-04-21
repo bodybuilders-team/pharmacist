@@ -5,19 +5,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
-import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
@@ -36,7 +38,6 @@ fun MedicineSearchScreen(
     pharmaciesState: Flow<PagingData<Pharmacy>>,
     onPharmacyClick: (Pharmacy) -> Unit
 ) {
-
     if (loadingState == MedicineViewModel.MedicineLoadingState.LOADED && medicine != null) {
         val pharmacies = pharmaciesState.collectAsLazyPagingItems()
 
@@ -45,56 +46,67 @@ fun MedicineSearchScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    text = "Name: ${medicine.name}", modifier = Modifier
-                        .weight(0.1f)
-                )
-
-                Text(
-                    text = "Description: ${medicine.description}", Modifier
-                        .weight(0.1f)
-                )
-
-                Button(onClick = {
-                    //TODO: Implement
-                }) {
-                    Text("Notify me when available in Favorite Pharmacies")
-                }
 
                 MeteredAsyncImage(
                     url = medicine.boxPhotoUrl,
                     contentDescription = "Box Photo",
                     modifier = Modifier
-                        .weight(0.1f)
+                        .fillMaxWidth(0.6f)
                 )
 
+                Text(
+                    text = medicine.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .padding(8.dp),
+                )
+
+                Text(
+                    text = medicine.description,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+
+                )
+
+                IconButton(
+                    modifier = Modifier,
+                    onClick = { /*TODO*/ },
+                ) { // TODO: Implement notifications and change button based on the state (if notifications are enabled, then
+                    // the button should be filled, otherwise it should be outlined, or something like that)
+                    Icon(
+                        Icons.Rounded.Notifications,
+                        contentDescription = "Add to notifications",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Text(
+                    text = "Available in ${pharmacies.itemCount} pharmacies",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(8.dp)
+                )
                 LazyColumn(
                     modifier = Modifier
                         .weight(0.1f)
+                        .padding(bottom = 8.dp)
                 ) {
+
                     items(pharmacies.itemCount) { index ->
                         val pharmacy = pharmacies[index]!!
-                        Box(modifier = Modifier.clickable {
-                            onPharmacyClick(pharmacy)
-                        }) {
+                        Box(modifier = Modifier
+                            .clickable {
+                                onPharmacyClick(pharmacy)
+                            }) {
                             Text(text = pharmacy.name)
-
                         }
                     }
                 }
             }
         }
-    } else {
+    } else
         Box {
             LoadingSpinner()
         }
-    }
 }
 

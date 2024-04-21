@@ -50,6 +50,9 @@ class MedicineViewModel(
 
     val pharmaciesState get() = _pharmaciesState
 
+    /**
+     * Loads the medicine with the given [mid].
+     */
     fun loadMedicine(mid: Long) = viewModelScope.launch {
         loadingState = MedicineLoadingState.LOADING
 
