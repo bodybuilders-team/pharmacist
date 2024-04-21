@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
@@ -25,6 +26,8 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.MapScreen
  * @param mapProperties properties of the map
  * @param state of the camera position
  * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
+ * @param setFollowMyLocation callback to be invoked when the user clicks on the follow my location button
+ * @param setPosition callback to be invoked when the position is to be changed
  */
 @Composable
 fun PharmacyMapScreen(
@@ -34,7 +37,8 @@ fun PharmacyMapScreen(
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
-    setFollowMyLocation: (Boolean) -> Unit
+    setFollowMyLocation: (Boolean) -> Unit,
+    setPosition: (LatLng) -> Unit
 ) {
     PharmacistScreen {
         Column(
@@ -52,7 +56,8 @@ fun PharmacyMapScreen(
                     cameraPositionState = cameraPositionState,
                     onPharmacyDetailsClick = onPharmacyDetailsClick,
                     pharmacies = pharmacies,
-                    setFollowMyLocation = setFollowMyLocation
+                    setFollowMyLocation = setFollowMyLocation,
+                    setPosition = setPosition
                 )
             else
                 LocationPermissionScreen(onPermissionGranted = { hasPermission = true })

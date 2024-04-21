@@ -101,6 +101,26 @@ class PharmacyMapViewModel(
             }
     }
 
+    fun setPosition(latLng: LatLng) = viewModelScope.launch {
+        followMyLocation = false
+        cameraPositionState.animate(
+            CameraUpdateFactory.newCameraPosition(
+                CameraPosition.fromLatLngZoom(latLng, cameraPositionState.position.zoom)
+            )
+        )
+    }
+
+    fun getPicture() {
+        // Launch Camera Intent
+//        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//        if (takePictureIntent.resolveActivity(context.packageManager) != null) {
+//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+//        } else {
+//            // Handle situation where no camera app is available
+//            Toast.makeText(context, "No Camera App Found", Toast.LENGTH_SHORT).show()
+//        }
+    }
+
     /**
      * Checks if the app has location access permission.
      *

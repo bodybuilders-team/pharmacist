@@ -37,7 +37,8 @@ class PharmacyMapActivity : PharmacistActivity() {
                 },
                 setFollowMyLocation = { followMyLocation ->
                     viewModel.followMyLocation = followMyLocation
-                }
+                },
+                setPosition = { location -> viewModel.setPosition(location) }
             )
         }
     }
