@@ -30,6 +30,10 @@ import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
 /**
  * Medicine screen.
  *
+ * @param medicine the medicine to display
+ * @param loadingState the loading state of the medicine
+ * @param pharmaciesState the pharmacies that have the medicine
+ * @param onPharmacyClick the action to perform when a pharmacy is clicked
  */
 @Composable
 fun MedicineSearchScreen(
@@ -46,12 +50,12 @@ fun MedicineSearchScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
             ) {
-
                 MeteredAsyncImage(
                     url = medicine.boxPhotoUrl,
                     contentDescription = "Box Photo",
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
+                        .padding(top = 16.dp)
                 )
 
                 Text(

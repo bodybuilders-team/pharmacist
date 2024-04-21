@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.ui.screens.medicine
+package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -6,7 +6,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService
 
-class PharmaciesPagingSource(
+class PharmacyMedicinesPagingSource(
     private val pharmaciesService: PharmaciesService,
     private val pageSize: Int,
     private val mid: Long? = null

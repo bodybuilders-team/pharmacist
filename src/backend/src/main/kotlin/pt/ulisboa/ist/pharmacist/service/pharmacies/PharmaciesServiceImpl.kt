@@ -47,8 +47,8 @@ class PharmaciesServiceImpl(
         return GetPharmaciesOutputDto(pharmacies, 0)
     }
 
-    override fun addPharmacy(name: String, location: Location, picture: String): PharmacyDto {
-        val pharmacy = pharmaciesRepository.create(name = name, location = location, picture = picture)
+    override fun addPharmacy(name: String, location: Location, pictureUrl: String): PharmacyDto {
+        val pharmacy = pharmaciesRepository.create(name = name, location = location, pictureUrl = pictureUrl)
         return PharmacyDto(pharmacy)
     }
 

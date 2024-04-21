@@ -89,7 +89,7 @@ class PharmaciesController(
         val addedPharmacy = pharmaciesService.addPharmacy(
             name = inputModel.name,
             location = inputModel.location,
-            picture = inputModel.picture
+            pictureUrl = inputModel.pictureUrl
         )
 
         return ResponseEntity

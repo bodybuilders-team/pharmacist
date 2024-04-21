@@ -36,9 +36,9 @@ interface PharmaciesService {
      *
      * @param name the name of the pharmacy
      * @param location the location of the pharmacy
-     * @param picture the picture of the pharmacy
+     * @param pictureUrl the pictureUrl of the pharmacy
      */
-    fun addPharmacy(name: String, location: Location, picture: String): PharmacyDto
+    fun addPharmacy(name: String, location: Location, pictureUrl: String): PharmacyDto
 
     /**
      * Lists the available medicines of a pharmacy.

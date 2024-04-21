@@ -7,10 +7,10 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
  *
  * @property name the name of the pharmacy
  * @property location the location of the pharmacy
- * @property picture the picture of the pharmacy
+ * @property pictureUrl the pictureUrl of the pharmacy
  */
 data class AddPharmacyInputModel(
     val name: String,
     val location: Location,
-    val picture: String
+    val pictureUrl: String
 )

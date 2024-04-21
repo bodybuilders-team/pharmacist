@@ -4,6 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
@@ -24,13 +27,30 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyL
  */
 class PharmacyViewModel(
     pharmacistService: PharmacistService,
-    sessionManager: SessionManager
+    sessionManager: SessionManager,
+    pharmacyId: Long
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
 
     var pharmacy by mutableStateOf<Pharmacy?>(null)
         private set
+
+    /*private val _medicinesState = Pager(
+        config = PagingConfig(
+            pageSize = PAGE_SIZE,
+            prefetchDistance = PREFETCH_DISTANCE
+        ),
+        pagingSourceFactory = {
+            PharmacyMedicinesPagingSource(
+                medicinesService = pharmacistService.medicinesService,
+                pageSize = PAGE_SIZE,
+                pid = pharmacyId
+            )
+        }
+    ).flow.cachedIn(viewModelScope)
+
+    val medicinesState get() = _medicinesState*/
 
     fun loadPharmacy(pid: Long) = viewModelScope.launch {
         loadingState = LOADING
@@ -47,5 +67,10 @@ class PharmacyViewModel(
         NOT_LOADED,
         LOADING,
         LOADED
+    }
+
+    companion object {
+        const val PAGE_SIZE = 10
+        const val PREFETCH_DISTANCE = 1
     }
 }

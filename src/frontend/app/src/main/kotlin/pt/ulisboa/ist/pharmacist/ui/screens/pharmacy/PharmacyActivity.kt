@@ -1,20 +1,30 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [PharmacyScreen].
  */
 class PharmacyActivity : PharmacistActivity() {
 
-    private val viewModel by getViewModel(::PharmacyViewModel)
-
     private val pharmacyId by lazy {
         intent.getLongExtra(PHARMACY_ID, -1)
+    }
+
+    private val viewModel by viewModelInit {
+        PharmacyViewModel(
+            dependenciesContainer.pharmacistService,
+            dependenciesContainer.sessionManager,
+            pharmacyId
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +36,17 @@ class PharmacyActivity : PharmacistActivity() {
         setContent {
             PharmacyScreen(
                 pharmacy = viewModel.pharmacy,
-                loadingState = viewModel.loadingState
+                loadingState = viewModel.loadingState,
+                onNavigateToPharmacyClick = { location ->
+                    val gmmIntentUri =
+                        Uri.parse("geo:0,0?q=${location.lat},${location.lon}(${viewModel.pharmacy?.name})")
+                    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                    startActivity(mapIntent)
+                },
+                /*medicinesState = viewModel.medicinesState,*/
+                onMedicineClick = { medicine ->
+                    MedicineActivity.navigate(this, medicine.medicineId)
+                }
             )
         }
     }

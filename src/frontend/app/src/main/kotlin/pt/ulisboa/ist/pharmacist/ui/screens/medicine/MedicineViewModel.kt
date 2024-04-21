@@ -15,14 +15,12 @@ import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
-import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmaciesPagingSource
 
 /**
  * View model for the [MedicineActivity].
  *
  * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
- *
  */
 class MedicineViewModel(
     pharmacistService: PharmacistService,

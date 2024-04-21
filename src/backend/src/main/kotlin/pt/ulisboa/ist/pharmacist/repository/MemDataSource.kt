@@ -22,7 +22,6 @@ class MemDataSource {
     val medicinesCounter = AtomicLong(0)
 
     init {
-
         medicines += mapOf(
             0L to Medicine(
                 0,
@@ -186,7 +185,7 @@ class MemDataSource {
                 2,
                 "Farmácia do Rossio",
                 Location(38.7149, -9.1394),
-                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
             ),
             3L to Pharmacy(
                 3,
