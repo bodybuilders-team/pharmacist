@@ -28,11 +28,11 @@ object Uris {
     fun getMedicines(substring: String, location: Location?, limit: Long, offset: Long) =
         "$MEDICINES?substring=$substring${if (location == null) "" else "&location=$location"}&limit=$limit&offset=$offset"
 
-    fun getPharmacies(mid: Long?, limit: Long?, offset: Long?): String {
+    fun getPharmacies(medicineId: Long?, limit: Long?, offset: Long?): String {
         return Uri.Builder().apply {
             appendPath(PHARMACIES.drop(1))
-            if (mid != null)
-                appendQueryParameter("medicine", mid.toString())
+            if (medicineId != null)
+                appendQueryParameter("medicine", medicineId.toString())
             if (limit != null)
                 appendQueryParameter("limit", limit.toString())
             if (offset != null)
@@ -44,8 +44,8 @@ object Uris {
 
     fun getMedicineById(pid: Long) = MEDICINES_GET_BY_ID.replace("{mid}", pid.toString())
 
-    fun listAvailableMedicines(pid: Long, limit: Long?, offset: Long?): String {
-        return PHARMACY_MEDICINES.replace("{pid}", pid.toString()) +
+    fun listAvailableMedicines(pharmacyId: Long, limit: Long?, offset: Long?): String {
+        return PHARMACY_MEDICINES.replace("{pid}", pharmacyId.toString()) +
                 "?${if (limit != null) "limit=$limit" else ""}${if (offset != null) "&offset=$offset" else ""}"
     }
 }

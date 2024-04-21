@@ -18,12 +18,16 @@ class PharmaciesService(
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
     suspend fun getPharmacies(
-        mid: Long? = null,
+        medicineId: Long? = null,
         limit: Long? = null,
         offset: Long? = null
     ): APIResult<GetPharmaciesOutputModel> {
         return get<GetPharmaciesOutputModel>(
-            link = Uris.getPharmacies(mid, limit, offset),
+            link = Uris.getPharmacies(
+                medicineId = medicineId,
+                limit = limit,
+                offset = offset
+            ),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )
     }
@@ -36,15 +40,15 @@ class PharmaciesService(
     }
 
     suspend fun listAvailableMedicines(
-        pid: Long,
+        pharmacyId: Long,
         limit: Long? = null,
         offset: Long? = null
     ): APIResult<ListAvailableMedicinesOutputModel> {
         return get<ListAvailableMedicinesOutputModel>(
             link = Uris.listAvailableMedicines(
-                pid,
-                limit,
-                offset
+                pharmacyId = pharmacyId,
+                limit = limit,
+                offset = offset
             ),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )

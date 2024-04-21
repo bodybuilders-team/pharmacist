@@ -29,7 +29,7 @@ class HomeActivity : PharmacistActivity() {
                 username = viewModel.username,
                 onLoginClick = { navigateTo<LoginActivity>() },
                 onRegisterClick = { navigateTo<RegisterActivity>() },
-                onContinueAsGuestClick = { /*TODO*/ },
+                onContinueAsGuestClick = { viewModel.enterAsGuest() },
                 onLogoutClick = { viewModel.logout() },
                 onAboutClick = { navigateTo<AboutActivity>() },
                 onPharmacyMapClick = { navigateTo<PharmacyMapActivity>() },

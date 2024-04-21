@@ -24,7 +24,14 @@ class HomeViewModel(
         private set
 
     val username
-        get() = sessionManager.username
+        get() = if (!isGuest) sessionManager.username else "Guest"
+
+    private var isGuest: Boolean by mutableStateOf(false)
+
+    fun enterAsGuest() {
+        this.isLoggedIn = true
+        this.isGuest = true
+    }
 
     /**
      * Logs out the user.

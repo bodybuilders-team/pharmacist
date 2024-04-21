@@ -24,7 +24,7 @@ class PharmacyMapActivity : PharmacistActivity() {
         viewModel.checkForLocationAccessPermission(this)
 
         setContent {
-            viewModel.loadPharmacyMap()
+            viewModel.loadPharmacyList()
 
             PharmacyMapScreen(
                 followMyLocation = viewModel.followMyLocation,

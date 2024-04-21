@@ -21,7 +21,7 @@ class PharmacyMedicinesPagingSource(
             if (params.key != null) ((currentPage - 1) * pageSize) + 1 else INITIAL_LOAD_SIZE
 
         val result = pharmaciesService.listAvailableMedicines(
-            pid = pid,
+            pharmacyId = pid,
             limit = params.loadSize.toLong(),
             offset = offset.toLong() - 1
         )

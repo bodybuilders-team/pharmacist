@@ -57,9 +57,9 @@ class PharmacyMapViewModel(
     )
 
     /**
-     * Loads the pharmacy map.
+     * Loads the list of pharmacies.
      */
-    fun loadPharmacyMap() = viewModelScope.launch {
+    fun loadPharmacyList() = viewModelScope.launch {
         if (state != PharmacyMapState.UNLOADED)
             return@launch
 
