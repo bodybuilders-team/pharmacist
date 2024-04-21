@@ -1,10 +1,11 @@
-package pt.ulisboa.ist.pharmacist.utils;
+package pt.ulisboa.ist.pharmacist.utils
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
+import org.springframework.stereotype.Component
 import java.security.Key
 import java.security.SignatureException
 import java.sql.Timestamp
@@ -12,7 +13,6 @@ import java.time.Duration
 import java.time.Instant
 import java.util.Date
 import javax.crypto.spec.SecretKeySpec
-import org.springframework.stereotype.Component
 
 /**
  * Utility class for JWT operations.

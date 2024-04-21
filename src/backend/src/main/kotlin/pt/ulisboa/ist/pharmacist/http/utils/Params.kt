@@ -9,8 +9,6 @@ object Params {
     const val ORDER_BY_PARAM = "orderBy"
     const val SORT_DIRECTION_PARAM = "sortDirection"
 
-    const val USERNAME_PARAM = "username"
-
     const val LOCATION_PARAM = "location"
     const val RANGE_PARAM = "range"
     const val MEDICINE_PARAM = "medicine"

@@ -34,5 +34,12 @@ interface MedicinesService {
      * @return the medicine created
      */
     fun createMedicine(name: String, description: String, boxPhotoUrl: String): MedicineDto
+
+    /**
+     * Gets a medicine by its id.
+     *
+     * @param medicineId the id of the medicine
+     * @return the medicine
+     */
     fun getMedicineById(medicineId: Long): MedicineDto
 }

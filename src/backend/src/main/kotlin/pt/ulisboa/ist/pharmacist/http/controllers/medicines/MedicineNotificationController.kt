@@ -1,14 +1,21 @@
-package pt.ulisboa.ist.pharmacist.http.controllers
+package pt.ulisboa.ist.pharmacist.http.controllers.medicines
 
-import java.util.concurrent.Executors
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
-import pt.ulisboa.ist.pharmacist.service.medicinenotifications.MedicineNotificationService
+import pt.ulisboa.ist.pharmacist.service.medicines.MedicineNotificationService
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
+import java.util.concurrent.Executors
 
+/**
+ * A Medicine Notification Controller.
+ *
+ * @property medicineNotificationService the medicine notification service
+ * @property usersRepository the users repository
+ */
 @RestController
 @RequestMapping(produces = ["application/json"])
 class MedicineNotificationController(
@@ -16,7 +23,10 @@ class MedicineNotificationController(
     val usersRepository: UsersRepository
 ) {
 
-    @GetMapping("/medicine-notifications", produces = ["application/json"])
+    /**
+     * Stream medicine notifications to the user.
+     */
+    @GetMapping(Uris.MEDICINE_NOTIFICATIONS)
     fun streamSseMvc(): SseEmitter {
         val emitter = SseEmitter()
         val sseMvcExecutor = Executors.newSingleThreadExecutor()

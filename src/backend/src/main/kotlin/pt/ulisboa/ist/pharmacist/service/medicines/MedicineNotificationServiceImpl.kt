@@ -1,19 +1,17 @@
-package pt.ulisboa.ist.pharmacist.service.medicinenotifications
+package pt.ulisboa.ist.pharmacist.service.medicines
 
+import org.springframework.stereotype.Service
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineNotification
+import pt.ulisboa.ist.pharmacist.domain.users.User
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import org.springframework.stereotype.Service
-import pt.ulisboa.ist.pharmacist.domain.medicinenotifications.MedicineNotification
-import pt.ulisboa.ist.pharmacist.domain.users.User
 
+/**
+ * Service that handles the business logic of medicine notifications.
+ */
 @Service
 class MedicineNotificationServiceImpl : MedicineNotificationService {
     private val lock = ReentrantLock()
-
-    companion object {
-        const val NOTIFICATION_INTERVAL = 1000L
-        const val STOCK_NOTIFICATION_THRESHOLD = 0L
-    }
 
     data class MedicinePharmacyPair(
         val medicineId: Long,
@@ -49,12 +47,16 @@ class MedicineNotificationServiceImpl : MedicineNotificationService {
                     notification.medicineStock.stock
                 ) ?: continue
 
-                if (previousStock <= STOCK_NOTIFICATION_THRESHOLD && notification.medicineStock.stock > STOCK_NOTIFICATION_THRESHOLD) {
+                if (previousStock <= STOCK_NOTIFICATION_THRESHOLD && notification.medicineStock.stock > STOCK_NOTIFICATION_THRESHOLD)
                     notifyAction(notification)
-                }
             }
 
             Thread.sleep(NOTIFICATION_INTERVAL)
         }
+    }
+
+    companion object {
+        const val NOTIFICATION_INTERVAL = 1000L
+        const val STOCK_NOTIFICATION_THRESHOLD = 0L
     }
 }
