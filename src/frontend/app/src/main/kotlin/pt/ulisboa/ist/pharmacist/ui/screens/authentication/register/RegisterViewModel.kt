@@ -45,7 +45,7 @@ class RegisterViewModel(
         )
 
         registerState = if (result.isSuccess()) {
-            sessionManager.setSession(result.data.accessToken, username)
+            sessionManager.setSession(result.data.userId, result.data.accessToken, username)
             RegisterState.REGISTERED
         } else {
             _events.emit(LoginViewModel.Event.ShowToast(result.error.title))

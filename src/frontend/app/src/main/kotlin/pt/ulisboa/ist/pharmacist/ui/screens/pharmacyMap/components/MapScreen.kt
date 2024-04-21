@@ -133,10 +133,11 @@ fun MapScreen(
             }
 
             if (addingPharmacy && newPharmacyMarkerState != null) {
-                Box(modifier = Modifier
-                    .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
-                    .align(alignment = Alignment.CenterHorizontally)
-                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                Box(
+                    modifier = Modifier
+                        .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
                 ) {
                     Column {
                         IconButton(

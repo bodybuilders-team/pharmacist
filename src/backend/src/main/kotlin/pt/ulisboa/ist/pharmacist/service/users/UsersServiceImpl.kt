@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
-import java.util.UUID
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
@@ -19,13 +18,13 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
+import java.util.UUID
 
 /**
  * Service that handles the business logic of the users.
  *
  * @property usersRepository the repository of the users
  * @property hashingUtils the utils for password operations
- * @property jwtProvider the JWT provider
  */
 @Service
 class UsersServiceImpl(
@@ -121,6 +120,7 @@ class UsersServiceImpl(
         user.accessTokens.add(AccessToken(tokenHash = tokenHash))
 
         return LoginOutputDto(
+            userId = user.userId,
             accessToken = accessToken
         )
     }

@@ -39,13 +39,28 @@ class PharmacyActivity : PharmacistActivity() {
                 loadingState = viewModel.loadingState,
                 onNavigateToPharmacyClick = { location ->
                     val gmmIntentUri =
-                        Uri.parse("geo:0,0?q=${location.lat},${location.lon}(${viewModel.pharmacy?.name})")
+                        Uri.parse("geo:0,0?q=${location.lat},${location.lon}(${viewModel.pharmacy?.pharmacy?.name})")
                     val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
                     startActivity(mapIntent)
                 },
                 medicinesState = viewModel.medicinesState,
                 onMedicineClick = { medicineId ->
                     MedicineActivity.navigate(this, medicineId)
+                },
+                onAddMedicineClick = {
+                    // TODO
+                },
+                onAddStockClick = { medicineId ->
+                    // TODO
+                },
+                onRemoveStockClick = { medicineId ->
+                    // TODO
+                },
+                onFavoriteClick = {
+                    viewModel.updateFavoriteStatus()
+                },
+                onRatingChanged = { rating ->
+                    // TODO
                 }
             )
         }

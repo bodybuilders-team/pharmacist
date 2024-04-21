@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Button
@@ -26,6 +27,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
@@ -41,12 +43,16 @@ import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
  */
 @Composable
 fun PharmacyScreen(
-    myPharmacyRating: Float,
-    pharmacy: Pharmacy?,
+    pharmacy: PharmacyWithUserDataModel?,
     loadingState: PharmacyViewModel.PharmacyLoadingState,
     onNavigateToPharmacyClick: (Location) -> Unit,
     medicinesState: Flow<PagingData<MedicineStockModel>>,
-    onMedicineClick: (Long) -> Unit
+    onMedicineClick: (Long) -> Unit,
+    onAddMedicineClick: () -> Unit,
+    onAddStockClick: (Long) -> Unit,
+    onRemoveStockClick: (Long) -> Unit,
+    onFavoriteClick: () -> Unit,
+    onRatingChanged: (Float) -> Unit
 ) {
     val medicinesStock = medicinesState.collectAsLazyPagingItems()
 
@@ -57,7 +63,7 @@ fun PharmacyScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 MeteredAsyncImage(
-                    url = pharmacy.pictureUrl,
+                    url = pharmacy.pharmacy.pictureUrl,
                     contentDescription = "Pharmacy picture",
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
@@ -66,18 +72,17 @@ fun PharmacyScreen(
 
                 Row {
                     Text(
-                        text = pharmacy.name,
+                        text = pharmacy.pharmacy.name,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .padding(8.dp),
                     )
                     IconButton(
                         modifier = Modifier,
-                        onClick = { /*TODO*/ },
-                    ) { // TODO: Implement mark as favorite and change button based on the state (if notifications are enabled, then
-                        // the button should be filled, otherwise it should be outlined, or something like that)
+                        onClick = onFavoriteClick,
+                    ) {
                         Icon(
-                            Icons.Rounded.FavoriteBorder, // Icons.Rounded.Favorite
+                            if (pharmacy.userMarkedAsFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                             contentDescription = "Add to notifications",
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -86,7 +91,7 @@ fun PharmacyScreen(
 
                 IconButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { onNavigateToPharmacyClick(pharmacy.location) },
+                    onClick = { onNavigateToPharmacyClick(pharmacy.pharmacy.location) },
                 ) {
                     Row {
                         Icon(
@@ -95,7 +100,7 @@ fun PharmacyScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "${pharmacy.location}",
+                            text = "${pharmacy.pharmacy.location}",
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
@@ -103,8 +108,8 @@ fun PharmacyScreen(
                 }
 
                 StarRatingBar(
-                    rating = myPharmacyRating,//pharmacy.rating,
-                    onRatingChanged = { /*TODO*/ }
+                    rating = pharmacy.userRating?.rating ?: 0f,
+                    onRatingChanged = onRatingChanged,
                 )
 
                 Text(
@@ -115,7 +120,7 @@ fun PharmacyScreen(
                 )
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = onAddMedicineClick,
                     modifier = Modifier,
                     shape = CircleShape,
                 ) {
@@ -141,8 +146,8 @@ fun PharmacyScreen(
                             medicine,
                             stock,
                             onMedicineClick = onMedicineClick,
-                            onAddStockClick = { /*TODO*/ },
-                            onRemoveStockClick = { /*TODO*/ }
+                            onAddStockClick = onAddStockClick,
+                            onRemoveStockClick = onRemoveStockClick
                         )
                     }
                 }

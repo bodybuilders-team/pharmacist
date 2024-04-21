@@ -45,7 +45,13 @@ object Uris {
     fun getMedicineById(pid: Long) = MEDICINES_GET_BY_ID.replace("{mid}", pid.toString())
 
     fun listAvailableMedicines(pharmacyId: Long, limit: Long?, offset: Long?): String {
-        return PHARMACY_MEDICINES.replace("{pid}", pharmacyId.toString()) +
+        return PHARMACY_MEDICINES
+            .replace("{pid}", pharmacyId.toString()) +
                 "?${if (limit != null) "limit=$limit" else ""}${if (offset != null) "&offset=$offset" else ""}"
     }
+
+    fun favoritePharmaciesGetById(userId: String, pharmacyId: Long) =
+        USER_FAVORITE_PHARMACIES_GET_BY_ID
+            .replace("{uid}", userId)
+            .replace("{pid}", pharmacyId.toString())
 }

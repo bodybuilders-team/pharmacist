@@ -39,7 +39,7 @@ class HomeViewModel(
     fun logout() = viewModelScope.launch {
         check(sessionManager.isLoggedIn()) { "The user is not logged in." }
 
-        pharmacistService.usersService.logout(sessionManager.accessToken!!)
+        pharmacistService.usersService.logout()
 
         sessionManager.clearSession()
         isLoggedIn = false

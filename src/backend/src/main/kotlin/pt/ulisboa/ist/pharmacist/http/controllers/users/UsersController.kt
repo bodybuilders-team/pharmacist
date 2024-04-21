@@ -126,7 +126,6 @@ class UsersController(private val usersService: UsersService) {
     }
 
 
-
     /**
      * Handles the request to remove a pharmacy from the user's favorite pharmacies.
      *

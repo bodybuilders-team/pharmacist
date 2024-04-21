@@ -5,10 +5,12 @@ package pt.ulisboa.ist.pharmacist.session
 /**
  * Responsible for holding a user's session.
  *
+ * @property usedId the user's id
  * @property accessToken the user's access token
  * @property username the user's username
  */
 interface SessionManager {
+    val usedId: String?
     val accessToken: String?
     val username: String?
 
@@ -22,11 +24,12 @@ interface SessionManager {
     /**
      * Updates the session with the given tokens and username.
      *
+     * @param userId the user's id
      * @param accessToken the user's access token
-     * @param refreshToken the user's refresh token
      * @param username the user's username
      */
     fun setSession(
+        userId: String,
         accessToken: String,
         username: String
     )

@@ -2,7 +2,6 @@ package pt.ulisboa.ist.pharmacist.service.pharmacies
 
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.users.User
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
@@ -88,5 +87,5 @@ interface PharmaciesService {
      * Rates a pharmacy.
      *
      */
-    fun ratePharmacy(user: User, pharmacyId: Long, rating: Int, comment: String)
+    fun ratePharmacy(user: User, pharmacyId: Long, rating: Float, comment: String)
 }

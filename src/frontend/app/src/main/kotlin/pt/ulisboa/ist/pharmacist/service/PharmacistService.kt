@@ -25,7 +25,7 @@ class PharmacistService(
     sessionManager: SessionManager
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
-    val usersService = UsersService(apiEndpoint, httpClient, jsonEncoder)
+    val usersService = UsersService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
     val pharmaciesService = PharmaciesService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
     val medicinesService = MedicinesService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
 }

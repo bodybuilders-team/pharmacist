@@ -16,6 +16,9 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         context.getSharedPreferences(SESSION_PREFS, Context.MODE_PRIVATE)
     }
 
+    override val usedId: String?
+        get() = prefs.getString(USER_ID, null)
+
     override val accessToken: String?
         get() = prefs.getString(ACCESS_TOKEN, null)
 
@@ -23,12 +26,14 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         get() = prefs.getString(USERNAME, null)
 
     override fun setSession(
+        userId: String,
         accessToken: String,
         username: String
     ) {
         prefs.edit()
             .putString(ACCESS_TOKEN, accessToken)
             .putString(USERNAME, username)
+            .putString(USER_ID, userId)
             .apply()
     }
 
@@ -36,6 +41,7 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         prefs.edit()
             .remove(ACCESS_TOKEN)
             .remove(USERNAME)
+            .remove(USER_ID)
             .apply()
     }
 
@@ -43,5 +49,6 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         private const val SESSION_PREFS = "session"
         private const val ACCESS_TOKEN = "accessToken"
         private const val USERNAME = "username"
+        private const val USER_ID = "userId"
     }
 }

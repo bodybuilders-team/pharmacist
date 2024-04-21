@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.pharmacist.http.utils
 
-import java.net.URI
 import org.springframework.web.util.UriTemplate
+import java.net.URI
 
 /**
  * The URIs of the API.

@@ -3,7 +3,6 @@ package pt.ulisboa.ist.pharmacist.service
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
-import java.io.IOException
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -15,6 +14,7 @@ import pt.ulisboa.ist.pharmacist.service.connection.fromJson
 import pt.ulisboa.ist.pharmacist.service.connection.getBodyOrThrow
 import pt.ulisboa.ist.pharmacist.service.connection.send
 import pt.ulisboa.ist.pharmacist.service.media.Problem.Companion.problemMediaType
+import java.io.IOException
 
 /**
  * A service that communicates with a HTTP server.
@@ -46,6 +46,10 @@ abstract class HTTPService(
 
             try {
                 when {
+                    response.isSuccessful && contentType == null &&
+                            T::class.java.isAssignableFrom(Unit::class.java) ->
+                        APIResult.Success(data = Unit as T)
+
                     response.isSuccessful && contentType == applicationJsonMediaType ->
                         APIResult.Success(data = jsonEncoder.fromJson<T>(resJson))
 
@@ -143,6 +147,35 @@ abstract class HTTPService(
                         .toRequestBody(contentType = applicationJsonMediaType)
                 } ?: EMPTY_REQUEST
             )
+            .build()
+            .getResponseResult()
+
+    protected suspend inline fun <reified T> put(
+        link: String,
+        token: String,
+        body: Any? = null
+    ): APIResult<T> =
+        Request.Builder()
+            .url(url = apiEndpoint + link)
+            .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
+            .put(
+                body = body?.let {
+                    jsonEncoder
+                        .toJson(body)
+                        .toRequestBody(contentType = applicationJsonMediaType)
+                } ?: EMPTY_REQUEST
+            )
+            .build()
+            .getResponseResult()
+
+    protected suspend inline fun <reified T> delete(
+        link: String,
+        token: String
+    ): APIResult<T> =
+        Request.Builder()
+            .url(url = apiEndpoint + link)
+            .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
+            .delete()
             .build()
             .getResponseResult()
 

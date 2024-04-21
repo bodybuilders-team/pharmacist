@@ -45,7 +45,7 @@ class LoginViewModel(
         )
 
         loginState = if (result.isSuccess()) {
-            sessionManager.setSession(result.data.accessToken, username)
+            sessionManager.setSession(result.data.userId, result.data.accessToken, username)
             LoginState.LOGGED_IN
         } else {
             _events.emit(Event.ShowToast(result.error.title))

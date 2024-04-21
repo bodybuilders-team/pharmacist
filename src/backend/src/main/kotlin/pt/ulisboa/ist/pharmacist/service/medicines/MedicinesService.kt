@@ -9,8 +9,6 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
  */
 interface MedicinesService {
 
-    // TODO: Implement the methods of the MedicinesServiceImpl interface
-
     /**
      * Gets the medicines.
      *

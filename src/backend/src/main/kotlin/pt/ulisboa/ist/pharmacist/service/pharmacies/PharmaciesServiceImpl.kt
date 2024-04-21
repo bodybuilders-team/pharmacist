@@ -119,7 +119,7 @@ class PharmaciesServiceImpl(
         )
     }
 
-    override fun ratePharmacy(user: User, pharmacyId: Long, rating: Int, comment: String) {
+    override fun ratePharmacy(user: User, pharmacyId: Long, rating: Float, comment: String) {
         val pharmacy = pharmaciesRepository.findById(pharmacyId)
             ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
         if (rating < 0 || rating > 5) throw InvalidArgumentException("Rating must be between 0 and 5")
