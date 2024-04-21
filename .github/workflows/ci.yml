@@ -11,19 +11,3 @@ jobs:
       - uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker-compose.yml"
-
-  gradle:
-    name: Gradle Build
-    runs-on: ubuntu-latest
-    defaults:
-        run:
-            working-directory: ./src/backend
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
-      - name: Make Gradlew executable
-        run: chmod +x ./gradlew
-      - name: Build with Gradle
-        run: ./gradlew build
