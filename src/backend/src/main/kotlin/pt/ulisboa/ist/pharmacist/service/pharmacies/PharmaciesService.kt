@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies
 
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
@@ -37,7 +38,7 @@ interface PharmaciesService {
      * @param location the location of the pharmacy
      * @param picture the picture of the pharmacy
      */
-    fun addPharmacy(name: String, location: String, picture: String): PharmacyDto
+    fun addPharmacy(name: String, location: Location, picture: String): PharmacyDto
 
     /**
      * Lists the available medicines of a pharmacy.
@@ -71,4 +72,11 @@ interface PharmaciesService {
         operation: String,
         quantity: Long
     ): ChangeMedicineStockOutputDto
+
+    /**
+     * Gets a pharmacy by its id.
+     *
+     * @param pid the id of the pharmacy
+     */
+    fun getPharmacyById(pid: Long): PharmacyDto
 }

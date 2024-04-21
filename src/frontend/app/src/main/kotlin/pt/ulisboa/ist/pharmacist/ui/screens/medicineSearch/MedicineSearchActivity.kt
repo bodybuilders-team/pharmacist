@@ -1,9 +1,16 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.launch
+import pt.ulisboa.ist.pharmacist.service.services.LocationService
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [MedicineSearchScreen].
@@ -16,14 +23,22 @@ class MedicineSearchActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewModel.checkForLocationAccessPermission(this)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                viewModel.startObtainingLocation(this@MedicineSearchActivity)
+            }
+        }
+
         setContent {
             MedicineSearchScreen(
-                medicines = viewModel.medicineSearchData.medicines,
-                loadMoreMedicines = {
-                    viewModel.loadMoreMedicines()
-                },
+                hasLocationPermission = viewModel.hasLocationPermission,
+                medicinesState = viewModel.medicinesState,
                 onSearch = { viewModel.searchMedicines(it) },
-                loadingState = viewModel.medicineSearchData.loadingState
+                onMedicineClicked = { mid ->
+                   MedicineActivity.navigate(this, mid)
+                }
             )
         }
     }

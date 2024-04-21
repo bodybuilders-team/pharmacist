@@ -14,7 +14,7 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
 
     override fun getMedicinesWithClosestPharmacy(
         substring: String,
-        location: String,
+        location: String?,
         offset: Int,
         limit: Int
     ): List<MedicineWithClosestPharmacyDto> {

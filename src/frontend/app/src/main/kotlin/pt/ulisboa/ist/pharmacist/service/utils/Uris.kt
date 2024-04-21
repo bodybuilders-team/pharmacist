@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service.utils
 
-import com.google.android.gms.maps.model.LatLng
+import android.net.Uri
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 
 /**
  * The URIs of the API.
@@ -22,11 +23,27 @@ object Uris {
     const val MEDICINES = "/medicines"
     const val MEDICINES_GET_BY_ID = "/medicines/{mid}"
 
-    fun getMedicines(substring:String, location: String, limit: Long, offset: Long): String {
-        return "$MEDICINES?substring=$substring&location=$location&limit=$limit&offset=$offset"
+    fun getMedicines(substring: String, location: Location?, limit: Long, offset: Long): String {
+        return "$MEDICINES?substring=$substring${if (location == null) "" else "&location=$location"}&limit=$limit&offset=$offset"
     }
 
-    fun getPharmaciesById(id: Long): String {
+    fun getPharmacies(mid: Long?, limit: Long?, offset: Long?): String {
+        return Uri.Builder().apply {
+            appendPath(PHARMACIES.slice(1 until PHARMACIES.length))
+            if (mid != null)
+                appendQueryParameter("medicine", mid.toString())
+            if (limit != null)
+                appendQueryParameter("limit", limit.toString())
+            if (offset != null)
+                appendQueryParameter("offset", offset.toString())
+        }.build().toString()
+    }
+
+    fun getPharmacyById(id: Long): String {
         return PHARMACIES_GET_BY_ID.replace("{pid}", id.toString())
+    }
+
+    fun getMedicineById(pid: Long): String {
+        return MEDICINES_GET_BY_ID.replace("{mid}", pid.toString())
     }
 }

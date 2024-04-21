@@ -6,8 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyLoadingState.LOADED
@@ -35,10 +37,9 @@ class PharmacyViewModel(
     fun loadPharmacy(pid: Long) = viewModelScope.launch {
         loadingState = LOADING
 
-//        val result = pharmacistService.pharmaciesService.getPharmacyById(pid)
-//        if (result.isSuccess())
-//            pharmacy = result.data
-        pharmacy = Pharmacy(pid, "Farmácia A", LatLng(37.0, -122.0), "picture1")
+        val result = pharmacistService.pharmaciesService.getPharmacyById(pid)
+        if (result.isSuccess())
+            pharmacy = result.data
 
         loadingState = LOADED
     }

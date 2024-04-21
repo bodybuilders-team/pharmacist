@@ -1,19 +1,25 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.services.medicines.MedicineWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.service.services.LocationService
+import pt.ulisboa.ist.pharmacist.service.services.hasLocationPermission
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
-import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewModel.MedicineLoadingState.LOADED
-import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewModel.MedicineLoadingState.LOADING
-import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewModel.MedicineLoadingState.NOT_LOADED
 
 /**
  * View model for the [MedicineSearchActivity].
@@ -21,85 +27,61 @@ import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewMod
  * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  *
- * @property loadingState the current loading state of the view model
  */
 class MedicineSearchViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
-    var medicineSearchData by mutableStateOf(
-        MedicineSearchData(
-            emptyList(),
-            NOT_LOADED,
-            false
-        )
-    )
+    var hasLocationPermission by mutableStateOf(false)
         private set
-    private var searchValue by mutableStateOf("")
+    private var queryFlow = MutableStateFlow("")
+    private val locationFlow = MutableStateFlow<Location?>(null)
 
-
-    fun loadMoreMedicines() {
-        if (medicineSearchData.loadingState == LOADING || medicineSearchData.reachedBottomOfQuery)
-            return
-
-        Log.d("MEDICINES_SCROLL", "A")
-        viewModelScope.launch {
-            medicineSearchData = medicineSearchData.copy(loadingState = LOADING)
-            Log.d("MEDICINES_SCROLL", "B")
-
-            val result = pharmacistService.medicinesService.getMedicines(
-                searchValue,
-                "",
-                LOAD_MORE_COUNT,
-                medicineSearchData.medicines.size.toLong()
-            )
-
-            if (result.isSuccess()) {
-                if (result.data.medicines.isEmpty()) {
-                    medicineSearchData = medicineSearchData.copy(
-                        loadingState = LOADED,
-                        reachedBottomOfQuery = true
-                    )
-                    return@launch
-                }
-
-                medicineSearchData = medicineSearchData.copy(
-                    medicines = medicineSearchData.medicines + result.data.medicines,
+    private val _medicinesState = combine(queryFlow, locationFlow) { searchValue, location ->
+        Pair(searchValue, location)
+    }.flatMapLatest { (search, location) ->
+        Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PREFETCH_DISTANCE
+            ),
+            pagingSourceFactory = {
+                MedicinePagingSource(
+                    pharmacistService.medicinesService,
+                    search,
+                    location
                 )
+            },
+        ).flow.cachedIn(viewModelScope)
+    }
 
-                Log.d(
-                    "MEDICINES_SCROLL",
-                    "Loaded ${result.data.medicines.size} more medicines, total: ${medicineSearchData.medicines.size}"
-                )
+
+    val medicinesState get() = _medicinesState
+
+    fun searchMedicines(query: String) {
+        this.queryFlow.value = query
+    }
+
+    fun checkForLocationAccessPermission(context: Context) {
+        hasLocationPermission = context.hasLocationPermission()
+    }
+
+    suspend fun startObtainingLocation(context: Context) {
+        val locationService = LocationService(context)
+
+        Log.d("MedicineSearchViewModel", "Starting location updates")
+        locationService.requestLocationUpdates()
+            .map {
+                Log.d("MedicineSearchViewModel", "Location: $it")
+                locationFlow.emit(Location(it.latitude, it.longitude))
             }
-
-            medicineSearchData = medicineSearchData.copy(loadingState = LOADED)
-            Log.d("MEDICINES_SCROLL", "C")
-        }
-    }
-
-    fun searchMedicines(searchValue: String) {
-        if (medicineSearchData.loadingState == LOADING)
-            return
-
-        this.searchValue = searchValue
-        medicineSearchData = MedicineSearchData(emptyList(), LOADING, false)
-    }
-
-
-    enum class MedicineLoadingState {
-        NOT_LOADED,
-        LOADING,
-        LOADED
+            .collect()
     }
 
     companion object {
-        const val LOAD_MORE_COUNT: Long = 2
+        private const val PAGE_SIZE = 3
+        private const val PREFETCH_DISTANCE = 1
     }
+
 }
 
-data class MedicineSearchData(
-    val medicines: List<MedicineWithClosestPharmacyOutputModel>,
-    val loadingState: MedicineSearchViewModel.MedicineLoadingState,
-    val reachedBottomOfQuery: Boolean
-)

@@ -1,5 +1,7 @@
 package pt.ulisboa.ist.pharmacist.ui.screens
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.session.SessionManager

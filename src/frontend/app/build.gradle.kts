@@ -76,5 +76,9 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.gson)
 
+
+
+    implementation(libs.paging)
+    implementation(libs.pagingCompose)
     implementation(libs.coil)
 }

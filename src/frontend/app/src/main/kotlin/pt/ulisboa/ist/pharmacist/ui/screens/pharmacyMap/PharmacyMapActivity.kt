@@ -2,6 +2,10 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 
@@ -15,7 +19,10 @@ class PharmacyMapActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.getCurrentLocation(this)
+        lifecycleScope.launch {
+            viewModel.getCurrentLocation(this@PharmacyMapActivity)
+        }
+
         viewModel.checkForLocationAccessPermission(this)
 
         setContent {

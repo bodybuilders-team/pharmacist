@@ -4,11 +4,6 @@ import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
 
 data class GetMedicinesOutputDto(
-    val count: Int,
+    val totalCount: Int,
     val medicines: List<MedicineDto>
-) {
-    constructor(medicines: List<Medicine>) : this(
-        count = medicines.size,
-        medicines = medicines.map { MedicineDto(it) }
-    )
-}
+)

@@ -1,5 +1,7 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addPharmacy
 
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+
 /**
  * An Add Pharmacy Input Model.
  *
@@ -9,6 +11,6 @@ package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addPharmacy
  */
 data class AddPharmacyInputModel(
     val name: String,
-    val location: String,
+    val location: Location,
     val picture: String
 )

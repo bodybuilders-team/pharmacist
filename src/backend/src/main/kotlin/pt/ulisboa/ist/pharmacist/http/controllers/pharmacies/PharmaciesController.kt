@@ -62,6 +62,20 @@ class PharmaciesController(
     }
 
     /**
+     * Handles the request to get a pharmacy by id.
+     *
+     * @param pid the id of the pharmacy
+     *
+     * @return information about the pharmacy
+     */
+    @GetMapping(Uris.PHARMACIES_GET_BY_ID)
+    fun getPharmacyById(
+        @PathVariable pid: Long
+    ): ResponseEntity<PharmacyModel> {
+        return ResponseEntity.ok(PharmacyModel(pharmaciesService.getPharmacyById(pid)))
+    }
+
+    /**
      * Handles the request to add a pharmacy.
      *
      * @param inputModel the input model of the request

@@ -5,13 +5,13 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
 data class PharmacyModel(
     val pharmacyId: Long,
     val name: String,
-    val location: String,
+    val location: LocationModel,
     val picture: String
 ) {
     constructor(pharmacyDto: PharmacyDto) : this(
         pharmacyId = pharmacyDto.pharmacyId,
         name = pharmacyDto.name,
-        location = pharmacyDto.location,
+        location = LocationModel(pharmacyDto.location),
         picture = pharmacyDto.picture
     )
 }

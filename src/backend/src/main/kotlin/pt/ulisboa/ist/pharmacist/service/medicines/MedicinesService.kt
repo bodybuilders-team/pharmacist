@@ -20,7 +20,7 @@ interface MedicinesService {
      */
     fun getMedicinesWithClosestPharmacy(
         substring: String,
-        location: String,
+        location: String?,
         offset: Int,
         limit: Int
     ): GetMedicinesWithClosestPharmacyOutputDto
@@ -34,4 +34,5 @@ interface MedicinesService {
      * @return the medicine created
      */
     fun createMedicine(name: String, description: String, boxPhotoUrl: String): MedicineDto
+    fun getMedicineById(medicineId: Long): MedicineDto
 }

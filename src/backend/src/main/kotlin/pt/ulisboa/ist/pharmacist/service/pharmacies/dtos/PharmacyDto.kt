@@ -5,13 +5,13 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 data class PharmacyDto(
     val pharmacyId: Long,
     val name: String,
-    val location: String,
+    val location: LocationDto,
     val picture: String
 ) {
     constructor(pharmacy: Pharmacy) : this(
         pharmacyId = pharmacy.pharmacyId,
         name = pharmacy.name,
-        location = pharmacy.location,
+        location = LocationDto(pharmacy.location),
         picture = pharmacy.picture
     )
 }

@@ -1,12 +1,13 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
+import android.view.MotionEvent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,52 +17,77 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.service.services.medicines.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
-import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewModel.MedicineLoadingState.LOADING
-import pt.ulisboa.ist.pharmacist.ui.utils.InfiniteScrollHandler
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.LocationPermissionScreen
 import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
 
 
 /**
  * Medicine Search screen.
  *
- * @param loadMoreMedicines callback to be invoked when the user clicks on the search medicine button
- * @param loadingState the current state of the loading operation
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MedicineSearchScreen(
-    medicines: List<MedicineWithClosestPharmacyOutputModel>,
-    loadMoreMedicines: () -> Unit,
+    hasLocationPermission: Boolean,
+    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>,
     onSearch: (String) -> Unit,
-    loadingState: MedicineSearchViewModel.MedicineLoadingState
+    onMedicineClicked: (Long) -> Unit
 ) {
-    val listState = rememberLazyListState()
-    var searchValue by remember { mutableStateOf("") }
+    val medicinePagingItems = medicinesState.collectAsLazyPagingItems()
 
-    InfiniteScrollHandler(
-        listState = listState,
-        loadMore = {
-            loadMoreMedicines()
-        }
-    )
+    var query by remember { mutableStateOf("") }
 
     PharmacistScreen {
+        var hasPermission by remember {
+            mutableStateOf(hasLocationPermission)
+        }
+
+        if (!hasLocationPermission) {
+            LocationPermissionScreen(onPermissionGranted = { hasPermission = true })
+            return@PharmacistScreen
+        }
+
         Column {
             Row {
-                TextField(value = searchValue, onValueChange = { searchValue = it })
-                Button(onClick = { onSearch(searchValue) }) {
+                TextField(value = query, onValueChange = { query = it })
+                Button(onClick = { onSearch(query) }) {
                     Text(text = "Search")
                 }
             }
 
-            LazyColumn(state = listState) {
-                items(items = medicines, key = { item ->
-                    item.medicine.medicineId
-                }) { (medicine, closestPharmacy) ->
-                    Box {
+
+            LazyColumn {
+
+                items(medicinePagingItems.itemCount) { index ->
+                    val (medicine, closestPharmacy) = medicinePagingItems[index]!!
+
+                    var isHovered by remember { mutableStateOf(false) }
+
+                    Box(
+                        modifier = Modifier
+                            .pointerInteropFilter {
+                                when (it.action) {
+                                    MotionEvent.ACTION_HOVER_ENTER -> isHovered = true
+                                    MotionEvent.ACTION_HOVER_EXIT -> isHovered = false
+                                }
+                                false
+                            }
+                            .background(if (isHovered) Color.LightGray else Color.Transparent)
+                            .clickable {
+                                onMedicineClicked(medicine.medicineId)
+                            }
+                    ) {
                         Row {
                             MeteredAsyncImage(
                                 url = medicine.boxPhotoUrl,
@@ -79,10 +105,6 @@ fun MedicineSearchScreen(
                                     style = MaterialTheme.typography.bodySmall,
                                     modifier = Modifier.weight(0.1f)
                                 )
-                                Text(
-                                    text = closestPharmacy.location.toString(),
-                                    modifier = Modifier.weight(0.1f)
-                                )
                             } else
                                 Text(
                                     text = "No pharmacy available",
@@ -93,17 +115,56 @@ fun MedicineSearchScreen(
                     }
                 }
 
+                medicinePagingItems.apply {
+                    when {
+                        loadState.refresh is LoadState.Loading -> {
+                            item {
+                                Box {
+                                    Text(
+                                        text = "Loading medicines...",
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                }
+                            }
+                        }
 
-                if (loadingState == LOADING) {
-                    item {
-                        Box {
-                            Text(
-                                text = "Loading more medicines...",
-                                modifier = Modifier.padding(16.dp)
-                            )
+                        loadState.refresh is LoadState.Error -> {
+                            val error = medicinePagingItems.loadState.refresh as LoadState.Error
+                            item {
+                                Box {
+                                    Text(
+                                        text = error.error.localizedMessage!!,
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        loadState.append is LoadState.Loading -> {
+                            item {
+                                Box {
+                                    Text(
+                                        text = "Loading more medicines...",
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        loadState.append is LoadState.Error -> {
+                            val error = medicinePagingItems.loadState.append as LoadState.Error
+                            item {
+                                Box {
+                                    Text(
+                                        text = error.error.localizedMessage!!,
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+
             }
         }
     }

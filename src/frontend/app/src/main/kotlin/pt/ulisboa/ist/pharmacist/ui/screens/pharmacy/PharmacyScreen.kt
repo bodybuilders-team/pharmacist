@@ -29,8 +29,7 @@ import pt.ulisboa.ist.pharmacist.ui.utils.assertNotNull
 @Composable
 fun PharmacyScreen(pharmacy: Pharmacy?, loadingState: PharmacyViewModel.PharmacyLoadingState) {
 
-    if (loadingState == PharmacyViewModel.PharmacyLoadingState.LOADED) {
-        assertNotNull(pharmacy)
+    if (loadingState == PharmacyViewModel.PharmacyLoadingState.LOADED && pharmacy != null) {
 
         PharmacistScreen {
             Column(

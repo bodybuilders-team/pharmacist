@@ -19,7 +19,7 @@ class MedicinesServiceImpl(
 
     override fun getMedicinesWithClosestPharmacy(
         substring: String,
-        location: String,
+        location: String?,
         offset: Int,
         limit: Int
     ): GetMedicinesWithClosestPharmacyOutputDto {
@@ -38,6 +38,13 @@ class MedicinesServiceImpl(
 
     override fun createMedicine(name: String, description: String, boxPhotoUrl: String): MedicineDto {
         val medicine = medicinesRepository.create(name, description, boxPhotoUrl)
+        return MedicineDto(medicine)
+    }
+
+    override fun getMedicineById(medicineId: Long): MedicineDto {
+        val medicine = medicinesRepository.findById(medicineId)
+            ?: throw InvalidArgumentException("Medicine with id $medicineId does not exist")
+
         return MedicineDto(medicine)
     }
 }

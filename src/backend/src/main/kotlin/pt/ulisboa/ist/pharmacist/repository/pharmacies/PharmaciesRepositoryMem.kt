@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.repository.pharmacies
 
 import org.springframework.stereotype.Repository
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.repository.MemDataSource
@@ -20,7 +21,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
         offset: Int,
         limit: Int
     ): List<Pharmacy> {
-        // TODO implement filtering
+        if (offset < 0) throw InvalidArgumentException("Offset must be a positive integer")
 
         return pharmacies.values.toList()
     }
@@ -69,7 +70,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
         return medicineStock
     }
 
-    override fun create(name: String, location: String, picture: String): Pharmacy {
+    override fun create(name: String, location: Location, picture: String): Pharmacy {
         val pharmacyId = dataSource.pharmaciesCounter.getAndIncrement()
         val pharmacy = Pharmacy(pharmacyId, name, location, picture, mutableListOf())
         pharmacies[pharmacyId] = pharmacy

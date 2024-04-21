@@ -3,6 +3,7 @@ package pt.ulisboa.ist.pharmacist.service.services.medicines
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
@@ -14,9 +15,9 @@ class MedicinesService(
     jsonEncoder: Gson
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
-    suspend fun getMedicines(
+    suspend fun getMedicinesWithClosestPharmacy(
         substring: String,
-        location: String,
+        location: Location?,
         limit: Long,
         offset: Long
     ): APIResult<GetMedicinesWithClosestPharmacyOutputModel> {
@@ -28,6 +29,10 @@ class MedicinesService(
                 offset
             )
         )
+    }
+
+    suspend fun getMedicineById(pid: Long): APIResult<Medicine> {
+        return get<Medicine>(link = Uris.getMedicineById(pid))
     }
 
 }

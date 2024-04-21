@@ -10,7 +10,7 @@ interface MedicinesRepository {
 
     fun getMedicinesWithClosestPharmacy(
         substring: String,
-        location: String,
+        location: String?,
         offset: Int,
         limit: Int
     ): List<MedicineWithClosestPharmacyDto>

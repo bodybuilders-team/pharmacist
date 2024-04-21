@@ -4,11 +4,11 @@ import pt.ulisboa.ist.pharmacist.http.controllers.medicines.MedicineModel
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicinesOutputDto
 
 data class GetMedicinesOutputModel(
-    val count: Int,
+    val totalCount: Int,
     val medicines: List<MedicineModel>
 ) {
     constructor(getMedicinesOutputDto: GetMedicinesOutputDto) : this(
-        count = getMedicinesOutputDto.count,
+        totalCount = getMedicinesOutputDto.totalCount,
         medicines = getMedicinesOutputDto.medicines.map { MedicineModel(it) }
     )
 }

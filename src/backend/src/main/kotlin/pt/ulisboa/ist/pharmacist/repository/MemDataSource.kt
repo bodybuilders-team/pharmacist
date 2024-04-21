@@ -2,6 +2,8 @@ package pt.ulisboa.ist.pharmacist.repository
 
 import org.springframework.stereotype.Component
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
@@ -157,6 +159,61 @@ class MemDataSource {
         )
         medicinesCounter.set(medicines.size.toLong())
 
+        pharmacies += mapOf(
+            0L to Pharmacy(
+                0,
+                "Farmácia São João",
+                Location(38.736946, -9.133621),
+                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png",
+                medicines = mutableListOf(
+                    MedicineStock(medicines[0L]!!, 100),
+                    MedicineStock(medicines[1L]!!, 50),
+                    MedicineStock(medicines[2L]!!, 40),
+                )
+            ),
+            1L to Pharmacy(
+                1,
+                "Farmácia do Chiado",
+                Location(38.7106, -9.1401),
+                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png",
+                medicines = mutableListOf(
+                    MedicineStock(medicines[3L]!!, 100),
+                    MedicineStock(medicines[4L]!!, 50),
+                    MedicineStock(medicines[5L]!!, 40),
+                )
+            ),
+            2L to Pharmacy(
+                2,
+                "Farmácia do Rossio",
+                Location(38.7149, -9.1394),
+                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+            ),
+            3L to Pharmacy(
+                3,
+                "Farmácia do Restelo",
+                Location(38.7014, -9.2094),
+                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+            ),
+            4L to Pharmacy(
+                4,
+                "Farmácia do Areeiro",
+                Location(38.7425, -9.1321),
+                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+            ),
+            5L to Pharmacy(
+                5,
+                "Farmácia do Lumiar",
+                Location(38.7706, -9.1601),
+                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+            ),
+            6L to Pharmacy(
+                6,
+                "Farmácia do Parque",
+                Location(38.7606, -9.1501),
+                "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+            )
+        )
+        pharmaciesCounter.set(pharmacies.size.toLong())
 
     }
 }

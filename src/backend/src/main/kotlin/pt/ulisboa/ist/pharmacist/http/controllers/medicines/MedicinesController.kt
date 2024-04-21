@@ -2,14 +2,10 @@ package pt.ulisboa.ist.pharmacist.http.controllers.medicines
 
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines.GetMedicinesWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
@@ -32,7 +28,7 @@ class MedicinesController(private val medicinesService: MedicinesService) {
     @GetMapping(Uris.MEDICINES)
     fun getMedicines(
         @RequestParam(Params.SUBSTRING_PARAM) substring: String,
-        @RequestParam(Params.LOCATION_PARAM) location: String,
+        @RequestParam(Params.LOCATION_PARAM) location: String?,
         @RequestParam(Params.OFFSET_PARAM, defaultValue = Params.OFFSET_DEFAULT.toString()) offset: Int,
         @RequestParam(Params.LIMIT_PARAM, defaultValue = Params.LIMIT_DEFAULT.toString()) limit: Int
     ): GetMedicinesWithClosestPharmacyOutputModel {
@@ -44,6 +40,22 @@ class MedicinesController(private val medicinesService: MedicinesService) {
                 limit = limit
             )
         )
+    }
+
+
+    /**
+     * Handles the request to get a medicine by its id.
+     *
+     * @param medicineId the id of the medicine
+     *
+     * @return the medicine
+     */
+    @GetMapping(Uris.MEDICINES_GET_BY_ID)
+    fun getMedicineById(
+        @PathVariable("mid") medicineId: Long
+    ): ResponseEntity<GetMedicineOutputModel> {
+        val medicine = medicinesService.getMedicineById(medicineId)
+        return ResponseEntity.ok(GetMedicineOutputModel(medicine))
     }
 
     /**

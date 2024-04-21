@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.repository.pharmacies
 
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 
@@ -28,7 +29,7 @@ interface PharmaciesRepository {
         quantity: Long
     ): MedicineStock
 
-    fun create(name: String, location: String, picture: String): Pharmacy
+    fun create(name: String, location: Location, picture: String): Pharmacy
 
     fun findByName(name: String): Pharmacy?
 

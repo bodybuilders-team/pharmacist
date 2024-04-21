@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies
 
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
@@ -44,10 +44,10 @@ class PharmaciesServiceImpl(
             offset = offset,
             limit = limit
         )
-        return GetPharmaciesOutputDto(pharmacies)
+        return GetPharmaciesOutputDto(pharmacies, 0)
     }
 
-    override fun addPharmacy(name: String, location: String, picture: String): PharmacyDto {
+    override fun addPharmacy(name: String, location: Location, picture: String): PharmacyDto {
         val pharmacy = pharmaciesRepository.create(name = name, location = location, picture = picture)
         return PharmacyDto(pharmacy)
     }
@@ -100,5 +100,11 @@ class PharmaciesServiceImpl(
             quantity = quantity
         )
         return ChangeMedicineStockOutputDto(medicineStock)
+    }
+
+    override fun getPharmacyById(pid: Long): PharmacyDto {
+        val pharmacy =
+            pharmaciesRepository.findById(pid) ?: throw NotFoundException("Pharmacy with id $pid does not exist")
+        return PharmacyDto(pharmacy)
     }
 }
