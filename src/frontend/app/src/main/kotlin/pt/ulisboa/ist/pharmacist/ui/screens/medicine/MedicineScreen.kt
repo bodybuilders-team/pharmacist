@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,6 +61,12 @@ fun MedicineSearchScreen(
                     text = "Description: ${medicine.description}", Modifier
                         .weight(0.1f)
                 )
+
+                Button(onClick = {
+                    //TODO: Implement
+                }) {
+                    Text("Notify me when available in Favorite Pharmacies")
+                }
 
                 MeteredAsyncImage(
                     url = medicine.boxPhotoUrl,
