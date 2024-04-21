@@ -9,9 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 
 /**
@@ -26,8 +28,10 @@ fun MapScreen(
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
-    onPharmacyDetailsClick: (Long) -> Unit
+    onPharmacyDetailsClick: (Long) -> Unit,
+    toggleFollowMyLocation: () -> Unit
 ) {
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,

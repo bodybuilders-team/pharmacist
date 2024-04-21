@@ -34,6 +34,7 @@ class PharmacyMapActivity : PharmacistActivity() {
                 onPharmacyDetailsClick = { pid ->
                     PharmacyActivity.navigate(this, pid)
                 },
+                toggleFollowMyLocation = { viewModel.toggleFollowMyLocation() }
             )
         }
     }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -32,7 +33,7 @@ class PharmacyMapViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager,
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
-    private var location by mutableStateOf(LatLng(0.0, 0.0))
+    private var location by mutableStateOf<LatLng?>(null)
 
     var state: PharmacyMapState by mutableStateOf(PharmacyMapState.UNLOADED)
         private set
@@ -43,18 +44,16 @@ class PharmacyMapViewModel(
     var pharmacies by mutableStateOf<List<Pharmacy>>(emptyList())
         private set
 
-    var cameraPositionState by mutableStateOf(
-        CameraPositionState(
-            CameraPosition.fromLatLngZoom(
-                location,
-                DEFAULT_ZOOM
-            )
-        )
-    )
+    var cameraPositionState by mutableStateOf(CameraPositionState())
         private set
 
-    val mapProperties by mutableStateOf(MapProperties())
+    private var followMyLocation by mutableStateOf(true)
 
+    val mapProperties by mutableStateOf(
+        MapProperties(
+            isMyLocationEnabled = true,
+        )
+    )
 
     /**
      * Loads the pharmacy map.
@@ -84,13 +83,13 @@ class PharmacyMapViewModel(
             .collect { location ->
                 val latLng = LatLng(location.latitude, location.longitude)
                 Log.d("PharmacyMapViewModel", "Location: $latLng")
-                this.location = latLng
-                cameraPositionState = CameraPositionState(
-                    CameraPosition.fromLatLngZoom(
-                        latLng,
-                        DEFAULT_ZOOM
+                if(followMyLocation) {
+                    cameraPositionState.animate(
+                        CameraUpdateFactory.newCameraPosition(
+                            CameraPosition.fromLatLngZoom(latLng, DEFAULT_ZOOM)
+                        )
                     )
-                )
+                }
             }
     }
 
@@ -103,12 +102,16 @@ class PharmacyMapViewModel(
         hasLocationPermission = context.hasLocationPermission()
     }
 
+    fun toggleFollowMyLocation() {
+        followMyLocation = !followMyLocation
+    }
+
     enum class PharmacyMapState {
         UNLOADED,
         LOADED
     }
 
     companion object {
-        private const val DEFAULT_ZOOM = 12f
+        private const val DEFAULT_ZOOM = 36f
     }
 }

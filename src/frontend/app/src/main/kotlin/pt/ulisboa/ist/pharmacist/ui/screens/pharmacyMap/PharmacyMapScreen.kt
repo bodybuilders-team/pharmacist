@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -25,7 +26,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.MapScreen
  * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
  * @param pharmacies list of pharmacies to display
  * @param mapProperties properties of the map
- * @param cameraPositionState state of the camera position
+ * @param  state of the camera position
  * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
  */
 @Composable
@@ -35,6 +36,7 @@ fun PharmacyMapScreen(
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
+    toggleFollowMyLocation : () -> Unit
 ) {
     PharmacistScreen {
         Column(
@@ -50,7 +52,8 @@ fun PharmacyMapScreen(
                     mapProperties = mapProperties,
                     cameraPositionState = cameraPositionState,
                     onPharmacyDetailsClick = onPharmacyDetailsClick,
-                    pharmacies = pharmacies
+                    pharmacies = pharmacies,
+                    toggleFollowMyLocation = toggleFollowMyLocation
                 )
             else
                 LocationPermissionScreen(onPermissionGranted = { hasPermission = true })
@@ -58,14 +61,3 @@ fun PharmacyMapScreen(
     }
 }
 
-@Preview
-@Composable
-private fun PharmacyMapScreenPreview() {
-    PharmacyMapScreen(
-        onPharmacyDetailsClick = {},
-        hasLocationPermission = true,
-        pharmacies = listOf(),
-        mapProperties = MapProperties(),
-        cameraPositionState = rememberCameraPositionState(),
-    )
-}
