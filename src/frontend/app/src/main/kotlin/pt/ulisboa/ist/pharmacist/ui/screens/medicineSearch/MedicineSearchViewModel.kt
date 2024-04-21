@@ -1,7 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -28,6 +28,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
  * @property sessionManager the manager used to handle the user session
  *
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class MedicineSearchViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager
@@ -55,7 +56,6 @@ class MedicineSearchViewModel(
         ).flow.cachedIn(viewModelScope)
     }
 
-
     val medicinesState get() = _medicinesState
 
     fun searchMedicines(query: String) {
@@ -80,6 +80,4 @@ class MedicineSearchViewModel(
         private const val PAGE_SIZE = 3
         private const val PREFETCH_DISTANCE = 1
     }
-
 }
-

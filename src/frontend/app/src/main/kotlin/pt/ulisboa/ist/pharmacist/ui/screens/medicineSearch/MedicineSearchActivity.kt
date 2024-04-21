@@ -2,9 +2,7 @@ package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
@@ -31,12 +29,10 @@ class MedicineSearchActivity : PharmacistActivity() {
                 hasLocationPermission = viewModel.hasLocationPermission,
                 medicinesState = viewModel.medicinesState,
                 onSearch = { viewModel.searchMedicines(it) },
-                onMedicineClicked = { mid ->
-                    MedicineActivity.navigate(this, mid)
+                onMedicineClicked = { medicineId ->
+                    MedicineActivity.navigate(this, medicineId)
                 }
             )
         }
     }
-
-
 }

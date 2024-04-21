@@ -17,6 +17,20 @@ class PharmacyActivity : PharmacistActivity() {
         intent.getLongExtra(PHARMACY_ID, -1)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (viewModel.loadingState == PharmacyViewModel.PharmacyLoadingState.NOT_LOADED)
+            viewModel.loadPharmacy(pharmacyId)
+
+        setContent {
+            PharmacyScreen(
+                pharmacy = viewModel.pharmacy,
+                loadingState = viewModel.loadingState
+            )
+        }
+    }
+
     companion object {
         private const val PHARMACY_ID = "pharmacyId"
 
@@ -32,20 +46,4 @@ class PharmacyActivity : PharmacistActivity() {
             }
         }
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        if (viewModel.loadingState == PharmacyViewModel.PharmacyLoadingState.NOT_LOADED)
-            viewModel.loadPharmacy(pharmacyId)
-
-        setContent {
-            PharmacyScreen(
-                pharmacy = viewModel.pharmacy,
-                loadingState = viewModel.loadingState
-            )
-        }
-    }
-
-
 }

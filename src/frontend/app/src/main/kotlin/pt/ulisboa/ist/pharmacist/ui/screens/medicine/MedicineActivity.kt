@@ -14,7 +14,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
  */
 class MedicineActivity : PharmacistActivity() {
 
-
     private val medicineId by lazy {
         intent.getLongExtra(MEDICINE_ID, -1)
     }

@@ -1,9 +1,11 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.shared
 
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
-import kotlin.coroutines.resume
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 /**
  * Defines the duration of a [Toast] message.
@@ -23,6 +25,7 @@ enum class ToastDuration(val duration: Int) {
  * @param onDismissed the callback to be invoked when the toast is dismissed
  */
 
+@RequiresApi(Build.VERSION_CODES.R)
 suspend fun Context.showToast(
     errorMessage: String,
     toastDuration: ToastDuration = ToastDuration.SHORT,
@@ -34,7 +37,7 @@ suspend fun Context.showToast(
         /* duration = */ toastDuration.duration
     )
 
-    suspendCancellableCoroutine<Unit> { continuation ->
+    suspendCancellableCoroutine { continuation ->
         toast.addCallback(
             object : Toast.Callback() {
                 override fun onToastHidden() {

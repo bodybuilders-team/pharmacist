@@ -26,31 +26,15 @@ class HomeActivity : PharmacistActivity() {
             HomeScreen(
                 loggedIn = viewModel.isLoggedIn,
                 username = viewModel.username,
-                onLoginClick = {
-                    navigateTo<LoginActivity>()
-                },
-                onRegisterClick = {
-                    navigateTo<RegisterActivity>()
-                },
-                onLogoutClick = {
-                    viewModel.logout()
-                },
-                onAboutClick = {
-                    navigateTo<AboutActivity>()
-                },
-                onPharmacyMapClick = {
-                    navigateTo<PharmacyMapActivity>()
-                },
-                onAddPharmacyClick = {
-                    navigateTo<AddPharmacyActivity>()
-                },
-                onSearchMedicineClick = {
-                    navigateTo<MedicineSearchActivity>()
-                },
+                onLoginClick = { navigateTo<LoginActivity>() },
+                onRegisterClick = { navigateTo<RegisterActivity>() },
+                onLogoutClick = { viewModel.logout() },
+                onAboutClick = { navigateTo<AboutActivity>() },
+                onPharmacyMapClick = { navigateTo<PharmacyMapActivity>() },
+                onAddPharmacyClick = { navigateTo<AddPharmacyActivity>() },
+                onSearchMedicineClick = { navigateTo<MedicineSearchActivity>() },
                 loadingState = viewModel.loadingState
             )
         }
     }
-
-
 }

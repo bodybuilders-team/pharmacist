@@ -40,14 +40,14 @@ class PharmacyMapViewModel(
     var hasLocationPermission by mutableStateOf(false)
         private set
 
-    var pharmacies by mutableStateOf<List<Pharmacy>>(emptyList()) // TODO: Change to pharmacies
+    var pharmacies by mutableStateOf<List<Pharmacy>>(emptyList())
         private set
 
     var cameraPositionState by mutableStateOf(
         CameraPositionState(
             CameraPosition.fromLatLngZoom(
                 location,
-                12f
+                DEFAULT_ZOOM
             )
         )
     )
@@ -57,7 +57,7 @@ class PharmacyMapViewModel(
 
 
     /**
-     * Loads the pharmacy home page.
+     * Loads the pharmacy map.
      */
     fun loadPharmacyMap() = viewModelScope.launch {
         if (state != PharmacyMapState.UNLOADED)
@@ -65,9 +65,8 @@ class PharmacyMapViewModel(
 
         val result = pharmacistService.pharmaciesService.getPharmacies()
 
-        if (result.isSuccess()) {
+        if (result.isSuccess())
             pharmacies = result.data.pharmacies
-        }
 
         state = PharmacyMapState.LOADED
     }
@@ -89,20 +88,27 @@ class PharmacyMapViewModel(
                 cameraPositionState = CameraPositionState(
                     CameraPosition.fromLatLngZoom(
                         latLng,
-                        12f
+                        DEFAULT_ZOOM
                     )
                 )
             }
     }
 
+    /**
+     * Checks if the app has location access permission.
+     *
+     * @param context the context of the app
+     */
     fun checkForLocationAccessPermission(context: Context) {
         hasLocationPermission = context.hasLocationPermission()
     }
-
 
     enum class PharmacyMapState {
         UNLOADED,
         LOADED
     }
 
+    companion object {
+        private const val DEFAULT_ZOOM = 12f
+    }
 }

@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package pt.ulisboa.ist.pharmacist.ui.screens.shared
 
 import kotlin.contracts.ExperimentalContracts

@@ -3,7 +3,6 @@ package pt.ulisboa.ist.pharmacist.service
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
-import java.io.IOException
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -15,6 +14,7 @@ import pt.ulisboa.ist.pharmacist.service.connection.fromJson
 import pt.ulisboa.ist.pharmacist.service.connection.getBodyOrThrow
 import pt.ulisboa.ist.pharmacist.service.connection.send
 import pt.ulisboa.ist.pharmacist.service.media.Problem.Companion.problemMediaType
+import java.io.IOException
 
 /**
  * A service that communicates with a HTTP server.

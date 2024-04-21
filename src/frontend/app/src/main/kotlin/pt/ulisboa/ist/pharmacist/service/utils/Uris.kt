@@ -23,6 +23,8 @@ object Uris {
     const val MEDICINES = "/medicines"
     const val MEDICINES_GET_BY_ID = "/medicines/{mid}"
 
+    const val MEDICINE_NOTIFICATIONS = "/medicine-notifications"
+
     fun getMedicines(substring: String, location: Location?, limit: Long, offset: Long): String {
         return "$MEDICINES?substring=$substring${if (location == null) "" else "&location=$location"}&limit=$limit&offset=$offset"
     }

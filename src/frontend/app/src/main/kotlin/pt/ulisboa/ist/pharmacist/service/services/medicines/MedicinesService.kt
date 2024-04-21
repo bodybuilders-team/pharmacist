@@ -4,9 +4,9 @@ import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
+import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.GetMedicinesWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.service.utils.Uris
 
 class MedicinesService(
@@ -36,13 +36,3 @@ class MedicinesService(
     }
 
 }
-
-data class GetMedicinesWithClosestPharmacyOutputModel(
-    val totalCount: Int,
-    val medicines: List<MedicineWithClosestPharmacyOutputModel>
-)
-
-data class MedicineWithClosestPharmacyOutputModel(
-    val medicine: Medicine,
-    val closestPharmacy: Pharmacy?
-)

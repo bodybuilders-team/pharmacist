@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -24,6 +23,10 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.MapScreen
  *
  * @param hasLocationPermission true if the app has the necessary permissions, false otherwise
  * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
+ * @param pharmacies list of pharmacies to display
+ * @param mapProperties properties of the map
+ * @param cameraPositionState state of the camera position
+ * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
  */
 @Composable
 fun PharmacyMapScreen(
@@ -33,8 +36,6 @@ fun PharmacyMapScreen(
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
 ) {
-
-    Log.d("Pharmacy 2", pharmacies.size.toString())
     PharmacistScreen {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

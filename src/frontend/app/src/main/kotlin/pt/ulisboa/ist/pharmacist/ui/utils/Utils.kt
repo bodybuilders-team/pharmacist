@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
+import pt.ulisboa.ist.pharmacist.R
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import pt.ulisboa.ist.pharmacist.R
 
 @OptIn(ExperimentalContracts::class)
 fun <T> assertNotNull(actual: T) {

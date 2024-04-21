@@ -13,7 +13,6 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.toLatLng
 
 /**
  * Screen to display the map

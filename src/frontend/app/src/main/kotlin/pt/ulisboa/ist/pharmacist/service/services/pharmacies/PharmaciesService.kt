@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacies.GetPharmaciesOutputModel
 import pt.ulisboa.ist.pharmacist.service.utils.Uris
 
 class PharmaciesService(
@@ -26,8 +27,3 @@ class PharmaciesService(
     }
 
 }
-
-data class GetPharmaciesOutputModel(
-    val totalCount: Int,
-    val pharmacies: List<Pharmacy>
-)

@@ -28,21 +28,15 @@ class AddPharmacyViewModel(
     private var _loadingState by mutableStateOf(NOT_LOADING)
     private var _state: AddPharmacyState by mutableStateOf(AddPharmacyState.IDLE)
 
+    private var _pharmacyName by mutableStateOf("")
+    private var _pharmacyLocation by mutableStateOf("")
+    private var _pharmacyPicture by mutableStateOf("")
+
     val loadingState: AddPharmacyLoadingState
         get() = _loadingState
 
     val state
         get() = _state
-
-    /**
-     * Loads the pharmacy home page.
-     */
-    fun loadPharmacyMap() {
-        check(state == AddPharmacyState.IDLE) { "The view model is not in the idle state." }
-
-        _state = AddPharmacyState.LOADING_ADD_PHARMACY
-        _state = AddPharmacyState.ADD_PHARMACY_LOADED
-    }
 
     /**
      * Sets the loading state to [LOADED].

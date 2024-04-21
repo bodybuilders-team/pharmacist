@@ -1,5 +1,7 @@
 package pt.ulisboa.ist.pharmacist.session
 
+// TODO: Maybe change depending on the implementation of the authentication mechanism in the backend
+
 /**
  * Responsible for holding a user's session.
  *

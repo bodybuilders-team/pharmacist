@@ -41,13 +41,6 @@ class HomeViewModel(
     }
 
     /**
-     * Sets the loading state to [LOADED].
-     */
-    fun setLoadingStateToLoaded() {
-        loadingState = LOADED
-    }
-
-    /**
      * The loading state of the [HomeViewModel].
      *
      * @property NOT_LOADING the home screen is idle
