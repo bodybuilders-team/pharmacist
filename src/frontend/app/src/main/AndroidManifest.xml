@@ -53,6 +53,10 @@
             android:theme="@style/Theme.Pharmacist" />
 
         <activity
+            android:name=".ui.screens.authentication.upgrade.UpgradeActivity"
+            android:theme="@style/Theme.Pharmacist" />
+
+        <activity
             android:name=".ui.screens.pharmacyMap.PharmacyMapActivity"
             android:theme="@style/Theme.Pharmacist" />
 

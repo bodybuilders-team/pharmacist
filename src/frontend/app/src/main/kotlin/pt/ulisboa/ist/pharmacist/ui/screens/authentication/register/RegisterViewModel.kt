@@ -11,7 +11,7 @@ import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.LoginViewModel
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.UpgradeViewModel
 
 /**
  * View model for the [RegisterActivity].
@@ -25,8 +25,8 @@ class RegisterViewModel(
     var registerState by mutableStateOf(RegisterState.NOT_REGISTERED)
         private set
 
-    private val _events = MutableSharedFlow<LoginViewModel.Event>()
-    val events: SharedFlow<LoginViewModel.Event> = _events
+    private val _events = MutableSharedFlow<UpgradeViewModel.Event>()
+    val events: SharedFlow<UpgradeViewModel.Event> = _events
 
     /**
      * Attempts to register the user with the given credentials.
@@ -46,7 +46,7 @@ class RegisterViewModel(
             sessionManager.setSession(result.data.userId, result.data.accessToken, username)
             RegisterState.REGISTERED
         } else {
-            _events.emit(LoginViewModel.Event.ShowToast(result.error.title))
+            _events.emit(UpgradeViewModel.Event.ShowToast(result.error.title))
             RegisterState.NOT_REGISTERED
         }
     }

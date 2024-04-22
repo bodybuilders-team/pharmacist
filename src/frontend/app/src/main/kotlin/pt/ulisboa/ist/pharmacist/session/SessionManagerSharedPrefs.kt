@@ -25,15 +25,20 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
     override val username: String?
         get() = prefs.getString(USERNAME, null)
 
+    override val isGuest: Boolean
+        get() = prefs.getBoolean(IS_GUEST, false)
+
     override fun setSession(
         userId: Long,
         accessToken: String,
-        username: String
+        username: String,
+        isGuest: Boolean
     ) {
         prefs.edit()
             .putString(ACCESS_TOKEN, accessToken)
             .putString(USERNAME, username)
             .putLong(USER_ID, userId)
+            .putBoolean(IS_GUEST, isGuest)
             .apply()
     }
 
@@ -42,6 +47,7 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
             .remove(ACCESS_TOKEN)
             .remove(USERNAME)
             .remove(USER_ID)
+            .remove(IS_GUEST)
             .apply()
     }
 
@@ -50,5 +56,6 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         private const val ACCESS_TOKEN = "accessToken"
         private const val USERNAME = "username"
         private const val USER_ID = "userId"
+        private const val IS_GUEST = "isGuest"
     }
 }

@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.ui.screens.authentication.register
+package pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade
 
 import android.os.Build
 import android.os.Bundle
@@ -8,17 +8,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.UpgradeViewModel
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.UpgradeScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 
 /**
- * Activity for the register screen.
+ * Activity for the upgrade account screen.
  *
- * @property viewModel the view model used to handle the register process
+ * @property viewModel the view model used to handle the upgrade account screen
  */
-class RegisterActivity : PharmacistActivity() {
+class UpgradeActivity : PharmacistActivity() {
 
-    private val viewModel by getViewModel(::RegisterViewModel)
+    private val viewModel by getViewModel(::UpgradeViewModel)
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,19 +33,21 @@ class RegisterActivity : PharmacistActivity() {
         }
 
         setContent {
-            LaunchedEffect(viewModel.registerState) {
-                if (viewModel.registerState == RegisterViewModel.RegisterState.REGISTERED) {
+            LaunchedEffect(viewModel.upgradeState) {
+                if (viewModel.upgradeState == UpgradeViewModel.UpgradeState.LOGGED_IN) {
                     finish()
                 }
             }
 
-            RegisterScreen(
-                state = viewModel.registerState,
-                onRegister = { username, password ->
-                    viewModel.register(username = username, password = password)
-                }
+            UpgradeScreen(
+                state = viewModel.upgradeState,
+                onUpgrade = { username, password ->
+                    viewModel.upgradeAccount(username = username, password = password)
+                },
             )
         }
+
+
     }
 
 }

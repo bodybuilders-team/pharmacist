@@ -13,6 +13,7 @@ object Uris {
     const val USERS_GET_BY_ID = "/users/{uid}"
     const val USER_FAVORITE_PHARMACIES = "/users/{uid}/favorite-pharmacies"
     const val USER_FAVORITE_PHARMACIES_GET_BY_ID = "/users/{uid}/favorite-pharmacies/{pid}"
+    const val USERS_UPGRADE = "/users/upgrade"
 
     const val PHARMACIES = "/pharmacies"
     const val PHARMACIES_GET_BY_ID = "/pharmacies/{pid}"

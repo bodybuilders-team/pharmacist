@@ -8,11 +8,13 @@ package pt.ulisboa.ist.pharmacist.session
  * @property usedId the user's id
  * @property accessToken the user's access token
  * @property username the user's username
+ * @property isGuest true if the user is a guest, false otherwise
  */
 interface SessionManager {
     val usedId: Long?
     val accessToken: String?
     val username: String?
+    val isGuest: Boolean
 
     /**
      * Checks if the user is logged in.
@@ -27,11 +29,13 @@ interface SessionManager {
      * @param userId the user's id
      * @param accessToken the user's access token
      * @param username the user's username
+     * @param isGuest true if the user is a guest, false otherwise
      */
     fun setSession(
         userId: Long,
         accessToken: String,
-        username: String
+        username: String,
+        isGuest: Boolean = false
     )
 
     /**

@@ -9,7 +9,6 @@ import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.LoginViewModel
 import java.util.UUID
 
 /**
@@ -26,6 +25,9 @@ class HomeViewModel(
     var isLoggedIn: Boolean by mutableStateOf(sessionManager.isLoggedIn())
         private set
 
+    var isGuest: Boolean by mutableStateOf(sessionManager.isGuest)
+        private set
+
     val username
         get() = sessionManager.username
 
@@ -39,13 +41,29 @@ class HomeViewModel(
 
         sessionManager.clearSession()
         isLoggedIn = false
+        isGuest = false
     }
 
+    /**
+     * Checks if the user is logged in.
+     */
     fun checkIfLoggedIn() {
         isLoggedIn = sessionManager.isLoggedIn()
     }
 
+    /**
+     * Checks if the user is a guest.
+     */
+    fun checkIfIsGuest() {
+        isGuest = sessionManager.isGuest
+    }
+
+    /**
+     * Enters the game as a guest.
+     */
     fun enterAsGuest() = viewModelScope.launch {
+        if (isLoggedIn || isGuest) return@launch
+
         val guestUserName = "Guest${UUID.randomUUID()}"
         val result = pharmacistService.usersService.register(
             username = guestUserName,
@@ -53,8 +71,14 @@ class HomeViewModel(
         )
 
         if (result.isSuccess()) {
-            sessionManager.setSession(result.data.userId, result.data.accessToken, guestUserName)
+            sessionManager.setSession(
+                result.data.userId,
+                result.data.accessToken,
+                guestUserName,
+                isGuest = true
+            )
             isLoggedIn = true
+            isGuest = true
         }
     }
 }

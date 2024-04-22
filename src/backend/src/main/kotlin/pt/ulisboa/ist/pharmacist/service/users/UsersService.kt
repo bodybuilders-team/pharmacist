@@ -66,6 +66,15 @@ interface UsersService {
     fun login(username: String, password: String): LoginOutputDto
 
     /**
+     * Upgrades a guest user to a registered user.
+     *
+     * @param user the user to upgrade
+     * @param username the name of the user
+     * @param password the password of the user
+     */
+    fun upgrade(user: User, username: String, password: String)
+
+    /**
      * Logs a user out.
      *
      * @param user the user to log out

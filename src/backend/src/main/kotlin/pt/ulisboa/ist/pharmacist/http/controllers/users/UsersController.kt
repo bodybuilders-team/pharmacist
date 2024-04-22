@@ -109,6 +109,26 @@ class UsersController(private val usersService: UsersService) {
     }
 
     /**
+     * Handles the request to upgrade a guest user to a registered user.
+     *
+     * @param user the user to upgrade
+     * @param userData the data of the user to be upgraded
+     */
+    @PostMapping(Uris.USERS_UPGRADE)
+    @Authenticated
+    fun upgrade(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
+        @Valid @RequestBody
+        userData: LoginInputModel
+    ) {
+        usersService.upgrade(
+            user = user,
+            username = userData.username,
+            password = userData.password
+        )
+    }
+
+    /**
      * Handles the request to add a pharmacy to the user's favorite pharmacies.
      *
      * @param uid the id of the user to add the pharmacy to

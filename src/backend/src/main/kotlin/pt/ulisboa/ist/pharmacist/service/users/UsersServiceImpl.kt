@@ -119,6 +119,20 @@ class UsersServiceImpl(
         )
     }
 
+    override fun upgrade(user: User, username: String, password: String) {
+        if (usersRepository.existsByUsername(username = username))
+            throw AlreadyExistsException("User with username $username already exists")
+
+        if (password.length < MIN_PASSWORD_LENGTH)
+            throw InvalidPasswordException("Password must be at least $MIN_PASSWORD_LENGTH characters long")
+
+        user.username = username
+        user.passwordHash = hashingUtils.hashPassword(
+            username = username,
+            password = password
+        )
+    }
+
     override fun logout(user: User, accessToken: String) {
         val tokenHash = hashingUtils.hashToken(token = accessToken)
 

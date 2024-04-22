@@ -12,22 +12,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.components.LoginButton
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.components.LoginTextFields
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.UpgradeViewModel.UpgradeState
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.components.UpgradeButton
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.components.UpgradeTextFields
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validatePassword
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validateUsername
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
 
 /**
- * Login screen.
+ * Upgrade screen.
  *
  * @param state the authentication state
- * @param onLogin callback to be invoked when the login button is clicked
+ * @param onUpgrade callback to be invoked when the upgrade button is clicked
  */
 @Composable
-fun LoginScreen(
-    state: LoginViewModel.LoginState,
-    onLogin: (String, String) -> Unit
+fun UpgradeScreen(
+    state: UpgradeState,
+    onUpgrade: (String, String) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -41,20 +42,20 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            ScreenTitle(title = stringResource(R.string.login_title))
+            ScreenTitle(title = "Upgrade Account")
 
-            LoginTextFields(
+            UpgradeTextFields(
                 username = username,
                 password = password,
                 onUsernameChangeCallback = { username = it },
                 onPasswordChangeCallback = { password = it }
             )
 
-            LoginButton(enabled = state != LoginViewModel.LoginState.LOGGING_IN) {
+            UpgradeButton(enabled = state != UpgradeState.LOGGING_IN) {
                 if (invalidFields)
-                    return@LoginButton
+                    return@UpgradeButton
 
-                onLogin(username, password)
+                onUpgrade(username, password)
             }
         }
     }

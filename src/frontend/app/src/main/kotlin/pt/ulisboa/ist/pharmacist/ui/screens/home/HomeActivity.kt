@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.about.AboutActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.LoginActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.UpgradeActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapActivity
@@ -21,15 +22,15 @@ class HomeActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         setContent {
             HomeScreen(
                 loggedIn = viewModel.isLoggedIn,
+                isGuest = viewModel.isGuest,
                 username = viewModel.username,
                 onLoginClick = { navigateTo<LoginActivity>() },
                 onRegisterClick = { navigateTo<RegisterActivity>() },
                 onContinueAsGuestClick = { viewModel.enterAsGuest() },
+                onUpgradeAccountClick = { navigateTo<UpgradeActivity>() },
                 onLogoutClick = { viewModel.logout() },
                 onAboutClick = { navigateTo<AboutActivity>() },
                 onPharmacyMapClick = { navigateTo<PharmacyMapActivity>() },
@@ -41,5 +42,6 @@ class HomeActivity : PharmacistActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.checkIfLoggedIn()
+        viewModel.checkIfIsGuest()
     }
 }

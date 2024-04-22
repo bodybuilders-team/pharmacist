@@ -18,8 +18,8 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
  */
 data class User(
     val userId: Long,
-    val username: String,
-    val passwordHash: String,
+    var username: String,
+    var passwordHash: String,
     val suspended: Boolean,
     val favoritePharmacies: MutableSet<Pharmacy> = mutableSetOf(),
     val medicinesToNotify: MutableSet<Medicine> = mutableSetOf(),

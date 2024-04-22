@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.UpgradeViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 
 /**

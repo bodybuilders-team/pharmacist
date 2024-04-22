@@ -19,6 +19,7 @@ import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Upgrade
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -52,10 +53,12 @@ private const val WELCOME_TEXT_WIDTH_FACTOR = 0.9f
  * Home screen.
  *
  * @param loggedIn if true, the user is logged in
+ * @param isGuest if true, the user is a guest
  * @param username the username of the logged in user
  * @param onLoginClick callback to be invoked when the user clicks on the login button
  * @param onRegisterClick callback to be invoked when the user clicks on the register button
  * @param onContinueAsGuestClick callback to be invoked when the user clicks on the continue as guest button
+ * @param onUpgradeAccountClick callback to be invoked when the user clicks on the upgrade account button
  * @param onLogoutClick callback to be invoked when the user clicks on the logout button
  * @param onPharmacyMapClick callback to be invoked when the user clicks on the pharmacy map button
  * @param onSearchMedicineClick callback to be invoked when the user clicks on the search medicine button
@@ -64,10 +67,12 @@ private const val WELCOME_TEXT_WIDTH_FACTOR = 0.9f
 @Composable
 fun HomeScreen(
     loggedIn: Boolean,
+    isGuest: Boolean,
     username: String?,
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit,
     onContinueAsGuestClick: () -> Unit,
+    onUpgradeAccountClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onAboutClick: () -> Unit,
     onPharmacyMapClick: () -> Unit,
@@ -134,14 +139,6 @@ fun HomeScreen(
                 )
             } else {
                 IconTextButton(
-                    onClick = onLogoutClick,
-                    imageVector = Icons.AutoMirrored.Rounded.Logout,
-                    contentDescription = stringResource(R.string.home_logoutButton_description),
-                    text = stringResource(R.string.home_logoutButton_text),
-                    modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
-                )
-
-                IconTextButton(
                     onClick = onPharmacyMapClick,
                     imageVector = Icons.Rounded.Map,
                     contentDescription = stringResource(R.string.home_pharmacyMapButton_description),
@@ -154,6 +151,23 @@ fun HomeScreen(
                     imageVector = Icons.Rounded.Search,
                     contentDescription = stringResource(R.string.home_searchMedicineButton_description),
                     text = stringResource(R.string.home_searchMedicineButton_text),
+                    modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
+                )
+
+                if (isGuest)
+                    IconTextButton(
+                        onClick = onUpgradeAccountClick,
+                        imageVector = Icons.Rounded.Upgrade,
+                        contentDescription = "Upgrade account",
+                        text = "Upgrade account",
+                        modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
+                    )
+
+                IconTextButton(
+                    onClick = onLogoutClick,
+                    imageVector = Icons.AutoMirrored.Rounded.Logout,
+                    contentDescription = stringResource(R.string.home_logoutButton_description),
+                    text = stringResource(R.string.home_logoutButton_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
             }

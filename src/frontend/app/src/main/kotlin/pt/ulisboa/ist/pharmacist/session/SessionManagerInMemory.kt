@@ -12,6 +12,7 @@ class SessionManagerInMemory : SessionManager {
     private var _accessToken: String? by mutableStateOf(null)
     private var _username: String? by mutableStateOf(null)
     private var _userId: Long? by mutableStateOf(null)
+    private var _isGuest: Boolean by mutableStateOf(false)
 
     override val accessToken
         get() = _accessToken
@@ -22,15 +23,20 @@ class SessionManagerInMemory : SessionManager {
     override val usedId: Long?
         get() = _userId
 
-    override fun setSession(userId: Long, accessToken: String, username: String) {
+    override val isGuest: Boolean
+        get() = _isGuest
+
+    override fun setSession(userId: Long, accessToken: String, username: String, isGuest: Boolean) {
         this._userId = userId
         this._accessToken = accessToken
         this._username = username
+        this._isGuest = isGuest
     }
 
     override fun clearSession() {
         this._accessToken = null
         this._username = null
         this._userId = null
+        this._isGuest = false
     }
 }

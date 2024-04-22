@@ -81,6 +81,24 @@ class UsersService(
         )
 
     /**
+     * Upgrades the account of the user with the given [username] and [password].
+     *
+     * @param username the username of the user
+     * @param password the password of the user
+     *
+     * @return the API result of the upgrade account request
+     */
+    suspend fun upgrade(
+        username: String,
+        password: String
+    ): APIResult<Unit> =
+        post(
+            link = Uris.USERS_UPGRADE,
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
+            body = LoginInput(username, password)
+        )
+
+    /**
      * Logs the user out.
      *
      * @return the API result of the logout request
