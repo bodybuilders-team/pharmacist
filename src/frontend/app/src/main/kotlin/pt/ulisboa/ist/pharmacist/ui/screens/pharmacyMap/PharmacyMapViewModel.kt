@@ -47,7 +47,7 @@ class PharmacyMapViewModel(
     var cameraPositionState by mutableStateOf(CameraPositionState())
         private set
 
-    var followMyLocation by mutableStateOf(true)
+    var followMyLocation by mutableStateOf(false)
 
     val mapProperties by mutableStateOf(
         MapProperties(
@@ -59,10 +59,16 @@ class PharmacyMapViewModel(
      * Loads the list of pharmacies.
      */
     fun loadPharmacyList() = viewModelScope.launch {
+        if (state == PharmacyMapState.LOADING) return@launch
+
+        state = PharmacyMapState.LOADING
+
         val result = pharmacistService.pharmaciesService.getPharmacies(limit = 1000)
 
         if (result.isSuccess())
             pharmacies = result.data.pharmacies
+
+        state = PharmacyMapState.LOADED
     }
 
     /**
@@ -129,6 +135,7 @@ class PharmacyMapViewModel(
 
     enum class PharmacyMapState {
         UNLOADED,
+        LOADING,
         LOADED
     }
 

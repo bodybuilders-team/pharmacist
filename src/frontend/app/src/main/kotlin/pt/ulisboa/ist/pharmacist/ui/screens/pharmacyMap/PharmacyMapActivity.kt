@@ -14,6 +14,11 @@ class PharmacyMapActivity : PharmacistActivity() {
 
     private val viewModel by getViewModel(::PharmacyMapViewModel)
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadPharmacyList()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
