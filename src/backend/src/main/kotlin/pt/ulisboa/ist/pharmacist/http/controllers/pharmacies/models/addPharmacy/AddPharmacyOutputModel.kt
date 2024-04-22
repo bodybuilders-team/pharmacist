@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addPharmacy
+package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.addPharmacy
 
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
 

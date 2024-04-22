@@ -7,6 +7,7 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDto
  * A Get Users Output Model.
  *
  * @property totalCount the total number of users
+ * @property users the list of users
  */
 data class GetUsersOutputModel(
     val totalCount: Int,

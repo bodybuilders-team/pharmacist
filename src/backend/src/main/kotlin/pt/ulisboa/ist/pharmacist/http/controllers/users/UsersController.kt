@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.users
 
 import jakarta.validation.Valid
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,7 +17,6 @@ import pt.ulisboa.ist.pharmacist.http.controllers.users.models.getUser.GetUserOu
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.getUsers.GetUsersOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.login.LoginInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.login.LoginOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.users.models.logout.LogoutUserOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterOutputModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
@@ -33,7 +33,7 @@ import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
  * @property usersService the service that handles the business logic related to the users
  */
 @RestController
-@RequestMapping(produces = ["application/json"])
+@RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 class UsersController(private val usersService: UsersService) {
 
     /**
@@ -152,16 +152,15 @@ class UsersController(private val usersService: UsersService) {
     fun logout(
         @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
         @RequestAttribute(AuthenticationInterceptor.ACCESS_TOKEN_ATTRIBUTE) accessToken: String
-    ): LogoutUserOutputModel {
+    ) {
         usersService.logout(user = user, accessToken = accessToken)
-
-        return LogoutUserOutputModel("User logged out successfully")
     }
 
     /**
      * Handles the request to get a user.
      *
      * @param uid the id of the user to be returned
+     *
      * @return the response to the request with the user
      */
     @GetMapping(Uris.USERS_GET_BY_ID)
@@ -171,5 +170,4 @@ class UsersController(private val usersService: UsersService) {
     ): GetUserOutputModel {
         return GetUserOutputModel(usersService.getUser(userId = uid))
     }
-
 }

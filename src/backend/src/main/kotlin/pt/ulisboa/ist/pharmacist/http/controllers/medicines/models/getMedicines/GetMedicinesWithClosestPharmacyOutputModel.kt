@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines
+package pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.getMedicines
 
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicinesWithClosestPharmacyOutputDto
 

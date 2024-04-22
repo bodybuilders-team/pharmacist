@@ -87,6 +87,9 @@ interface PharmaciesService {
     /**
      * Rates a pharmacy.
      *
+     * @param user the user that is rating the pharmacy
+     * @param pharmacyId the id of the pharmacy
+     * @param rating the rating to be given
      */
     fun ratePharmacy(user: User, pharmacyId: Long, rating: Int)
 }

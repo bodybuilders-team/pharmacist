@@ -15,6 +15,13 @@ data class Location(
     val lat: Double,
     val lon: Double
 ) {
+
+    /**
+     * Calculates the distance to another location.
+     *
+     * @param location the other location
+     * @return the distance to the other location in kilometers
+     */
     fun distanceTo(location: Location): Double {
         val latDistance = Math.toRadians(lat - location.lat)
         val lonDistance = Math.toRadians(lon - location.lon)
@@ -26,6 +33,13 @@ data class Location(
     }
 
     companion object {
+
+        /**
+         * Parses a location from a string.
+         *
+         * @param location the location string
+         * @return the location or null if the string is not a valid location
+         */
         fun parse(location: String): Location? {
             val locationParts = location.split(",")
             if (locationParts.size != 2) return null

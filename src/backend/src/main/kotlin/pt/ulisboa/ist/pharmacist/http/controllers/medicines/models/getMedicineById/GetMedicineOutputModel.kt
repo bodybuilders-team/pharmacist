@@ -1,8 +1,16 @@
-package pt.ulisboa.ist.pharmacist.http.controllers.medicines
+package pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.getMedicineById
 
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
 
-data class MedicineModel(
+/**
+ * Output model for the get medicine use case.
+
+ * @property medicineId the medicine id
+ * @property name the medicine name
+ * @property description the medicine description
+ * @property boxPhotoUrl the medicine box photo url
+ */
+data class GetMedicineOutputModel(
     val medicineId: Long,
     val name: String,
     val description: String,

@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock
+package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.changeMedicineStock
 
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 

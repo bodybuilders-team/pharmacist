@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.medicines
 
 import jakarta.validation.Valid
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -10,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineInputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.medicines.createMedicine.CreateMedicineOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines.GetMedicineOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.medicines.getMedicines.GetMedicinesWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.createMedicine.CreateMedicineInputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.createMedicine.CreateMedicineOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.getMedicineById.GetMedicineOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.getMedicines.GetMedicinesWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
@@ -25,7 +26,7 @@ import pt.ulisboa.ist.pharmacist.service.medicines.MedicinesService
  * @property medicinesService the service that handles the operations related to the medicines
  */
 @RestController
-@RequestMapping(produces = ["application/json"])
+@RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 @Authenticated
 class MedicinesController(private val medicinesService: MedicinesService) {
 

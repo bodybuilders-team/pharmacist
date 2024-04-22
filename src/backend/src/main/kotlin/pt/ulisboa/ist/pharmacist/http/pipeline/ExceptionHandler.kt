@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import jakarta.servlet.http.HttpServletRequest
-import java.net.URI
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -23,6 +22,7 @@ import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPaginationParamsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
+import java.net.URI
 
 /**
  * Handles exceptions thrown by the controllers.
@@ -126,24 +126,6 @@ class ExceptionHandler {
             status = HttpStatus.UNAUTHORIZED.value()
         ).toResponse()
 
-//    TODO/**
-//     * Handles Forbidden exceptions.
-//     *
-//     * @param ex exception to handle
-//     * @param request the HTTP request
-//     * @return response entity with the error message
-//     */
-//    @ExceptionHandler(value = [])
-//    fun handleForbidden(
-//        request: HttpServletRequest,
-//        ex: Exception
-//    ): ResponseEntity<Any> =
-//        Problem(
-//            type = URI.create(PROBLEMS_DOCS_URI + ex.toProblemType()),
-//            title = ex.message ?: "Forbidden",
-//            status = HttpStatus.FORBIDDEN.value()
-//        ).toResponse()
-
     /**
      * Handles all other uncaught exceptions.
      *
@@ -164,8 +146,7 @@ class ExceptionHandler {
             .also { ex.printStackTrace() }
 
     companion object {
-        const val PROBLEMS_DOCS_URI =
-            "https://pharmacist/"
+        const val PROBLEMS_DOCS_URI = "https://pharmacist/"
 
         /**
          * Converts an exception to a problem type name, in kebab-case.

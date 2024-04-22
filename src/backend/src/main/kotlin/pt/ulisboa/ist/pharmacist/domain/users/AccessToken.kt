@@ -2,11 +2,8 @@ package pt.ulisboa.ist.pharmacist.domain.users
 
 /**
  * The AccessToken entity.
- *
  */
-data class AccessToken(
-    val tokenHash: String
-) {
+data class AccessToken(val tokenHash: String) {
 
     // Use only  token hash for equals and hashcode, not other fields
     override fun equals(other: Any?): Boolean {

@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addNewMedicine
+package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.addNewMedicine
 
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 

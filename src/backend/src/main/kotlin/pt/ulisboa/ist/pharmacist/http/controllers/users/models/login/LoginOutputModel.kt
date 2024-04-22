@@ -5,6 +5,7 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
 /**
  * A Login Output Model.
  *
+ * @property userId the id of the user
  * @property accessToken the access token of the user
  */
 data class LoginOutputModel(

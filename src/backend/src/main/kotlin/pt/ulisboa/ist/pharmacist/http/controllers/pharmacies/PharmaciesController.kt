@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies
 
 import jakarta.validation.Valid
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -14,14 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.users.User
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addNewMedicine.AddNewMedicineInputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addNewMedicine.AddNewMedicineOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addPharmacy.AddPharmacyInputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.addPharmacy.AddPharmacyOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock.ChangeMedicineStockInputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock.ChangeMedicineStockOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.getPharmacies.GetPharmaciesOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.listMedicines.ListAvailableMedicinesOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.addNewMedicine.AddNewMedicineInputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.addNewMedicine.AddNewMedicineOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.addPharmacy.AddPharmacyInputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.addPharmacy.AddPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.changeMedicineStock.ChangeMedicineStockInputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.changeMedicineStock.ChangeMedicineStockOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.getPharmacies.GetPharmaciesOutputModel
+import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.models.listMedicines.ListAvailableMedicinesOutputModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor
 import pt.ulisboa.ist.pharmacist.http.utils.Params
@@ -34,11 +36,9 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.PharmaciesService
  * @property pharmaciesService the service that handles the business logic related to the pharmacies
  */
 @RestController
-@RequestMapping(produces = ["application/json"])
+@RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 @Authenticated
-class PharmaciesController(
-    private val pharmaciesService: PharmaciesService
-) {
+class PharmaciesController(private val pharmaciesService: PharmaciesService) {
 
     /**
      * Handles the request to get pharmacies.
@@ -148,11 +148,16 @@ class PharmaciesController(
         )
     }
 
-
+    /**
+     * Handles the request to rate a pharmacy.
+     *
+     * @param pid the id of the pharmacy
+     * @param pharmacyRating the rating of the pharmacy
+     */
     @PostMapping(Uris.PHARMACY_RATE)
     fun ratePharmacy(
         @PathVariable pid: String,
-        @Valid @RequestBody pharmacyRating: Int,
+        @Valid @RequestBody pharmacyRating: Int, // TODO: Change to a model
         @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
     ) {
         pharmaciesService.ratePharmacy(

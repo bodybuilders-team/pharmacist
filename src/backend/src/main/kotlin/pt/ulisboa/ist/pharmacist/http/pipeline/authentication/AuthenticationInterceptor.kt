@@ -16,7 +16,6 @@ import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
  * 1. If the request has an Authorization header
  * 2. If the token in the header is a bearer token
  * 3. If the token is valid
- *
  */
 @Component
 class AuthenticationInterceptor(
@@ -54,11 +53,10 @@ class AuthenticationInterceptor(
 
     companion object {
         private const val AUTHORIZATION_HEADER = "Authorization"
-        private const val ACCESS_TOKEN_COOKIE_NAME = "access_token"
+        private const val BEARER_TOKEN_PREFIX = "Bearer "
+
         const val USER_ATTRIBUTE = "user"
         const val ACCESS_TOKEN_ATTRIBUTE = "access_token"
-        private const val BEARER_TOKEN_PREFIX = "Bearer "
-        private const val SECRET_KEY_ALGORITHM = "HmacSHA512"
 
         /**
          * Parses the bearer token.
