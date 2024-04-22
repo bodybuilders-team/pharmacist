@@ -52,7 +52,9 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
                 medicinesState = viewModel.medicinesState,
                 onSearch = { viewModel.searchMedicines(it) },
                 onMedicineClicked = { medicine ->
-                    viewModel.selectedMedicine = medicine
+                    viewModel.selectedMedicine =
+                        if (medicine == viewModel.selectedMedicine)
+                            null else medicine
                 },
                 selectedMedicine = viewModel.selectedMedicine,
                 createMedicine = {
