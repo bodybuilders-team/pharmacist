@@ -13,6 +13,7 @@ class MedicinePagingSource(
     private val pageSize: Int,
     private val location: Location?
 ) : PagingSource<Int, MedicineWithClosestPharmacyOutputModel>() {
+
     override fun getRefreshKey(state: PagingState<Int, MedicineWithClosestPharmacyOutputModel>): Int? {
         return null
     }

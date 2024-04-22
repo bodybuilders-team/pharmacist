@@ -12,5 +12,6 @@ data class Pharmacy(
     var pharmacyId: Long,
     val name: String,
     val location: Location,
-    val pictureUrl: String
+    val pictureUrl: String,
+    val globalRating: Double?
 )

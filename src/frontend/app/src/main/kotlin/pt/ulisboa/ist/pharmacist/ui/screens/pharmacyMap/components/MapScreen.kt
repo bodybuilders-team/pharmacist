@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.LatLng
@@ -61,7 +60,9 @@ fun MapScreen(
     var newPharmacyDescription by remember { mutableStateOf("") }
 
     LaunchedEffect(cameraPositionState.cameraMoveStartedReason) {
-        if (cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
+        if (cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE ||
+            cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.API_ANIMATION
+            ) {
             Log.d("MapScreen", "Camera moved by user, disabling followMyLocation")
             setFollowMyLocation(false)
         }
@@ -98,6 +99,12 @@ fun MapScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )
+                        if (pharmacy.globalRating != null)
+                            Text(
+                                text = "Rating: ${
+                                    String.format("%.1f", pharmacy.globalRating)
+                                } ⭐", style = MaterialTheme.typography.bodySmall
+                            )
                         Text(
                             marker.snippet ?: "No description",
                             style = MaterialTheme.typography.bodySmall

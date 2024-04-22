@@ -39,7 +39,7 @@ inline fun <reified T> Context.navigateTo(
  * @param beforeNavigation a function that is called before the navigation is performed
  */
 fun <T> Context.navigateToForResult(
-    activityResultLauncher: ActivityResultLauncher<Intent?>,
+    activityResultLauncher: ActivityResultLauncher<Intent>,
     clazz: Class<T>,
     beforeNavigation: (Intent) -> Unit = {}
 ) {
@@ -47,4 +47,11 @@ fun <T> Context.navigateToForResult(
 
     beforeNavigation(intent)
     activityResultLauncher.launch(intent)
+}
+
+inline fun <reified T> Context.navigateToForResult(
+    activityResultLauncher: ActivityResultLauncher<Intent>,
+    noinline beforeNavigation: (Intent) -> Unit = {}
+) {
+    navigateToForResult(activityResultLauncher, T::class.java, beforeNavigation)
 }

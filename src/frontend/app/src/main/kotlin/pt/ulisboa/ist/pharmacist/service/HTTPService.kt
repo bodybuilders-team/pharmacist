@@ -3,6 +3,7 @@ package pt.ulisboa.ist.pharmacist.service
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
+import java.io.IOException
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -14,7 +15,6 @@ import pt.ulisboa.ist.pharmacist.service.connection.fromJson
 import pt.ulisboa.ist.pharmacist.service.connection.getBodyOrThrow
 import pt.ulisboa.ist.pharmacist.service.connection.send
 import pt.ulisboa.ist.pharmacist.service.media.Problem.Companion.problemMediaType
-import java.io.IOException
 
 /**
  * A service that communicates with a HTTP server.
@@ -42,19 +42,18 @@ abstract class HTTPService(
         this.send(httpClient) { response ->
             val body = response.getBodyOrThrow()
             val contentType = body.contentType()
-            val resJson = JsonReader(body.charStream())
 
             try {
                 when {
-                    response.isSuccessful && contentType == null &&
-                            T::class.java.isAssignableFrom(Unit::class.java) ->
-                        APIResult.Success(data = Unit as T)
-
                     response.isSuccessful && contentType == applicationJsonMediaType ->
-                        APIResult.Success(data = jsonEncoder.fromJson<T>(resJson))
+                        APIResult.Success(data = jsonEncoder.fromJson<T>(JsonReader(body.charStream())))
 
                     !response.isSuccessful && contentType == problemMediaType ->
-                        APIResult.Failure(error = jsonEncoder.fromJson(resJson))
+                        APIResult.Failure(error = jsonEncoder.fromJson(JsonReader(body.charStream())))
+
+                    response.isSuccessful &&
+                            T::class.java.isAssignableFrom(Unit::class.java) ->
+                        APIResult.Success(data = Unit as T)
 
                     else -> throw UnexpectedResponseException(response)
                 }
@@ -121,6 +120,7 @@ abstract class HTTPService(
             .build()
             .getResponseResult()
 
+
     /**
      * Sends a POST request to the specified link with the specified body and a token in the header.
      *
@@ -141,6 +141,24 @@ abstract class HTTPService(
             .url(url = apiEndpoint + link)
             .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
             .post(
+                body = body?.let {
+                    jsonEncoder
+                        .toJson(body)
+                        .toRequestBody(contentType = applicationJsonMediaType)
+                } ?: EMPTY_REQUEST
+            )
+            .build()
+            .getResponseResult()
+
+    protected suspend inline fun <reified T> patch(
+        link: String,
+        token: String,
+        body: Any? = null
+    ): APIResult<T> =
+        Request.Builder()
+            .url(url = apiEndpoint + link)
+            .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
+            .patch(
                 body = body?.let {
                     jsonEncoder
                         .toJson(body)

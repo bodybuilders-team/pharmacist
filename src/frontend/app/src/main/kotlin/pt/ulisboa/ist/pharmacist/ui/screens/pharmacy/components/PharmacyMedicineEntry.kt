@@ -43,7 +43,7 @@ import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
 fun PharmacyMedicineEntry(
     medicine: Medicine,
     stock: Long,
-    onMedicineClick: (Long) -> Unit,
+    onMedicineClick: (Long) -> Unit = {},
     onAddStockClick: (Long) -> Unit,
     onRemoveStockClick: (Long) -> Unit
 ) {

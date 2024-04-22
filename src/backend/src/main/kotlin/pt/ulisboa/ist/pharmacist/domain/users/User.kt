@@ -21,7 +21,7 @@ data class User(
     val favoritePharmacies: MutableSet<Pharmacy> = mutableSetOf(),
     val medicinesToNotify: MutableSet<Medicine> = mutableSetOf(),
     val accessTokens: MutableSet<AccessToken> = mutableSetOf(),
-    val ratings: MutableMap<Long, UserPharmacyRating> = mutableMapOf()
+    val ratings: MutableMap<Long, Int> = mutableMapOf()
 ) {
 
     init {

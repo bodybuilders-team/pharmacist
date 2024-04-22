@@ -69,7 +69,6 @@ fun MedicineSearchScreen(
                     text = medicine.description,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
-
                 )
 
                 IconButton(

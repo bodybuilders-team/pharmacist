@@ -1,5 +1,7 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock
 
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
+
 /**
  * The input model of the 'Change Medicine Stock' endpoint.
  *
@@ -7,6 +9,6 @@ package pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStoc
  * @property quantity the quantity to be added or removed
  */
 data class ChangeMedicineStockInputModel(
-    val operation: String,
+    val operation: MedicineStock.Operation,
     val quantity: Long
 )

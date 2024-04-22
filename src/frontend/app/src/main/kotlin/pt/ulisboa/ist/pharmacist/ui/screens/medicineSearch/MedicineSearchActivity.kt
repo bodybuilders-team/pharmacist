@@ -29,8 +29,8 @@ class MedicineSearchActivity : PharmacistActivity() {
                 hasLocationPermission = viewModel.hasLocationPermission,
                 medicinesState = viewModel.medicinesState,
                 onSearch = { viewModel.searchMedicines(it) },
-                onMedicineClicked = { medicineId ->
-                    MedicineActivity.navigate(this, medicineId)
+                onMedicineClicked = { medicine ->
+                    MedicineActivity.navigate(this, medicine.medicineId)
                 }
             )
         }

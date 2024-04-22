@@ -92,4 +92,35 @@ class PharmaciesService(
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )
     }
+
+    suspend fun ratePharmacy(pharmacyId: Long, rating: Int): APIResult<Unit> {
+        return post<Unit>(
+            link = Uris.ratePharmacy(pharmacyId),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
+            body = rating
+        )
+    }
+
+    suspend fun changeMedicineStock(
+        pharmacyId: Long,
+        medicineId: Long,
+        operation: MedicineStockOperation,
+        stock: Long
+    ): APIResult<Unit> {
+        return patch<Unit>(
+            link = Uris.changeMedicineStock(pharmacyId, medicineId),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
+            body = ChangeMedicineStockModel(operation, stock)
+        )
+    }
+
+    data class ChangeMedicineStockModel(
+        val operation: MedicineStockOperation,
+        val quantity: Long
+    )
+
+    enum class MedicineStockOperation {
+        ADD,
+        REMOVE
+    }
 }

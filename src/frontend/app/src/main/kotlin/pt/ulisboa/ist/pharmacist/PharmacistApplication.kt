@@ -23,7 +23,11 @@ class PharmacistApplication : DependenciesContainer, Application() {
 
     override val pharmacistService = PharmacistService(
         apiEndpoint = API_ENDPOINT,
-        httpClient = OkHttpClient(),
+        httpClient = OkHttpClient.Builder()
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .build(),
         jsonEncoder = jsonEncoder,
         sessionManager = sessionManager
     )

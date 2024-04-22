@@ -22,7 +22,6 @@ import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.changeMedicineStock.ChangeMedicineStockOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.getPharmacies.GetPharmaciesOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.listMedicines.ListAvailableMedicinesOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.pharmacies.pharmacyRate.PharmacyRatingModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor
 import pt.ulisboa.ist.pharmacist.http.utils.Params
@@ -149,17 +148,17 @@ class PharmaciesController(
         )
     }
 
+
     @PostMapping(Uris.PHARMACY_RATE)
     fun ratePharmacy(
         @PathVariable pid: String,
-        @Valid @RequestBody pharmacyRating: PharmacyRatingModel,
+        @Valid @RequestBody pharmacyRating: Int,
         @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
     ) {
         pharmaciesService.ratePharmacy(
             user,
             pharmacyId = pid.toLong(),
-            rating = pharmacyRating.rating,
-            comment = pharmacyRating.comment
+            rating = pharmacyRating
         )
     }
 

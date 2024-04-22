@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun StarRatingBar(
     maxStars: Int = 5,
-    rating: Float,
-    onRatingChanged: (Float) -> Unit
+    rating: Int,
+    onRatingChanged: (Int) -> Unit
 ) {
     val density = LocalDensity.current.density
     val starSize = (12f * density).dp
@@ -49,7 +49,7 @@ fun StarRatingBar(
                     .selectable(
                         selected = isSelected,
                         onClick = {
-                            onRatingChanged(i.toFloat())
+                            onRatingChanged(i)
                         }
                     )
                     .width(starSize)

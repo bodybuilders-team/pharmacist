@@ -4,11 +4,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 
 data class PharmacyWithUserDataModel(
     val pharmacy: Pharmacy,
-    val userRating: PharmacyRatingModel?,
+    val userRating: Int?,
     val userMarkedAsFavorite: Boolean
 )
 
-data class PharmacyRatingModel(
-    val rating: Float,
-    val comment: String
-)

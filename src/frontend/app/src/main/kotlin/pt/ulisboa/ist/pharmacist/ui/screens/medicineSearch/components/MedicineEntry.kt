@@ -40,7 +40,8 @@ import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
 fun MedicineEntry(
     medicine: Medicine,
     closestPharmacy: Pharmacy? = null,
-    onMedicineClicked: (Long) -> Unit,
+    onMedicineClicked: (Medicine) -> Unit,
+    isSelected: Boolean,
 ) {
     var isHovered by remember { mutableStateOf(false) }
 
@@ -53,9 +54,15 @@ fun MedicineEntry(
                 }
                 false
             }
-            .background(if (isHovered) Color.LightGray else Color.Transparent)
+            .background(
+                when {
+                    isSelected -> Color.Gray
+                    isHovered -> Color.LightGray
+                    else -> Color.Transparent
+                }
+            )
             .clickable {
-                onMedicineClicked(medicine.medicineId)
+                onMedicineClicked(medicine)
             }
     ) {
         Row(

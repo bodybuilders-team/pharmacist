@@ -28,6 +28,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     annotationProcessor("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("com.google.cloud:google-cloud-storage:2.37.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

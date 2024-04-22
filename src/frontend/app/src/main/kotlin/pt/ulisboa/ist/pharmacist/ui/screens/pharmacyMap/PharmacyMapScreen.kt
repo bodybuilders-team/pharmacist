@@ -24,7 +24,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.MapScreen
  * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
  * @param pharmacies list of pharmacies to display
  * @param mapProperties properties of the map
- * @param state of the camera position
+ * @param cameraPositionState of the camera position
  * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
  * @param setFollowMyLocation callback to be invoked when the user clicks on the follow my location button
  * @param setPosition callback to be invoked when the position is to be changed

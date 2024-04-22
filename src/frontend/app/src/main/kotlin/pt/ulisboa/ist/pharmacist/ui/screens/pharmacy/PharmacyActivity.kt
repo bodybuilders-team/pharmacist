@@ -5,7 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService.MedicineStockOperation.ADD
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService.MedicineStockOperation.REMOVE
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
@@ -26,6 +29,13 @@ class PharmacyActivity : PharmacistActivity() {
             pharmacyId
         )
     }
+
+
+    private val addPharmacyResultLauncher = AddMedicineToPharmacyActivity
+        .registerForResult(this) { medicineId ->
+            if (medicineId != null)
+                viewModel.addMedicine(medicineId)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,19 +58,23 @@ class PharmacyActivity : PharmacistActivity() {
                     MedicineActivity.navigate(this, medicineId)
                 },
                 onAddMedicineClick = {
-                    // TODO
+                    AddMedicineToPharmacyActivity.navigateForResult(
+                        this,
+                        addPharmacyResultLauncher,
+                        pharmacyId
+                    )
                 },
                 onAddStockClick = { medicineId ->
-                    // TODO
+                    viewModel.modifyStock(medicineId, ADD)
                 },
                 onRemoveStockClick = { medicineId ->
-                    // TODO
+                    viewModel.modifyStock(medicineId, REMOVE)
                 },
                 onFavoriteClick = {
                     viewModel.updateFavoriteStatus()
                 },
                 onRatingChanged = { rating ->
-                    // TODO
+                    viewModel.updateRating(rating)
                 }
             )
         }

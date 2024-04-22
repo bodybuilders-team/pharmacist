@@ -7,6 +7,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
  * The URIs of the API.
  */
 object Uris {
+    const val CREATE_SIGNED_URL = "/create-signed-url"
     const val USERS = "/users"
     const val USERS_LOGIN = "/users/login"
     const val USERS_LOGOUT = "/users/logout"
@@ -18,7 +19,7 @@ object Uris {
     const val PHARMACIES_GET_BY_ID = "/pharmacies/{pid}"
     const val PHARMACY_MEDICINES = "/pharmacies/{pid}/medicines"
     const val PHARMACY_MEDICINES_GET_BY_ID = "/pharmacies/{pid}/medicines/{mid}"
-    const val PHARMACY_RATINGS = "/pharmacies/{pid}/ratings"
+    const val PHARMACY_RATINGS = "/pharmacies/{pid}/rate"
 
     const val MEDICINES = "/medicines"
     const val MEDICINES_GET_BY_ID = "/medicines/{mid}"
@@ -54,4 +55,13 @@ object Uris {
         USER_FAVORITE_PHARMACIES_GET_BY_ID
             .replace("{uid}", userId)
             .replace("{pid}", pharmacyId.toString())
+
+    fun ratePharmacy(pharmacyId: Long): String {
+        return PHARMACY_RATINGS.replace("{pid}", pharmacyId.toString())
+    }
+
+    fun changeMedicineStock(pharmacyId: Long, medicineId: Long): String =
+        PHARMACY_MEDICINES_GET_BY_ID
+            .replace("{pid}", pharmacyId.toString())
+            .replace("{mid}", medicineId.toString())
 }

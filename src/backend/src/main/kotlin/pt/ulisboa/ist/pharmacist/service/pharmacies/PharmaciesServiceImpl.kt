@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.users.User
-import pt.ulisboa.ist.pharmacist.domain.users.UserPharmacyRating
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
@@ -87,7 +86,7 @@ class PharmaciesServiceImpl(
     override fun changeMedicineStock(
         pharmacyId: Long,
         medicineId: Long,
-        operation: String,
+        operation: MedicineStock.Operation,
         quantity: Long
     ): ChangeMedicineStockOutputDto {
         pharmaciesRepository.findById(pharmacyId)
@@ -99,7 +98,7 @@ class PharmaciesServiceImpl(
         val medicineStock = pharmaciesRepository.changeMedicineStock(
             pharmacyId = pharmacyId,
             medicineId = medicineId,
-            operation = MedicineStock.Operation(operation),
+            operation = operation,
             quantity = quantity
         )
         return ChangeMedicineStockOutputDto(medicineStock)
@@ -119,7 +118,7 @@ class PharmaciesServiceImpl(
         )
     }
 
-    override fun ratePharmacy(user: User, pharmacyId: Long, rating: Float, comment: String) {
+    override fun ratePharmacy(user: User, pharmacyId: Long, rating: Int) {
         val pharmacy = pharmaciesRepository.findById(pharmacyId)
             ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
         if (rating < 0 || rating > 5) throw InvalidArgumentException("Rating must be between 0 and 5")
@@ -127,11 +126,11 @@ class PharmaciesServiceImpl(
         val userRating = user.ratings[pharmacyId]
 
         if (userRating != null) {
-            pharmacy.globalRatingSum -= userRating.rating
+            pharmacy.globalRatingSum -= userRating
             pharmacy.numberOfRatings--
         }
 
-        user.ratings[pharmacyId] = UserPharmacyRating(rating, comment)
+        user.ratings[pharmacyId] = rating
 
         pharmacy.globalRatingSum += rating
         pharmacy.numberOfRatings++

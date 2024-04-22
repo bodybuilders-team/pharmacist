@@ -136,6 +136,6 @@ class PharmacyMapViewModel(
     }
 
     companion object {
-        private const val DEFAULT_ZOOM = 36f
+        private const val DEFAULT_ZOOM = 15f
     }
 }

@@ -25,6 +25,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
+import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.components.MedicineEntry
@@ -41,114 +42,135 @@ fun MedicineSearchScreen(
     hasLocationPermission: Boolean,
     medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>,
     onSearch: (String) -> Unit,
-    onMedicineClicked: (Long) -> Unit
+    onMedicineClicked: (Medicine) -> Unit
+) {
+    PharmacistScreen {
+        MedicineSearch(
+            modifier = Modifier.fillMaxSize(),
+            hasLocationPermission = hasLocationPermission,
+            medicinesState = medicinesState,
+            onSearch = onSearch,
+            onMedicineClicked = onMedicineClicked
+        )
+    }
+}
+
+@Composable
+fun MedicineSearch(
+    modifier: Modifier = Modifier,
+    hasLocationPermission: Boolean,
+    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>,
+    onSearch: (String) -> Unit,
+    onMedicineClicked: (Medicine) -> Unit,
+    selectedMedicine: Medicine? = null
 ) {
     val medicinePagingItems = medicinesState.collectAsLazyPagingItems()
 
     var query by remember { mutableStateOf("") }
 
-    PharmacistScreen {
-        var hasPermission by remember {
-            mutableStateOf(hasLocationPermission)
-        }
 
-        if (!hasPermission) {
-            LocationPermissionScreen(onPermissionGranted = { hasPermission = true })
-            return@PharmacistScreen
-        }
+    var hasPermission by remember {
+        mutableStateOf(hasLocationPermission)
+    }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+    if (!hasPermission) {
+        LocationPermissionScreen(onPermissionGranted = { hasPermission = true })
+        return
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .then(modifier)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(TEXT_FIELD_WIDTH_FACTOR)
+                .padding(top = 16.dp, bottom = 16.dp)
+                .align(Alignment.CenterHorizontally)
         ) {
-            Row(
+            TextField(
+                value = query,
+                onValueChange = { query = it },
                 modifier = Modifier
-                    .fillMaxWidth(TEXT_FIELD_WIDTH_FACTOR)
-                    .padding(top = 16.dp, bottom = 16.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .weight(1f)
+                    .align(Alignment.CenterVertically),
+            )
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                onClick = { onSearch(query) }
             ) {
-                TextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterVertically),
+                Icon(Icons.Rounded.Search, contentDescription = "Search Button")
+            }
+        }
+
+        LazyColumn(modifier = Modifier.fillMaxWidth(TEXT_FIELD_WIDTH_FACTOR)) {
+            items(medicinePagingItems.itemCount) { index ->
+                val (medicine, closestPharmacy) = medicinePagingItems[index]!!
+                MedicineEntry(
+                    medicine = medicine,
+                    closestPharmacy = closestPharmacy,
+                    onMedicineClicked = { onMedicineClicked(medicine) },
+                    isSelected = if (selectedMedicine?.medicineId != null) selectedMedicine.medicineId == medicine.medicineId else false
                 )
-                IconButton(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    onClick = { onSearch(query) }
-                ) {
-                    Icon(Icons.Rounded.Search, contentDescription = "Search Button")
-                }
             }
 
-            LazyColumn(modifier = Modifier.fillMaxWidth(TEXT_FIELD_WIDTH_FACTOR)) {
-                items(medicinePagingItems.itemCount) { index ->
-                    val (medicine, closestPharmacy) = medicinePagingItems[index]!!
-                    MedicineEntry(
-                        medicine = medicine,
-                        closestPharmacy = closestPharmacy,
-                        onMedicineClicked = onMedicineClicked
-                    )
-                }
-
-                medicinePagingItems.apply {
-                    when {
-                        loadState.refresh is LoadState.Loading -> {
-                            item {
-                                Box {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .align(Alignment.BottomCenter)
-                                    ) {
-                                        LoadingSpinner(modifier = Modifier.align(Alignment.Center))
-                                    }
-                                }
-                            }
-                        }
-
-                        loadState.refresh is LoadState.Error -> {
-                            val error = medicinePagingItems.loadState.refresh as LoadState.Error
-                            item {
-                                Box {
-                                    Text(
-                                        text = error.error.localizedMessage!!,
-                                        modifier = Modifier.padding(16.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        loadState.append is LoadState.Loading -> {
-                            item {
-                                Box {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .align(Alignment.BottomCenter)
-                                    ) {
-                                        LoadingSpinner(modifier = Modifier.align(Alignment.Center))
-                                    }
-                                }
-                            }
-                        }
-
-                        loadState.append is LoadState.Error -> {
-                            val error = medicinePagingItems.loadState.append as LoadState.Error
-                            item {
-                                Box {
-                                    Text(
-                                        text = error.error.localizedMessage!!,
-                                        modifier = Modifier.padding(16.dp)
-                                    )
+            medicinePagingItems.apply {
+                when {
+                    loadState.refresh is LoadState.Loading -> {
+                        item {
+                            Box {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .align(Alignment.BottomCenter)
+                                ) {
+                                    LoadingSpinner(modifier = Modifier.align(Alignment.Center))
                                 }
                             }
                         }
                     }
-                }
 
+                    loadState.refresh is LoadState.Error -> {
+                        val error = medicinePagingItems.loadState.refresh as LoadState.Error
+                        item {
+                            Box {
+                                Text(
+                                    text = error.error.localizedMessage!!,
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    loadState.append is LoadState.Loading -> {
+                        item {
+                            Box {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .align(Alignment.BottomCenter)
+                                ) {
+                                    LoadingSpinner(modifier = Modifier.align(Alignment.Center))
+                                }
+                            }
+                        }
+                    }
+
+                    loadState.append is LoadState.Error -> {
+                        val error = medicinePagingItems.loadState.append as LoadState.Error
+                        item {
+                            Box {
+                                Text(
+                                    text = error.error.localizedMessage!!,
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
+                        }
+                    }
+                }
             }
+
         }
     }
 }

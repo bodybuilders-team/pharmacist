@@ -18,6 +18,6 @@ data class Pharmacy(
     var numberOfRatings: Int = 0,
     val medicines: MutableList<MedicineStock> = mutableListOf()
 ) {
-    val globalRating: Double
-        get() = globalRatingSum / numberOfRatings
+    val globalRating: Double?
+        get() = if(numberOfRatings == 0) null else globalRatingSum / numberOfRatings
 }

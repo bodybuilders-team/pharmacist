@@ -6,12 +6,14 @@ data class PharmacyModel(
     val pharmacyId: Long,
     val name: String,
     val location: LocationModel,
-    val pictureUrl: String
+    val pictureUrl: String,
+    val globalRating: Double?
 ) {
     constructor(pharmacyDto: PharmacyDto) : this(
         pharmacyId = pharmacyDto.pharmacyId,
         name = pharmacyDto.name,
         location = LocationModel(pharmacyDto.location),
-        pictureUrl = pharmacyDto.pictureUrl
+        pictureUrl = pharmacyDto.pictureUrl,
+        globalRating = pharmacyDto.globalRating
     )
 }

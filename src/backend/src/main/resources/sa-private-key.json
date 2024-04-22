@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "pharmacist-420716",
+  "private_key_id": "692539468a507f0df8307698ea964582de5373ca",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC0eL723/nZzknq\nGLYBjAYSSakzwRu5QQ8qMLhPDcDpoz2rGxQTxvncg7W4Dl0sIXhjjvrC8uOklcGA\n9z9xCtIeddJcevlbgjVA3/Ftj4ZTSZlV+Vm/t2RoolIsR94m0SvNSfTsUhfkzHQd\nhIMWIZNCxh2leNM+n7ZAhHJIj0NW0luh3wnWonP6OqXeFisBevp/T9XF7nRe7+tf\nL2e+rPhf7bdGDy1Zn0YN0mmoBHXsPuouZdzXz3Nwv3lGtdAJUiId31j42Yyz8rxL\nE1e84ZSgw8+f5RrFy72dJOjtf2gWIiJyohEo7kHFsUnEu98zGRWUF4YFyDo3fWKh\n6fA+SeKrAgMBAAECggEAMJR+R0NkZNqQcAkl2UXBjqOwfeOCHHykYeWKf5FCuEG+\nhHQ+E9LQiKkVvg1zzEDYQOiInPi4CaJcW+RyefIBPLzXmxhpTlY/Eo8V1Lm5XWsm\n8Qs1uxNZXocvWocgCE/vHAxH92Nj1i2pJhb5GHiCRQvCiDv9lVJ1w2lDwD98T37N\nuH1xhfpwrWe8yteIlfJBAFGjH/hdOh8nVIjX2lybN3EGyGmr0MyEdyWd4y7LaR3p\npm9drFiqNGCC2U4k3lLL2BTCfoUcfGGQh+NGqDJ+9q6gWMBGsHIO2FoEt1JDzj2a\n41ARUOI/A8BfVj9qtJ3V2GCp7YuSM3Uge4uKfWP1xQKBgQDmOC//B0Km1gBqt1HJ\n3Xe0xhmuCuptEnjh88bYg+1OF7ILXeVwABlkjLsiNhKBbi9Je07HGkaqkJkNYEvc\nhBMuQptTh/F3UyGJHPeqEsgg+z0Jgro2/fkcharl8xg9BViiMXlvfkyTDuBYniv5\nRbf9tNiOkd0nWZkL5yb20f7vVQKBgQDIrmnyX8/2tDWOOiRjCOEMYZrt5tUjzIkg\nMTVm2Ve0nQw5SJONYhvZxk7vukJeIrGP4EGUWudeQO/ZREPxnNxNgF+BI1XRQVso\n129vxGQ9hjtOyjDEhwMSINh4t6bOL7KFRPQ8oB/hhJvjO4yGZF0S/kGf/2/CyTzZ\n1+SAhDGJ/wKBgQC3A6XMJHZs8KTmMRN42XFnKTCS9iSETvIAFe5WgxIsSZQFi0Bw\n9/M3xtShDsFJWVGIJdlrWE0jHM4/HvVPuUMSPGsETYa8qD55pKiR8FpeNbvBCsaE\nHwRhEzXXlZgIMm7SiWgTJSE0qtfYOu2UPUNWEeUx+W0I8iZDmx+TiT8T/QKBgBhi\nMNdVUvR74wH8CI3L92REu8lqQb2OzZ6OvBlaETEN3/1Z1yvXnuCwGslADW5YstBz\nhCRdgz1NkJcKl2LVF2OHVJNhUr0RPt1Qh+bBqxhapfwlzxUh/nqGaScJ0Ye9/ef5\nf9+Z6SXCshpDEwkFStXS9PBW3iKBxxYFCGuhJE/LAoGATxZ0ChtwttToL4ZWA5hh\nKEFwWgkhfvv4FTnW/N0KktVEAw/qLDkuTgzExR3TFX1g0V9m4p+6ZTPfse7WK4dr\n0F7W3pa5/aaBi8tFEu2K8ZcvGP5kGZX+lmFniKsIK/Q7HVxQ5kFIsqUEK6RNkezS\npkNPG5fcDXgDeZpXW3ZyGNo=\n-----END PRIVATE KEY-----\n",
+  "client_email": "pharmacist@pharmacist-420716.iam.gserviceaccount.com",
+  "client_id": "113405688658347988139",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/pharmacist%40pharmacist-420716.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
