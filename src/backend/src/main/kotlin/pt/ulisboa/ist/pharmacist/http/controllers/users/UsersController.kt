@@ -84,7 +84,6 @@ class UsersController(private val usersService: UsersService) {
         return RegisterOutputModel(
             usersService.register(
                 username = userData.username,
-                email = userData.email,
                 password = userData.password
             )
         )
@@ -119,7 +118,7 @@ class UsersController(private val usersService: UsersService) {
     @PutMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
     @Authenticated
     fun addFavoritePharmacy(
-        @PathVariable uid: String,
+        @PathVariable uid: Long,
         @PathVariable pid: Long
     ) {
         usersService.addFavoritePharmacy(userId = uid, pharmacyId = pid)
@@ -136,7 +135,7 @@ class UsersController(private val usersService: UsersService) {
     @DeleteMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
     @Authenticated
     fun removeFavoritePharmacy(
-        @PathVariable uid: String,
+        @PathVariable uid: Long,
         @PathVariable pid: Long
     ) {
         usersService.removeFavoritePharmacy(userId = uid, pharmacyId = pid)
@@ -166,7 +165,7 @@ class UsersController(private val usersService: UsersService) {
     @GetMapping(Uris.USERS_GET_BY_ID)
     @Authenticated
     fun getUser(
-        @PathVariable uid: String
+        @PathVariable uid: Long
     ): GetUserOutputModel {
         return GetUserOutputModel(usersService.getUser(userId = uid))
     }

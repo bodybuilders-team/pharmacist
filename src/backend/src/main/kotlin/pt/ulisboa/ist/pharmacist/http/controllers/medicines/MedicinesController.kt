@@ -36,7 +36,7 @@ class MedicinesController(private val medicinesService: MedicinesService) {
      * @return the list of pharmacies
      */
     @GetMapping(Uris.MEDICINES)
-    fun getMedicines(
+    fun getMedicines( // TODO: Add query parameter with pharmacy name to retrieve stock information
         @RequestParam(Params.SUBSTRING_PARAM) substring: String,
         @RequestParam(Params.LOCATION_PARAM) location: String?,
         @RequestParam(Params.OFFSET_PARAM, defaultValue = Params.OFFSET_DEFAULT.toString()) offset: Int,

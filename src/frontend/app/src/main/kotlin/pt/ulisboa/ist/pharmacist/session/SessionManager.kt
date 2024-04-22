@@ -10,7 +10,7 @@ package pt.ulisboa.ist.pharmacist.session
  * @property username the user's username
  */
 interface SessionManager {
-    val usedId: String?
+    val usedId: Long?
     val accessToken: String?
     val username: String?
 
@@ -29,7 +29,7 @@ interface SessionManager {
      * @param username the user's username
      */
     fun setSession(
-        userId: String,
+        userId: Long,
         accessToken: String,
         username: String
     )

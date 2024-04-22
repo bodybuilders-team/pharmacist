@@ -29,7 +29,7 @@ import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
 import kotlin.math.min
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
 /**
  * A medicine entry in the pharmacy medicine list.
@@ -55,7 +55,7 @@ fun PharmacyMedicineEntry(
             .height(120.dp)
             .padding(bottom = 8.dp)
             .background(
-                color = Color(0xAAE0E0E0),
+                color = MaterialTheme.colorScheme.secondary,
                 shape = MaterialTheme.shapes.medium
             )
     ) {
@@ -74,7 +74,7 @@ fun PharmacyMedicineEntry(
             }) {
             MeteredAsyncImage(
                 url = medicine.boxPhotoUrl,
-                contentDescription = "Pharmacy picture",
+                contentDescription = "Medicine picture",
                 modifier = Modifier
                     .width(100.dp)
                     .align(Alignment.CenterVertically)

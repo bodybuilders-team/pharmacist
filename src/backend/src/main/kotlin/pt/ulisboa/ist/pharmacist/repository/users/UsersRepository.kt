@@ -9,17 +9,15 @@ import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
  */
 interface UsersRepository {
 
-    fun create(userId: String, username: String, email: String, passwordHash: String): User
+    fun create(username: String, passwordHash: String): User
 
-    fun addFavoritePharmacy(userId: String, pharmacyId: Long)
+    fun addFavoritePharmacy(userId: Long, pharmacyId: Long)
 
-    fun removeFavoritePharmacy(userId: String, pharmacyId: Long)
+    fun removeFavoritePharmacy(userId: Long, pharmacyId: Long)
 
     fun findByUsername(username: String): User?
 
-    fun findByEmail(email: String): User?
-
-    fun findById(id: String): User?
+    fun findById(userId: Long): User?
 
     fun findAll(pageable: OffsetPageRequest): Page<User>
 
@@ -28,8 +26,6 @@ interface UsersRepository {
     fun count(): Long
 
     fun existsByUsername(username: String): Boolean
-
-    fun existsByEmail(email: String): Boolean
 
     fun findByAccessTokenHash(accessToken: String): User?
 }

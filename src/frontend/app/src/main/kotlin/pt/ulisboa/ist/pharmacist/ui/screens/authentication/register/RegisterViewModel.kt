@@ -31,15 +31,13 @@ class RegisterViewModel(
     /**
      * Attempts to register the user with the given credentials.
      *
-     * @param email the email of the user
      * @param username the username of the user
      * @param password the password of the user
      */
-    fun register(email: String, username: String, password: String) = viewModelScope.launch {
+    fun register(username: String, password: String) = viewModelScope.launch {
         registerState = RegisterState.REGISTERING
 
         val result = pharmacistService.usersService.register(
-            email = email,
             username = username,
             password = password
         )

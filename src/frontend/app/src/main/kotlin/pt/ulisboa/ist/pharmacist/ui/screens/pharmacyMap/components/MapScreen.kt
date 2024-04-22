@@ -108,10 +108,6 @@ fun MapScreen(
                                 } ⭐", style = MaterialTheme.typography.bodySmall
                             )
                         Text(
-                            marker.snippet ?: "No description",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                        Text(
                             "(click for more details)",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Light

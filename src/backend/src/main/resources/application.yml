@@ -11,6 +11,7 @@ google:
   credentials: /sa-private-key.json
   projectId: pharmacist-420716
   bucketName: pharmacist-g03
+
 spring:
   application:
     name: pharmacist

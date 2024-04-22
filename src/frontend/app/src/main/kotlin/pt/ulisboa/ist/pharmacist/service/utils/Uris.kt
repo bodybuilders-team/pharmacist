@@ -51,9 +51,9 @@ object Uris {
                 "?${if (limit != null) "limit=$limit" else ""}${if (offset != null) "&offset=$offset" else ""}"
     }
 
-    fun favoritePharmaciesGetById(userId: String, pharmacyId: Long) =
+    fun favoritePharmaciesGetById(userId: Long, pharmacyId: Long) =
         USER_FAVORITE_PHARMACIES_GET_BY_ID
-            .replace("{uid}", userId)
+            .replace("{uid}", userId.toString())
             .replace("{pid}", pharmacyId.toString())
 
     fun ratePharmacy(pharmacyId: Long): String {

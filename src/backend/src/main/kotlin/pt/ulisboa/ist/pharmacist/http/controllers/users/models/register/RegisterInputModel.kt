@@ -1,13 +1,11 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.users.models.register
 
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Size
 
 /**
  * A Register Input Model.
  *
  * @property username the username of the user to be created
- * @property email the email of the user to be created
  * @property password the password of the user to be created
  */
 data class RegisterInputModel(
@@ -17,9 +15,6 @@ data class RegisterInputModel(
         message = "Username must be between $MIN_USERNAME_LENGTH and $MAX_USERNAME_LENGTH characters long."
     )
     val username: String,
-
-    @field:Email(message = "Email must be a valid email address.")
-    val email: String,
 
     @field:Size(
         min = MIN_PASSWORD_LENGTH,

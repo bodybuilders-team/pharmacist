@@ -16,7 +16,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterView
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterViewModel.RegisterState.REGISTERED
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.components.RegisterButton
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.components.RegisterTextFields
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validateEmail
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validatePassword
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.validateUsername
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
@@ -30,15 +29,12 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
 @Composable
 fun RegisterScreen(
     state: RegisterState,
-    onRegister: (String, String, String) -> Unit
+    onRegister: (String, String) -> Unit
 ) {
-
-    var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val invalidFields = (email.isEmpty() || username.isEmpty() || password.isEmpty()) ||
-            email.isNotEmpty() && !validateEmail(email) ||
+    val invalidFields = (username.isEmpty() || password.isEmpty()) ||
             username.isNotEmpty() && !validateUsername(username) ||
             password.isNotEmpty() && !validatePassword(password)
 
@@ -50,10 +46,8 @@ fun RegisterScreen(
             ScreenTitle(title = stringResource(R.string.register_title))
 
             RegisterTextFields(
-                email = email,
                 username = username,
                 password = password,
-                onEmailChangeCallback = { email = it },
                 onUsernameChangeCallback = { username = it },
                 onPasswordChangeCallback = { password = it }
             )
@@ -62,7 +56,7 @@ fun RegisterScreen(
                 if (invalidFields)
                     return@RegisterButton
 
-                onRegister(email, username, password)
+                onRegister(username, password)
             }
         }
     }

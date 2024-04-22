@@ -6,6 +6,6 @@ package pt.ulisboa.ist.pharmacist.service.users.dtos.login
  * @property accessToken the access token
  */
 data class LoginOutputDto(
-    val userId: String,
+    val userId: Long,
     val accessToken: String
 )

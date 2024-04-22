@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
-import java.util.UUID
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
@@ -19,6 +18,7 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
+import java.util.UUID
 
 /**
  * Service that handles the business logic of the users.
@@ -34,14 +34,14 @@ class UsersServiceImpl(
     private val hashingUtils: HashingUtils,
 ) : UsersService {
 
-    override fun addFavoritePharmacy(userId: String, pharmacyId: Long) {
+    override fun addFavoritePharmacy(userId: Long, pharmacyId: Long) {
         usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
         usersRepository.addFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
     }
 
-    override fun removeFavoritePharmacy(userId: String, pharmacyId: Long) {
+    override fun removeFavoritePharmacy(userId: Long, pharmacyId: Long) {
         usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
@@ -69,22 +69,15 @@ class UsersServiceImpl(
         )
     }
 
-    override fun register(username: String, email: String, password: String): RegisterOutputDto {
+    override fun register(username: String, password: String): RegisterOutputDto {
         if (usersRepository.existsByUsername(username = username))
             throw AlreadyExistsException("User with username $username already exists")
-
-        if (usersRepository.existsByEmail(email = email))
-            throw AlreadyExistsException("User with email $email already exists")
 
         if (password.length < MIN_PASSWORD_LENGTH)
             throw InvalidPasswordException("Password must be at least $MIN_PASSWORD_LENGTH characters long")
 
-        val userId = UUID.randomUUID().toString()
-
         val user = usersRepository.create(
-            userId = userId,
             username = username,
-            email = email,
             passwordHash = hashingUtils.hashPassword(
                 username = username,
                 password = password
@@ -97,7 +90,7 @@ class UsersServiceImpl(
         user.accessTokens.add(AccessToken(tokenHash = tokenHash))
 
         return RegisterOutputDto(
-            userId = userId,
+            userId = user.userId,
             accessToken = accessToken
         )
     }
@@ -132,7 +125,7 @@ class UsersServiceImpl(
         user.accessTokens.remove(AccessToken(tokenHash = tokenHash))
     }
 
-    override fun getUser(userId: String): UserDto {
+    override fun getUser(userId: Long): UserDto {
         val user = usersRepository
             .findById(userId)
             ?: throw NotFoundException("User with id $userId not found")

@@ -1,25 +1,26 @@
 package pt.ulisboa.ist.pharmacist.repository
 
-import java.util.concurrent.atomic.AtomicLong
 import org.springframework.stereotype.Component
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import java.util.concurrent.atomic.AtomicLong
 
+/**
+ * The in-memory data source.
+ */
 @Component
 class MemDataSource {
 
-    val pharmacies = mutableMapOf<Long, Pharmacy>()
-    val medicines = mutableMapOf<Long, Medicine>()
+    final val users = mutableMapOf<Long, User>()
+    final val pharmacies = mutableMapOf<Long, Pharmacy>()
+    final val medicines = mutableMapOf<Long, Medicine>()
 
-    val users = mutableMapOf<String, User>()
-    val accessTokens = mutableListOf<AccessToken>()
-
-    val pharmaciesCounter = AtomicLong(0)
-    val medicinesCounter = AtomicLong(0)
+    final val usersCounter = AtomicLong(0)
+    final val pharmaciesCounter = AtomicLong(0)
+    final val medicinesCounter = AtomicLong(0)
 
     init {
         medicines += mapOf(
@@ -185,13 +186,23 @@ class MemDataSource {
                 2,
                 "Farmácia do Rossio",
                 Location(38.7149, -9.1394),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                medicines = mutableListOf(
+                    MedicineStock(medicines[0L]!!, 100),
+                    MedicineStock(medicines[4L]!!, 50),
+                    MedicineStock(medicines[5L]!!, 40),
+                )
             ),
             3L to Pharmacy(
                 3,
                 "Farmácia do Restelo",
                 Location(38.7014, -9.2094),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
+                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                medicines = mutableListOf(
+                    MedicineStock(medicines[3L]!!, 100),
+                    MedicineStock(medicines[1L]!!, 50),
+                    MedicineStock(medicines[2L]!!, 40),
+                )
             ),
             4L to Pharmacy(
                 4,
@@ -213,6 +224,5 @@ class MemDataSource {
             )
         )
         pharmaciesCounter.set(pharmacies.size.toLong())
-
     }
 }

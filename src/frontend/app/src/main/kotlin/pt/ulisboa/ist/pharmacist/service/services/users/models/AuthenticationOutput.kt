@@ -7,7 +7,7 @@ package pt.ulisboa.ist.pharmacist.service.services.users.models
  * @property accessToken the access token
  */
 data class AuthenticationOutput(
-    val userId: String,
+    val userId: Long,
     val accessToken: String
 )
 

@@ -41,8 +41,8 @@ class RegisterActivity : PharmacistActivity() {
 
             RegisterScreen(
                 state = viewModel.registerState,
-                onRegister = { email, username, password ->
-                    viewModel.register(email = email, username = username, password = password)
+                onRegister = { username, password ->
+                    viewModel.register(username = username, password = password)
                 }
             )
         }

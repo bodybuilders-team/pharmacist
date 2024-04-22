@@ -38,5 +38,4 @@ interface PharmaciesRepository {
     fun findAll(): List<Pharmacy>
 
     fun delete(pharmacy: Pharmacy)
-
 }

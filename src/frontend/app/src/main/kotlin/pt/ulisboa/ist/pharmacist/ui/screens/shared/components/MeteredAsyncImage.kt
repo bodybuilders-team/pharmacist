@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.ui.utils
+package pt.ulisboa.ist.pharmacist.ui.screens.shared.components
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -11,12 +11,26 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import pt.ulisboa.ist.pharmacist.R
 
+/**
+ * Checks if the user is on a metered connection.
+ *
+ * @param context the context
+ * @return true if the user is on a metered connection, false otherwise
+ */
 fun isOnMeteredConnection(context: Context): Boolean {
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     return connectivityManager.isActiveNetworkMetered
 }
 
+/**
+ * An image that only loads if the user is not on a metered connection.
+ *
+ * @param url the URL of the image
+ * @param contentDescription the content description of the image
+ * @param modifier the modifier
+ * @param placeholderImage the placeholder image
+ */
 @Composable
 fun MeteredAsyncImage(
     url: Any?,
@@ -29,19 +43,18 @@ fun MeteredAsyncImage(
         isOnMeteredConnection(context = context)
     }
 
-    return if (isOnMeteredConnection) {
+    return if (isOnMeteredConnection)
         Image(
             painter = painterResource(id = placeholderImage),
             contentDescription = contentDescription,
             modifier = modifier
         )
-    } else {
+    else
         AsyncImage(
             model = url,
             contentDescription = contentDescription,
             modifier = modifier
         )
-    }
 }
 
 

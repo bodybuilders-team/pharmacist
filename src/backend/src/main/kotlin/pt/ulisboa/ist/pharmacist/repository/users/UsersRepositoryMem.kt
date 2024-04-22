@@ -16,21 +16,24 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
 
     private val users = dataSource.users
 
-    override fun create(userId: String, username: String, email: String, passwordHash: String): User {
+    override fun create(username: String, passwordHash: String): User {
+        val userId = dataSource.usersCounter.getAndIncrement()
         val user = User(
-            userId = userId, username = username, email = email, passwordHash = passwordHash,
+            userId = userId,
+            username = username,
+            passwordHash = passwordHash,
             suspended = false,
         )
         users[userId] = user
         return user
     }
 
-    override fun addFavoritePharmacy(userId: String, pharmacyId: Long) {
+    override fun addFavoritePharmacy(userId: Long, pharmacyId: Long) {
         val user = users[userId] ?: throw NotFoundException("User not found")
         user.favoritePharmacies.add(dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found"))
     }
 
-    override fun removeFavoritePharmacy(userId: String, pharmacyId: Long) {
+    override fun removeFavoritePharmacy(userId: Long, pharmacyId: Long) {
         val user = users[userId] ?: throw NotFoundException("User not found")
         user.favoritePharmacies.remove(
             dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
@@ -41,12 +44,8 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
         return users.values.find { it.username == username }
     }
 
-    override fun findByEmail(email: String): User? {
-        return users.values.find { it.email == email }
-    }
-
-    override fun findById(id: String): User? {
-        return users[id]
+    override fun findById(userId: Long): User? {
+        return users[userId]
     }
 
     override fun findAll(pageable: OffsetPageRequest): Page<User> {
@@ -67,10 +66,6 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
 
     override fun existsByUsername(username: String): Boolean {
         return users.values.any { it.username == username }
-    }
-
-    override fun existsByEmail(email: String): Boolean {
-        return users.values.any { it.email == email }
     }
 
     override fun findByAccessTokenHash(accessToken: String): User? {

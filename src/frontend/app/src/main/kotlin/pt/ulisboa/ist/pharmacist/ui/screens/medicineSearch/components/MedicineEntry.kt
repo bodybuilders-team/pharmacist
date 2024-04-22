@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.min
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
 /**
  * A medicine entry in the search medicine result list.
@@ -47,6 +47,7 @@ fun MedicineEntry(
 
     Box(
         modifier = Modifier
+            .padding(bottom = 8.dp)
             .pointerInteropFilter {
                 when (it.action) {
                     MotionEvent.ACTION_HOVER_ENTER -> isHovered = true
@@ -58,8 +59,9 @@ fun MedicineEntry(
                 when {
                     isSelected -> Color.Gray
                     isHovered -> Color.LightGray
-                    else -> Color.Transparent
-                }
+                    else -> MaterialTheme.colorScheme.secondary
+                },
+                shape = MaterialTheme.shapes.medium
             )
             .clickable {
                 onMedicineClicked(medicine)

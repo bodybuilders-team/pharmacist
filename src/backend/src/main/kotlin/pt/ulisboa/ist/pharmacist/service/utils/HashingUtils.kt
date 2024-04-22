@@ -1,10 +1,10 @@
 package pt.ulisboa.ist.pharmacist.service.utils
 
+import org.springframework.stereotype.Component
+import pt.ulisboa.ist.pharmacist.utils.ServerConfiguration
 import javax.crypto.Mac
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
-import org.springframework.stereotype.Component
-import pt.ulisboa.ist.pharmacist.utils.ServerConfiguration
 
 /**
  * Utility class for hashing operations.

@@ -18,7 +18,7 @@ interface UsersService {
      * @param userId the id of the user
      * @param pharmacyId the id of the pharmacy
      */
-    fun addFavoritePharmacy(userId: String, pharmacyId: Long)
+    fun addFavoritePharmacy(userId: Long, pharmacyId: Long)
 
     /**
      * Removes a favorite pharmacy from the user.
@@ -26,7 +26,7 @@ interface UsersService {
      * @param userId the id of the user
      * @param pharmacyId the id of the pharmacy
      */
-    fun removeFavoritePharmacy(userId: String, pharmacyId: Long)
+    fun removeFavoritePharmacy(userId: Long, pharmacyId: Long)
 
     /**
      * Gets all users.
@@ -45,14 +45,13 @@ interface UsersService {
      * Registers a new user.
      *
      * @param username the name of the user
-     * @param email the email of the user
      * @param password the password of the user
      *
      * @return the token for the new user
      * @throws AlreadyExistsException if the user already exists
      * @throws InvalidPasswordException if the password is invalid
      */
-    fun register(username: String, email: String, password: String): RegisterOutputDto
+    fun register(username: String, password: String): RegisterOutputDto
 
     /**
      * Logs a user in.
@@ -82,5 +81,5 @@ interface UsersService {
      * @return the DTO with the user's data
      * @throws NotFoundException if the user does not exist
      */
-    fun getUser(userId: String): UserDto
+    fun getUser(userId: Long): UserDto
 }

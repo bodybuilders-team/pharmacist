@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicine
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,8 +22,9 @@ import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
+import pt.ulisboa.ist.pharmacist.ui.screens.medicine.components.MedicinePharmacyEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
-import pt.ulisboa.ist.pharmacist.ui.utils.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
 
 /**
@@ -74,10 +74,9 @@ fun MedicineSearchScreen(
                 IconButton(
                     modifier = Modifier,
                     onClick = { /*TODO*/ },
-                ) { // TODO: Implement notifications and change button based on the state (if notifications are enabled, then
-                    // the button should be filled, otherwise it should be outlined, or something like that)
+                ) {
                     Icon(
-                        Icons.Rounded.Notifications,
+                        Icons.Rounded.Notifications, // Icons.Rounded.NotificationsActive
                         contentDescription = "Add to notifications",
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -91,18 +90,15 @@ fun MedicineSearchScreen(
                 )
                 LazyColumn(
                     modifier = Modifier
-                        .weight(0.1f)
-                        .padding(bottom = 8.dp)
+                        .padding(10.dp)
                 ) {
 
                     items(pharmacies.itemCount) { index ->
                         val pharmacy = pharmacies[index]!!
-                        Box(modifier = Modifier
-                            .clickable {
-                                onPharmacyClick(pharmacy)
-                            }) {
-                            Text(text = pharmacy.name)
-                        }
+                        MedicinePharmacyEntry(
+                            pharmacy,
+                            onPharmacyClick = onPharmacyClick
+                        )
                     }
                 }
             }

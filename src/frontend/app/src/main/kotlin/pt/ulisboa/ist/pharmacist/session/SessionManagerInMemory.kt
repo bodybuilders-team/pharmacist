@@ -11,7 +11,7 @@ import androidx.compose.runtime.setValue
 class SessionManagerInMemory : SessionManager {
     private var _accessToken: String? by mutableStateOf(null)
     private var _username: String? by mutableStateOf(null)
-    private var _userId: String? by mutableStateOf(null)
+    private var _userId: Long? by mutableStateOf(null)
 
     override val accessToken
         get() = _accessToken
@@ -19,10 +19,10 @@ class SessionManagerInMemory : SessionManager {
     override val username
         get() = _username
 
-    override val usedId: String?
+    override val usedId: Long?
         get() = _userId
 
-    override fun setSession(userId: String, accessToken: String, username: String) {
+    override fun setSession(userId: Long, accessToken: String, username: String) {
         this._userId = userId
         this._accessToken = accessToken
         this._username = username

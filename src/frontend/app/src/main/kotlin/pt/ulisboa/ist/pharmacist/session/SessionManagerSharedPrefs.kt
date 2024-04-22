@@ -16,8 +16,8 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         context.getSharedPreferences(SESSION_PREFS, Context.MODE_PRIVATE)
     }
 
-    override val usedId: String?
-        get() = prefs.getString(USER_ID, null)
+    override val usedId: Long?
+        get() = if (prefs.contains(USER_ID)) prefs.getLong(USER_ID, -1) else null
 
     override val accessToken: String?
         get() = prefs.getString(ACCESS_TOKEN, null)
@@ -26,14 +26,14 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         get() = prefs.getString(USERNAME, null)
 
     override fun setSession(
-        userId: String,
+        userId: Long,
         accessToken: String,
         username: String
     ) {
         prefs.edit()
             .putString(ACCESS_TOKEN, accessToken)
             .putString(USERNAME, username)
-            .putString(USER_ID, userId)
+            .putLong(USER_ID, userId)
             .apply()
     }
 

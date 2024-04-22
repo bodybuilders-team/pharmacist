@@ -42,9 +42,8 @@ class UsersService(
     }
 
     /**
-     * Registers the user with the given [email], [username] and [password].
+     * Registers the user with the given [username] and [password].
      *
-     * @param email the email of the user
      * @param username the username of the user
      * @param password the password of the user
      *
@@ -54,13 +53,12 @@ class UsersService(
      * @throws IOException if there is an error while sending the request
      */
     suspend fun register(
-        email: String,
         username: String,
         password: String
     ): APIResult<RegisterOutput> =
         post(
             link = Uris.USERS,
-            body = RegisterInput(username = username, email = email, password = password)
+            body = RegisterInput(username = username, password = password)
         )
 
     /**
