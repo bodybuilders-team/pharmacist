@@ -27,22 +27,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
-import kotlin.math.min
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import kotlin.math.min
 
 /**
  * A medicine entry in the pharmacy medicine list.
  *
  * @param medicine the Medicine
  * @param stock the stock of the medicine
+ * @param modifier the modifier
  * @param onMedicineClick function to be executed when the medicine is clicked
+ * @param onAddStockClick function to be executed when the add stock button is clicked
+ * @param onRemoveStockClick function to be executed when the remove stock button is clicked
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PharmacyMedicineEntry(
     medicine: Medicine,
     stock: Long,
+    modifier: Modifier = Modifier,
     onMedicineClick: (Long) -> Unit = {},
     onAddStockClick: (Long) -> Unit,
     onRemoveStockClick: (Long) -> Unit
@@ -58,6 +62,7 @@ fun PharmacyMedicineEntry(
                 color = MaterialTheme.colorScheme.secondary,
                 shape = MaterialTheme.shapes.medium
             )
+            .then(modifier)
     ) {
         Row(modifier = Modifier
             .pointerInteropFilter {
@@ -82,6 +87,7 @@ fun PharmacyMedicineEntry(
             )
             Column(
                 modifier = Modifier
+                    .padding(top = 8.dp)
                     .align(Alignment.CenterVertically)
             ) {
                 Text(
@@ -92,10 +98,10 @@ fun PharmacyMedicineEntry(
                 Text(
                     text = medicine.description.substring(
                         0,
-                        min(100, medicine.description.length)
+                        min(50, medicine.description.length)
                     )
-                        .plus(if (medicine.description.length > 100) "..." else ""),
-                    style = MaterialTheme.typography.bodySmall,
+                        .plus(if (medicine.description.length > 50) "..." else ""),
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(0.1f)
                 )
             }
@@ -121,7 +127,6 @@ fun PharmacyMedicineEntry(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-
             IconButton(
                 onClick = { onRemoveStockClick(medicine.medicineId) },
                 modifier = Modifier.align(Alignment.CenterHorizontally)

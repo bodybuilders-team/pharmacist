@@ -15,7 +15,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateToForResul
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
- * Activity for the [MedicineScreen].
+ * Activity for the [AddMedicineToPharmacyScreen].
  */
 class AddMedicineToPharmacyActivity : PharmacistActivity() {
 

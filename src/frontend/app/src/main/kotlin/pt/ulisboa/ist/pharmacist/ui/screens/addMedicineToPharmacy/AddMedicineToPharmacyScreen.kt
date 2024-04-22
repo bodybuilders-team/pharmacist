@@ -1,26 +1,33 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearch
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton
 import pt.ulisboa.ist.pharmacist.ui.theme.PharmacistTheme
 
 
 /**
- * Medicine screen.
- *
+ * Screen for adding a medicine to a pharmacy.
  */
 @Composable
 fun AddMedicineToPharmacyScreen(
@@ -33,10 +40,18 @@ fun AddMedicineToPharmacyScreen(
     addMedicineToPharmacy: (Long, Long) -> Unit,
 ) {
     PharmacistTheme {
-        Column {
-
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "Available Medicines",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp)
+            )
             MedicineSearch(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .weight(0.8f),
                 hasLocationPermission = hasLocationPermission,
                 medicinesState = medicinesState,
                 onSearch = onSearch,
@@ -44,12 +59,13 @@ fun AddMedicineToPharmacyScreen(
                 selectedMedicine = selectedMedicine
             )
 
-            var stock by remember { mutableStateOf(0L) }
+            var stock by remember { mutableLongStateOf(0L) }
 
             if (selectedMedicine != null) {
                 PharmacyMedicineEntry(
-                    selectedMedicine,
-                    stock,
+                    modifier = Modifier.fillMaxWidth(0.8f),
+                    medicine = selectedMedicine,
+                    stock = stock,
                     onAddStockClick = {
                         stock += 1
                     },
@@ -59,29 +75,28 @@ fun AddMedicineToPharmacyScreen(
                 )
             }
 
-            Button(
+            IconButton(
+                onClick = createMedicine,
+                imageVector = Icons.Rounded.Add,
+                text = "Create Medicine",
+                contentDescription = "Create Medicine",
                 modifier = Modifier
-                    .weight(0.3f),
-                onClick = {
-                    createMedicine()
-                }
-            ) {
-                Text("Create Medicine")
-            }
+                    .align(Alignment.CenterHorizontally)
+            )
 
-            Button(
-                modifier = Modifier
-                    .weight(0.3f),
-                enabled = selectedMedicine != null,
+            IconButton(
                 onClick = {
                     if (selectedMedicine != null)
                         addMedicineToPharmacy(selectedMedicine.medicineId, stock)
-                }
-            ) {
-                Text("Add Medicine To Pharmacy")
-            }
+                },
+                enabled = selectedMedicine != null,
+                imageVector = Icons.Rounded.Add,
+                text = "Add Medicine To Pharmacy",
+                contentDescription = "Add Medicine To Pharmacy",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
         }
-
     }
 }
 

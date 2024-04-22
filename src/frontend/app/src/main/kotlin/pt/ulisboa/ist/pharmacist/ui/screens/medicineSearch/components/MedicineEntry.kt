@@ -34,6 +34,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
  * @param medicine the Medicine
  * @param closestPharmacy the closest pharmacy where the medicine is available
  * @param onMedicineClicked function to be executed when the medicine is clicked
+ * @param isSelected true if the medicine is selected, false otherwise
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

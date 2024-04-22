@@ -8,7 +8,6 @@ import pt.ulisboa.ist.pharmacist.service.connection.APIResult
 import pt.ulisboa.ist.pharmacist.service.services.users.models.getUsers.GetUsersOutput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.login.LoginInput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.login.LoginOutput
-import pt.ulisboa.ist.pharmacist.service.services.users.models.logout.LogoutOutput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.register.RegisterInput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.register.RegisterOutput
 import pt.ulisboa.ist.pharmacist.service.utils.Uris
@@ -89,7 +88,7 @@ class UsersService(
      * @throws UnexpectedResponseException if there is an unexpected response from the server
      * @throws IOException if there is an error while sending the request
      */
-    suspend fun logout(): APIResult<LogoutOutput> =
+    suspend fun logout(): APIResult<Unit> =
         post(
             link = Uris.USERS_LOGOUT,
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")

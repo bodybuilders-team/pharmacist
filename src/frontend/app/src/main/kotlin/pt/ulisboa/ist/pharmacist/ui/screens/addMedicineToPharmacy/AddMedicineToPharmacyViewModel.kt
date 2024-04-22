@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -30,6 +31,9 @@ import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicinePagingSource
  *
  * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
+ * @property pharmacyId the id of the pharmacy
+ * @property selectedMedicine the selected medicine
+ * @property hasLocationPermission true if the user has location permission, false otherwise
  */
 class AddMedicineToPharmacyViewModel(
     pharmacistService: PharmacistService,
@@ -43,6 +47,7 @@ class AddMedicineToPharmacyViewModel(
     private var queryFlow = MutableStateFlow("")
     private val locationFlow = MutableStateFlow<Location?>(null)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val _medicinesState = combine(queryFlow, locationFlow) { searchValue, location ->
         Pair(searchValue, location)
     }.flatMapLatest { (search, location) ->

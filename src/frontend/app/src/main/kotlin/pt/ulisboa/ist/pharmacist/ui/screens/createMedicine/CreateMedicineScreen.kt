@@ -2,14 +2,14 @@ package pt.ulisboa.ist.pharmacist.ui.screens.createMedicine
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -22,11 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
 
 
 /**
  * Create Medicine screen.
  *
+ * @param boxPhoto the box photo
+ * @param onSelectImage function to be executed when the user selects an image
+ * @param onCreateMedicine function to be executed when the user creates a medicine
  */
 @Composable
 fun CreateMedicineScreen(
@@ -35,7 +39,6 @@ fun CreateMedicineScreen(
     onCreateMedicine: (String, String) -> Unit
 ) {
     PharmacistScreen {
-        // Add take photo button or image picker
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
@@ -43,21 +46,24 @@ fun CreateMedicineScreen(
             var name by remember { mutableStateOf("") }
             var description by remember { mutableStateOf("") }
 
+            ScreenTitle(title = "Create Medicine")
+
+            // TODO: Add validation of these fields
             TextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name") },
+                label = { Text("Medicine Name") },
                 modifier = Modifier.padding(16.dp)
             )
 
             TextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description") },
+                label = { Text("Medicine Description") },
                 modifier = Modifier.padding(16.dp)
             )
 
-            Row {
+            Column {
                 if (boxPhoto != null)
                     Image(
                         bitmap = boxPhoto,
@@ -69,13 +75,22 @@ fun CreateMedicineScreen(
                     onClick = onSelectImage,
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Icon(Icons.Rounded.Image, contentDescription = "Take photo/Select image")
+                    Icon(
+                        Icons.Rounded.Image,
+                        contentDescription = "Take photo/Select image",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
 
-            Button(onClick = { onCreateMedicine(name, description) }) {
-                Text("Create")
-            }
+            pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton(
+                onClick = { onCreateMedicine(name, description) },
+                imageVector = Icons.Rounded.Add,
+                text = "Create Medicine",
+                contentDescription = "Create Medicine",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
 
         }
     }
