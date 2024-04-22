@@ -33,7 +33,7 @@ class CreateMedicineActivity : PharmacistActivity() {
 
             val inputStream: InputStream? = contentResolver.openInputStream(uri)
 
-            if(inputStream == null) {
+            if (inputStream == null) {
                 Log.e("CreateMedicineActivity", "Failed to open input stream")
                 return@registerForActivityResult
             }

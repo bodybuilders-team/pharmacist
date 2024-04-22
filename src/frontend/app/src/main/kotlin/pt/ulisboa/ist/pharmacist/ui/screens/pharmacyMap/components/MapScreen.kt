@@ -62,7 +62,7 @@ fun MapScreen(
     LaunchedEffect(cameraPositionState.cameraMoveStartedReason) {
         if (cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE ||
             cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.API_ANIMATION
-            ) {
+        ) {
             Log.d("MapScreen", "Camera moved by user, disabling followMyLocation")
             setFollowMyLocation(false)
         }

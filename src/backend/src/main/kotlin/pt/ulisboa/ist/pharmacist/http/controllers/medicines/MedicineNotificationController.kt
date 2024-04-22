@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.medicines
 
+import java.util.concurrent.Executors
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -8,7 +9,6 @@ import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.medicines.MedicineNotificationService
 import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
-import java.util.concurrent.Executors
 
 /**
  * A Medicine Notification Controller.

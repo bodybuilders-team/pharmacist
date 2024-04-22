@@ -25,17 +25,20 @@ class CreateMedicineModel(
     fun uploadBoxPhoto(boxPhoto: ByteArray) = viewModelScope.launch {
         val createSignedUrlResult = pharmacistService.uploaderService.createSignedUrl()
 
-        if(createSignedUrlResult.isFailure()) {
+        if (createSignedUrlResult.isFailure()) {
             return@launch
         }
 
-        Log.d("CreateMedicineModel", "Signed URL created successfully with URL: ${createSignedUrlResult.data.signedUrl} and object name: ${createSignedUrlResult.data.objectName}")
+        Log.d(
+            "CreateMedicineModel",
+            "Signed URL created successfully with URL: ${createSignedUrlResult.data.signedUrl} and object name: ${createSignedUrlResult.data.objectName}"
+        )
 
         val signedUrl = createSignedUrlResult.data.signedUrl
 
         val uploadResult = pharmacistService.uploaderService.uploadBoxPhoto(signedUrl, boxPhoto)
 
-        if(uploadResult.isSuccess()) {
+        if (uploadResult.isSuccess()) {
             Log.d("CreateMedicineModel", "Box photo uploaded successfully")
         }
 

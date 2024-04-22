@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service.services.users
 
 import com.google.gson.Gson
+import java.io.IOException
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
@@ -12,7 +13,6 @@ import pt.ulisboa.ist.pharmacist.service.services.users.models.register.Register
 import pt.ulisboa.ist.pharmacist.service.services.users.models.register.RegisterOutput
 import pt.ulisboa.ist.pharmacist.service.utils.Uris
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import java.io.IOException
 
 /**
  * The service that handles the users requests.

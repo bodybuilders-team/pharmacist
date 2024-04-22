@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.authentication.login
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -9,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 
 /**
