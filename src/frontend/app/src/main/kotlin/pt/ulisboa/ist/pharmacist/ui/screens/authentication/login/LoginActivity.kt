@@ -11,6 +11,9 @@ import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.UpgradeViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
 
+// TODO: Login, Register and Upgrade screens are essentially the same, with the same components and logic. They should be refactored to share the same components and logic:
+// named AuthenticationScreen, AuthenticationViewModel, AuthenticationState, AuthenticationEvent, AuthenticationTextField, AuthenticationButton, etc.
+
 /**
  * Activity for the login screen.
  *
