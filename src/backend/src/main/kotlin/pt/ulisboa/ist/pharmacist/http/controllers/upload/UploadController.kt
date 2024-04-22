@@ -8,15 +8,18 @@ import com.google.cloud.storage.HttpMethod
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import com.google.common.net.HttpHeaders.CONTENT_TYPE
+import jakarta.validation.Valid
+import java.util.concurrent.TimeUnit
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import pt.ulisboa.ist.pharmacist.http.controllers.upload.models.SignedUrlInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.upload.models.SignedUrlModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.utils.ServerConfiguration
-import java.util.concurrent.TimeUnit
 
 
 @RestController
@@ -27,17 +30,19 @@ class UploadController(val serverConfiguration: ServerConfiguration) {
     /**
      * Generates a signed URL for a PUT request to upload an object to a bucket.
      *
-     * @param projectId the project id
-     * @param bucketName the bucket name
-     * @param objectName the object name
-     *
      * @return the signed URL
      */
     private fun generateV4GetObjectSignedUrl(
-        projectId: String,
-        bucketName: String,
-        objectName: String
+        mimeTypeStr: String,
     ): SignedUrlModel {
+        val mimeType = MediaType.parseMediaType(mimeTypeStr)
+
+        if (mimeType.type != "image")
+            throw IllegalArgumentException("Invalid MIME type, must be image/*")
+
+        val uuid = java.util.UUID.randomUUID().toString()
+
+        val objectName = "$uuid.${mimeType.subtype}"
 
         val credentials: Credentials = GoogleCredentials.fromStream(
             UploadController::class.java.getResourceAsStream(serverConfiguration.googleCredentials)
@@ -45,18 +50,19 @@ class UploadController(val serverConfiguration: ServerConfiguration) {
 
         val storage: Storage = StorageOptions.newBuilder()
             .setCredentials(credentials)
-            .setProjectId(projectId).build().service
+            .setProjectId(serverConfiguration.googleProjectId).build().service
 
         // Define resource
-        val blobInfo: BlobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, objectName)).build()
+        val blobInfo: BlobInfo =
+            BlobInfo.newBuilder(BlobId.of(serverConfiguration.googleBucketName, objectName)).build()
 
         // Generate Signed URL
         val extensionHeaders: MutableMap<String, String> = HashMap()
-        extensionHeaders[CONTENT_TYPE] = MediaType.APPLICATION_OCTET_STREAM_VALUE
+        extensionHeaders[CONTENT_TYPE] = mimeTypeStr
 
         val url = storage.signUrl(
             blobInfo,
-            15,
+            SIGNED_URL_DURATION,
             TimeUnit.MINUTES,
             Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
             Storage.SignUrlOption.withExtHeaders(extensionHeaders),
@@ -65,7 +71,7 @@ class UploadController(val serverConfiguration: ServerConfiguration) {
 
         return SignedUrlModel(
             signedUrl = url.toString(),
-            objectName = objectName
+            url = "${serverConfiguration.googleUrl}/${serverConfiguration.googleBucketName}/$objectName"
         )
     }
 
@@ -75,13 +81,12 @@ class UploadController(val serverConfiguration: ServerConfiguration) {
      * @return the response to the request with the signed URL
      */
     @PostMapping(Uris.CREATE_SIGNED_URL)
-    fun createSignedUrl(): SignedUrlModel {
-        val uuid = java.util.UUID.randomUUID().toString()
+    fun createSignedUrl(
+        @Valid @RequestBody signedUrlRequest: SignedUrlInputModel
+    ): SignedUrlModel = generateV4GetObjectSignedUrl(signedUrlRequest.mimeType)
 
-        return generateV4GetObjectSignedUrl(
-            serverConfiguration.googleProjectId,
-            serverConfiguration.googleBucketName,
-            uuid
-        )
+    companion object {
+        private const val SIGNED_URL_DURATION = 15L
     }
 }
+

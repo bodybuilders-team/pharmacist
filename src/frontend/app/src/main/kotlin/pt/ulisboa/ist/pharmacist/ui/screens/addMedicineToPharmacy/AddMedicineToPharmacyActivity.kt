@@ -59,7 +59,16 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
                     CreateMedicineActivity.navigateForResult(this, createMedicineResultLauncher)
                 },
                 addMedicineToPharmacy = { medicineId, stock ->
-                    viewModel.addMedicineToPharmacy(medicineId, stock)
+                    lifecycleScope.launch {
+                        val added = viewModel.addMedicineToPharmacy(medicineId, stock)
+
+                        if (added) {
+                            val intent = Intent()
+                            intent.putExtra(MEDICINE_ID, medicineId)
+                            setResult(RESULT_OK, intent)
+                            finish()
+                        }
+                    }
                 }
             )
         }

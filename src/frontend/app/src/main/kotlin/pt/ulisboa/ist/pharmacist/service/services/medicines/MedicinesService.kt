@@ -34,11 +34,37 @@ class MedicinesService(
         )
     }
 
-    suspend fun getMedicineById(pid: Long): APIResult<Medicine> {
+    suspend fun getMedicineById(medicineId: Long): APIResult<Medicine> {
         return get<Medicine>(
-            link = Uris.getMedicineById(pid),
+            link = Uris.getMedicineById(medicineId),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )
     }
 
+    suspend fun createMedicine(
+        name: String,
+        description: String,
+        boxPhotoUrl: String
+    ): APIResult<CreateMedicineOutputModel> {
+        return post(
+            link = Uris.MEDICINES,
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
+            body = CreateMedicineInputModel(
+                name = name,
+                description = description,
+                boxPhotoUrl = boxPhotoUrl
+            )
+        )
+
+    }
+
+    data class CreateMedicineInputModel(
+        val name: String,
+        val description: String,
+        val boxPhotoUrl: String
+    )
+
+    data class CreateMedicineOutputModel(
+        val medicineId: Long
+    )
 }

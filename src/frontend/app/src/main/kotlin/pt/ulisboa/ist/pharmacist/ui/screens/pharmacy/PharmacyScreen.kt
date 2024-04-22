@@ -135,7 +135,6 @@ fun PharmacyScreen(
 
                 LazyColumn(
                     modifier = Modifier
-                        .weight(0.1f)
                         .padding(20.dp)
                 ) {
 

@@ -7,10 +7,10 @@ server:
   port: 8080
 
 google:
+  base-url: https://storage.googleapis.com
   credentials: /sa-private-key.json
   projectId: pharmacist-420716
   bucketName: pharmacist-g03
-
 spring:
   application:
     name: pharmacist

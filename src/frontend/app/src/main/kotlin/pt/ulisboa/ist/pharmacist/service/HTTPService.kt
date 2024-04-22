@@ -40,25 +40,26 @@ abstract class HTTPService(
      */
     protected suspend inline fun <reified T> Request.getResponseResult(): APIResult<T> =
         this.send(httpClient) { response ->
-            val body = response.getBodyOrThrow()
-            val contentType = body.contentType()
+            response.getBodyOrThrow().use { body ->
+                val contentType = body.contentType()
 
-            try {
-                when {
-                    response.isSuccessful && contentType == applicationJsonMediaType ->
-                        APIResult.Success(data = jsonEncoder.fromJson<T>(JsonReader(body.charStream())))
+                try {
+                    when {
+                        response.isSuccessful && contentType == applicationJsonMediaType ->
+                            APIResult.Success(data = jsonEncoder.fromJson<T>(JsonReader(body.charStream())))
 
-                    !response.isSuccessful && contentType == problemMediaType ->
-                        APIResult.Failure(error = jsonEncoder.fromJson(JsonReader(body.charStream())))
+                        !response.isSuccessful && contentType == problemMediaType ->
+                            APIResult.Failure(error = jsonEncoder.fromJson(JsonReader(body.charStream())))
 
-                    response.isSuccessful &&
-                            T::class.java.isAssignableFrom(Unit::class.java) ->
-                        APIResult.Success(data = Unit as T)
+                        response.isSuccessful &&
+                                T::class.java.isAssignableFrom(Unit::class.java) ->
+                            APIResult.Success(data = Unit as T)
 
-                    else -> throw UnexpectedResponseException(response)
+                        else -> throw UnexpectedResponseException(response)
+                    }
+                } catch (e: JsonSyntaxException) {
+                    throw UnexpectedResponseException(response)
                 }
-            } catch (e: JsonSyntaxException) {
-                throw UnexpectedResponseException(response)
             }
         }
 

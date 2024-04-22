@@ -116,6 +116,18 @@ class PharmaciesService(
         )
     }
 
+    suspend fun addNewMedicineToPharmacy(
+        pharmacyId: Long,
+        medicineId: Long,
+        stock: Long
+    ): APIResult<Unit> {
+        return put<Unit>(
+            link = Uris.addNewMedicineToPharmacy(pharmacyId, medicineId),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
+            body = AddNewMedicineInputModel(stock)
+        )
+    }
+
     data class ChangeMedicineStockModel(
         val operation: MedicineStockOperation,
         val quantity: Long
@@ -156,3 +168,7 @@ class PharmaciesService(
         )
     }
 }
+
+data class AddNewMedicineInputModel(
+    val quantity: Long
+)

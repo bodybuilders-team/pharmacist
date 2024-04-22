@@ -14,9 +14,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.connection.isFailure
 import pt.ulisboa.ist.pharmacist.service.services.LocationService
 import pt.ulisboa.ist.pharmacist.service.services.hasLocationPermission
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -32,7 +34,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicinePagingSource
 class AddMedicineToPharmacyViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager,
-    pharmacyId: Long
+    val pharmacyId: Long
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
     var selectedMedicine by mutableStateOf<Medicine?>(null)
 
@@ -67,12 +69,42 @@ class AddMedicineToPharmacyViewModel(
     }
 
 
-    fun addMedicineToPharmacy(medicineId: Long, stock: Long) {
+    suspend fun addMedicineToPharmacy(medicineId: Long, stock: Long): Boolean {
+        if (stock <= 0) {
+            Log.e("AddMedicineToPharmacyViewModel", "Invalid stock")
+            return false
+        }
+
         Log.d("AddMedicineToPharmacyViewModel", "addMedicineToPharmacy: $medicineId, $stock")
+
+        val result = pharmacistService.pharmaciesService.addNewMedicineToPharmacy(
+            pharmacyId,
+            medicineId,
+            stock
+        )
+
+        if (result.isFailure()) {
+            Log.e("AddMedicineToPharmacyViewModel", "Failed to add medicine to pharmacy")
+            return false
+        }
+
+        Log.d("AddMedicineToPharmacyViewModel", "Medicine added to pharmacy")
+
+        return true
     }
 
-    fun addMedicine(medicineId: Long) {
+    fun addMedicine(medicineId: Long) = viewModelScope.launch {
         Log.d("AddMedicineToPharmacyViewModel", "addMedicine: $medicineId")
+
+        val result = pharmacistService.medicinesService.getMedicineById(medicineId)
+
+        if (result.isFailure()) {
+            Log.e("AddMedicineToPharmacyViewModel", "Failed to get medicine with id $medicineId")
+            return@launch
+        }
+
+        val medicine = result.data
+        selectedMedicine = medicine
     }
 
 

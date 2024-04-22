@@ -64,4 +64,10 @@ object Uris {
         PHARMACY_MEDICINES_GET_BY_ID
             .replace("{pid}", pharmacyId.toString())
             .replace("{mid}", medicineId.toString())
+
+    fun addNewMedicineToPharmacy(pharmacyId: Long, medicineId: Long): String {
+        return PHARMACY_MEDICINES_GET_BY_ID
+            .replace("{pid}", pharmacyId.toString())
+            .replace("{mid}", medicineId.toString())
+    }
 }

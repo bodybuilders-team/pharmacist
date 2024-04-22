@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service
 
 import com.google.gson.Gson
-import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -43,20 +43,23 @@ class UploaderService(
     val sessionManager: SessionManager
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
-    suspend fun uploadBoxPhoto(signedUrl: String, boxPhoto: ByteArray): APIResult<Unit> {
+    suspend fun uploadBoxPhoto(signedUrl: String, boxPhoto: ByteArray, mimeType: MediaType): APIResult<Unit> {
         return Request.Builder()
             .url(url = signedUrl)
             .put(
                 body = boxPhoto
-                    .toRequestBody(contentType = "application/octet-stream".toMediaType())
+                    .toRequestBody(contentType = mimeType)
             )
             .build()
             .getResponseResult()
     }
 
-    suspend fun createSignedUrl(): APIResult<SignedUrlOutputModel> {
+    suspend fun createSignedUrl(
+        mimeType: String
+    ): APIResult<SignedUrlOutputModel> {
         return post(
             link = Uris.CREATE_SIGNED_URL,
+            body = SignedUrlInputModel(mimeType = mimeType),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )
     }
@@ -64,5 +67,9 @@ class UploaderService(
 
 data class SignedUrlOutputModel(
     val signedUrl: String,
-    val objectName: String
+    val url: String
+)
+
+data class SignedUrlInputModel(
+    val mimeType: String
 )

@@ -26,5 +26,8 @@ class ServerConfiguration(
     val googleProjectId: String,
 
     @Value("\${google.bucketName}")
-    val googleBucketName: String
+    val googleBucketName: String,
+
+    @Value("\${google.base-url}")
+    val googleUrl: String
 )
