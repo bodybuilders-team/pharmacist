@@ -1,10 +1,10 @@
 package pt.ulisboa.ist.pharmacist.service.medicines
 
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineNotification
 import pt.ulisboa.ist.pharmacist.domain.users.User
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 /**
  * Service that handles the business logic of medicine notifications.
