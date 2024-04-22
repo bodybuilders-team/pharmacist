@@ -1,31 +1,25 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components
 
+import android.content.res.Configuration
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CameraAlt
-import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
@@ -34,8 +28,8 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton
 
 /**
  * Screen to display the map
@@ -51,13 +45,21 @@ fun MapScreen(
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
+    onAddPharmacyFinishClick: (newPharmacyName: String, newPharmacyDescription: String, location: Location) -> Unit,
     setFollowMyLocation: (Boolean) -> Unit,
     setPosition: (LatLng) -> Unit
 ) {
-    var addingPharmacy by remember { mutableStateOf(false) }
-    var newPharmacyMarkerState by remember { mutableStateOf<MarkerState?>(null) }
-    var newPharmacyName by remember { mutableStateOf("") }
-    var newPharmacyDescription by remember { mutableStateOf("") }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    var addingPharmacy by rememberSaveable { mutableStateOf(false) }
+    var newPharmacyMarkerLocation by rememberSaveable { mutableStateOf<LatLng?>(null) }
+    var newPharmacyMarkerState by remember {
+        mutableStateOf(newPharmacyMarkerLocation?.let { MarkerState(it) })
+    }
+
+    LaunchedEffect(key1 = newPharmacyMarkerState?.position) {
+        newPharmacyMarkerLocation = newPharmacyMarkerState?.position
+    }
 
     LaunchedEffect(cameraPositionState.cameraMoveStartedReason) {
         if (cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE ||
@@ -139,59 +141,25 @@ fun MapScreen(
                 Text(if (!addingPharmacy) "Add Pharmacy" else "Cancel")
             }
 
-            if (addingPharmacy && newPharmacyMarkerState != null) {
-                Box(
-                    modifier = Modifier
-                        .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
-                        .align(alignment = Alignment.CenterHorizontally)
-                        .background(Color.White, shape = RoundedCornerShape(8.dp))
-                ) {
-                    Column {
-                        IconButton(
-                            onClick = {
-                                setPosition(newPharmacyMarkerState!!.position)
-                            },
-                            imageVector = Icons.Rounded.LocationOn,
-                            text = "Go to location",
-                            contentDescription = "Go to location"
-                        )
-                        TextField(
-                            value = newPharmacyName,
-                            textStyle = MaterialTheme.typography.bodyMedium,
-                            //fontWeight = FontWeight.Bold,
-                            onValueChange = { newPharmacyName = it },
-                            label = { Text("Pharmacy Name") },
-                            placeholder = { Text("New Pharmacy") }
-                        )
-                        TextField(
-                            value = newPharmacyDescription,
-                            textStyle = MaterialTheme.typography.bodySmall,
-                            onValueChange = { newPharmacyDescription = it },
-                            label = { Text("Pharmacy Description") },
-                            placeholder = { Text("No description") }
-                        )
-                        IconButton(
-                            onClick = {
-                                // Intent to select or take picture
-                                // getPicture()
-                            },
-                            imageVector = Icons.Rounded.CameraAlt,
-                            text = "Select or Take a picture",
-                            contentDescription = "Select or Take a picture"
-                        )
-                        Button(
-                            onClick = {
-                                // viewModel.addPharmacy(newPharmacyName, newPharmacyDescription, newPharmacyMarkerState!!.position)
-
-                                addingPharmacy = false
-                                newPharmacyMarkerState = null
-                                newPharmacyName = "New Pharmacy"
-                                newPharmacyDescription = "No description"
-                            }
-                        ) {
-                            Text("Finish")
+            if (addingPharmacy) {
+                newPharmacyMarkerLocation?.let { markerLocation ->
+                    AddPharmacyWindow(
+                        modifier = Modifier.align(
+                            alignment = if (isLandscape) Alignment.Start
+                            else Alignment.CenterHorizontally
+                        ),
+                        onGoToLocationButtonClick = { setPosition(markerLocation) },
+                        onAddPictureButtonClick = { /* TODO */ },
+                        onAddPharmacyFinishClick = { newPharmacyName, newPharmacyDescription ->
+                            onAddPharmacyFinishClick(
+                                newPharmacyName,
+                                newPharmacyDescription,
+                                Location(markerLocation.latitude, markerLocation.longitude)
+                            )
+                            addingPharmacy = false
+                            newPharmacyMarkerState = null
                         }
-                    }
+                    )
                 }
             }
         }

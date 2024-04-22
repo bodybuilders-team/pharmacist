@@ -2,8 +2,10 @@ package pt.ulisboa.ist.pharmacist.service.services.pharmacies
 
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.addPharmacy.AddPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacies.GetPharmaciesOutputModel
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.listAvailableMedicines.ListAvailableMedicinesOutputModel
@@ -122,5 +124,35 @@ class PharmaciesService(
     enum class MedicineStockOperation {
         ADD,
         REMOVE
+    }
+
+    /**
+     * Adds a new pharmacy.
+     *
+     * @param name the pharmacy name
+     * @param description the pharmacy description
+     * @param pictureUrl the pharmacy picture's url
+     * @param location the pharmacy location
+     *
+     * @return the API result of the add pharmacy request
+     *
+     * @throws IllegalStateException if there is no access token
+     */
+    suspend fun addPharmacy(
+        name: String,
+        description: String,
+        pictureUrl: String,
+        location: Location
+    ): APIResult<AddPharmacyOutputModel> {
+        return post<AddPharmacyOutputModel>(
+            link = Uris.PHARMACIES,
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
+            body = mapOf(
+                "name" to name,
+                //"description" to description,
+                "pictureUrl" to pictureUrl,
+                "location" to location
+            )
+        )
     }
 }

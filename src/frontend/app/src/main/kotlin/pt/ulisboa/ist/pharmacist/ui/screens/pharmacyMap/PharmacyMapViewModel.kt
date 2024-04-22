@@ -14,6 +14,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
@@ -34,8 +35,6 @@ class PharmacyMapViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager,
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
-    private var location by mutableStateOf<LatLng?>(null)
-
     var state: PharmacyMapState by mutableStateOf(PharmacyMapState.UNLOADED)
         private set
 
@@ -60,15 +59,10 @@ class PharmacyMapViewModel(
      * Loads the list of pharmacies.
      */
     fun loadPharmacyList() = viewModelScope.launch {
-        if (state != PharmacyMapState.UNLOADED)
-            return@launch
-
-        val result = pharmacistService.pharmaciesService.getPharmacies()
+        val result = pharmacistService.pharmaciesService.getPharmacies(limit = 1000)
 
         if (result.isSuccess())
             pharmacies = result.data.pharmacies
-
-        state = PharmacyMapState.LOADED
     }
 
     /**
@@ -83,7 +77,7 @@ class PharmacyMapViewModel(
         locationService.requestLocationUpdates()
             .collect { location ->
                 val latLng = LatLng(location.latitude, location.longitude)
-                Log.d("PharmacyMapViewModel", "Location: $latLng")
+                Log.d("PharmacyMapViewModel_CurrentLocation", "Location: $latLng")
                 if (followMyLocation) {
                     try {
                         cameraPositionState.animate(
@@ -92,10 +86,10 @@ class PharmacyMapViewModel(
                             )
                         )
                     } catch (e: CancellationException) {
-                        Log.d("PharmacyMapViewModel", "Camera animation cancelled")
+                        Log.d("PharmacyMapViewModel_CurrentLocation", "Camera animation cancelled")
                         throw e
                     } catch (e: Exception) {
-                        Log.d("PharmacyMapViewModel", "Camera animation failed")
+                        Log.d("PharmacyMapViewModel_CurrentLocation", "Camera animation failed")
                     }
                 }
             }
@@ -110,15 +104,18 @@ class PharmacyMapViewModel(
         )
     }
 
-    fun getPicture() {
-        // Launch Camera Intent
-//        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//        if (takePictureIntent.resolveActivity(context.packageManager) != null) {
-//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-//        } else {
-//            // Handle situation where no camera app is available
-//            Toast.makeText(context, "No Camera App Found", Toast.LENGTH_SHORT).show()
-//        }
+    fun addPharmacy(name: String, description: String, picture: String, location: Location) {
+        viewModelScope.launch {
+            val result = pharmacistService.pharmaciesService.addPharmacy(
+                name = name,
+                description = description,
+                pictureUrl = picture,
+                location = location
+            )
+
+            if (result.isSuccess())
+                loadPharmacyList()
+        }
     }
 
     /**

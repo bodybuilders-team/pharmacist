@@ -23,17 +23,25 @@ class PharmacyMapActivity : PharmacistActivity() {
 
         viewModel.checkForLocationAccessPermission(this)
 
-        setContent {
-            viewModel.loadPharmacyList()
+        viewModel.loadPharmacyList()
 
+        setContent {
             PharmacyMapScreen(
                 followMyLocation = viewModel.followMyLocation,
                 hasLocationPermission = viewModel.hasLocationPermission,
                 mapProperties = viewModel.mapProperties,
-                cameraPositionState = viewModel.cameraPositionState,
                 pharmacies = viewModel.pharmacies,
+                cameraPositionState = viewModel.cameraPositionState,
                 onPharmacyDetailsClick = { pid ->
                     PharmacyActivity.navigate(this, pid)
+                },
+                onAddPharmacyFinishClick = { name, description, location ->
+                    viewModel.addPharmacy(
+                        name = name,
+                        description = description,
+                        picture = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                        location = location
+                    )
                 },
                 setFollowMyLocation = { followMyLocation ->
                     viewModel.followMyLocation = followMyLocation

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.LocationPermissionScreen
@@ -37,6 +38,7 @@ fun PharmacyMapScreen(
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
+    onAddPharmacyFinishClick: (newPharmacyName: String, newPharmacyDescription: String, location: Location) -> Unit,
     setFollowMyLocation: (Boolean) -> Unit,
     setPosition: (LatLng) -> Unit
 ) {
@@ -54,8 +56,9 @@ fun PharmacyMapScreen(
                     followMyLocation = followMyLocation,
                     mapProperties = mapProperties,
                     cameraPositionState = cameraPositionState,
-                    onPharmacyDetailsClick = onPharmacyDetailsClick,
                     pharmacies = pharmacies,
+                    onPharmacyDetailsClick = onPharmacyDetailsClick,
+                    onAddPharmacyFinishClick = onAddPharmacyFinishClick,
                     setFollowMyLocation = setFollowMyLocation,
                     setPosition = setPosition
                 )
