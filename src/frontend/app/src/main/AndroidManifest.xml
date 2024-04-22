@@ -45,15 +45,7 @@
             android:theme="@style/Theme.Pharmacist" />
 
         <activity
-            android:name=".ui.screens.authentication.login.LoginActivity"
-            android:theme="@style/Theme.Pharmacist" />
-
-        <activity
-            android:name=".ui.screens.authentication.register.RegisterActivity"
-            android:theme="@style/Theme.Pharmacist" />
-
-        <activity
-            android:name=".ui.screens.authentication.upgrade.UpgradeActivity"
+            android:name=".ui.screens.authentication.AuthenticationActivity"
             android:theme="@style/Theme.Pharmacist" />
 
         <activity

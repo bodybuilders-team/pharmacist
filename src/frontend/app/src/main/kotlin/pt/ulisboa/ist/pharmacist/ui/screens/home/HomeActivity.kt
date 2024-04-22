@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.about.AboutActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.LoginActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.upgrade.UpgradeActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.authentication.register.RegisterActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
@@ -27,10 +25,25 @@ class HomeActivity : PharmacistActivity() {
                 loggedIn = viewModel.isLoggedIn,
                 isGuest = viewModel.isGuest,
                 username = viewModel.username,
-                onLoginClick = { navigateTo<LoginActivity>() },
-                onRegisterClick = { navigateTo<RegisterActivity>() },
+                onLoginClick = {
+                    AuthenticationActivity.navigate(
+                        this,
+                        AuthenticationActivity.Companion.AuthenticationMethod.LOGIN
+                    )
+                },
+                onRegisterClick = {
+                    AuthenticationActivity.navigate(
+                        this,
+                        AuthenticationActivity.Companion.AuthenticationMethod.REGISTER
+                    )
+                },
                 onContinueAsGuestClick = { viewModel.enterAsGuest() },
-                onUpgradeAccountClick = { navigateTo<UpgradeActivity>() },
+                onUpgradeAccountClick = {
+                    AuthenticationActivity.navigate(
+                        this,
+                        AuthenticationActivity.Companion.AuthenticationMethod.UPGRADE
+                    )
+                },
                 onLogoutClick = { viewModel.logout() },
                 onAboutClick = { navigateTo<AboutActivity>() },
                 onPharmacyMapClick = { navigateTo<PharmacyMapActivity>() },
