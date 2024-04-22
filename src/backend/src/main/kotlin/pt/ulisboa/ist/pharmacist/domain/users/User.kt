@@ -39,7 +39,7 @@ data class User(
 
     companion object {
         private const val MIN_USERNAME_LENGTH = 3
-        private const val MAX_USERNAME_LENGTH = 40
+        private const val MAX_USERNAME_LENGTH = 128
 
         const val PASSWORD_HASH_LENGTH = 128
     }

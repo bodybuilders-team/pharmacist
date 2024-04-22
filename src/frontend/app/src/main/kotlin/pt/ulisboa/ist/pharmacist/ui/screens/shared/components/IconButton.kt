@@ -27,7 +27,7 @@ private const val BUTTON_PADDING = 6
  * @param enabled whether the button is enabled or not
  */
 @Composable
-fun IconButton(
+fun IconTextButton(
     onClick: () -> Unit,
     painter: Painter,
     contentDescription: String,
@@ -57,7 +57,7 @@ fun IconButton(
 }
 
 @Composable
-fun IconButton(
+fun IconTextButton(
     onClick: () -> Unit,
     imageVector: ImageVector,
     contentDescription: String,

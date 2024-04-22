@@ -83,7 +83,7 @@ fun CreateMedicineScreen(
                 }
             }
 
-            pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton(
+            pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton(
                 onClick = { onCreateMedicine(name, description) },
                 imageVector = Icons.Rounded.Add,
                 text = "Create Medicine",

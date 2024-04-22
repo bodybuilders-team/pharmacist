@@ -6,8 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.login.LoginViewModel
+import java.util.UUID
 
 /**
  * View model for the [HomeActivity].
@@ -24,14 +27,7 @@ class HomeViewModel(
         private set
 
     val username
-        get() = if (!isGuest) sessionManager.username else "Guest"
-
-    private var isGuest: Boolean by mutableStateOf(false)
-
-    fun enterAsGuest() {
-        this.isLoggedIn = true
-        this.isGuest = true
-    }
+        get() = sessionManager.username
 
     /**
      * Logs out the user.
@@ -47,5 +43,18 @@ class HomeViewModel(
 
     fun checkIfLoggedIn() {
         isLoggedIn = sessionManager.isLoggedIn()
+    }
+
+    fun enterAsGuest() = viewModelScope.launch {
+        val guestUserName = "Guest${UUID.randomUUID()}"
+        val result = pharmacistService.usersService.register(
+            username = guestUserName,
+            password = UUID.randomUUID().toString()
+        )
+
+        if (result.isSuccess()) {
+            sessionManager.setSession(result.data.userId, result.data.accessToken, guestUserName)
+            isLoggedIn = true
+        }
     }
 }

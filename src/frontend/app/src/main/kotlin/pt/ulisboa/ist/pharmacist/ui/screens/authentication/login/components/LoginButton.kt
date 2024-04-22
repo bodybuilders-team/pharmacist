@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 
 private const val BUTTON_PADDING = 8
 
@@ -23,7 +23,7 @@ fun LoginButton(
     enabled: Boolean = true,
     onLoginClickCallback: () -> Unit
 ) {
-    IconButton(
+    IconTextButton(
         onClick = onLoginClickCallback,
         enabled = enabled,
         modifier = Modifier.padding(BUTTON_PADDING.dp),

@@ -22,7 +22,7 @@ import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearch
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 import pt.ulisboa.ist.pharmacist.ui.theme.PharmacistTheme
 
 
@@ -75,7 +75,7 @@ fun AddMedicineToPharmacyScreen(
                 )
             }
 
-            IconButton(
+            IconTextButton(
                 onClick = createMedicine,
                 imageVector = Icons.Rounded.Add,
                 text = "Create Medicine",
@@ -84,7 +84,7 @@ fun AddMedicineToPharmacyScreen(
                     .align(Alignment.CenterHorizontally)
             )
 
-            IconButton(
+            IconTextButton(
                 onClick = {
                     if (selectedMedicine != null)
                         addMedicineToPharmacy(selectedMedicine.medicineId, stock)

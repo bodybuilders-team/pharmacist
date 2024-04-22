@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 
 @Composable
 fun AddPharmacyWindow(
@@ -40,7 +40,7 @@ fun AddPharmacyWindow(
             .then(modifier)
     ) {
         Column {
-            IconButton(
+            IconTextButton(
                 onClick = { onGoToLocationButtonClick() },
                 imageVector = Icons.Rounded.LocationOn,
                 text = "Go to location",
@@ -61,7 +61,7 @@ fun AddPharmacyWindow(
                 label = { Text("Pharmacy Description") },
                 placeholder = { Text("No description") }
             )
-            IconButton(
+            IconTextButton(
                 onClick = { onAddPictureButtonClick() },
                 imageVector = Icons.Rounded.CameraAlt,
                 text = "Select or Take a picture",

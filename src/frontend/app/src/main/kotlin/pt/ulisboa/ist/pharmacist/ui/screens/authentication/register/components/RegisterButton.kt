@@ -7,7 +7,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 
 private const val BUTTON_PADDING = 8
 
@@ -22,7 +22,7 @@ fun RegisterButton(
     enabled: Boolean = true,
     onRegisterClickCallback: () -> Unit
 ) {
-    IconButton(
+    IconTextButton(
         onClick = onRegisterClickCallback,
         enabled = enabled,
         modifier = Modifier.padding(BUTTON_PADDING.dp),

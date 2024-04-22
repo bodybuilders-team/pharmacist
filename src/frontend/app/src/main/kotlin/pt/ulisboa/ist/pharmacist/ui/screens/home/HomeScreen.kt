@@ -3,13 +3,33 @@ package pt.ulisboa.ist.pharmacist.ui.screens.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Login
+import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Login
+import androidx.compose.material.icons.rounded.Map
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.PersonAdd
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -18,7 +38,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconButton
+import pt.ulisboa.ist.pharmacist.ui.screens.authentication.components.UsernameTextField
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 
 private const val LOGO_MAX_WIDTH_FACTOR = 0.6f
 private const val LOGO_MAX_HEIGHT_FACTOR = 0.5f
@@ -88,58 +109,58 @@ fun HomeScreen(
 
 
             if (!loggedIn) {
-                IconButton(
+                IconTextButton(
                     onClick = onLoginClick,
-                    painter = painterResource(R.drawable.ic_round_login_24),
+                    imageVector = Icons.AutoMirrored.Rounded.Login,
                     contentDescription = stringResource(R.string.home_loginButton_description),
                     text = stringResource(R.string.home_loginButton_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
 
-                IconButton(
+                IconTextButton(
                     onClick = onRegisterClick,
-                    painter = painterResource(R.drawable.ic_round_person_add_24),
+                    imageVector = Icons.Rounded.PersonAdd,
                     contentDescription = stringResource(R.string.home_registerButton_description),
                     text = stringResource(R.string.home_registerButton_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
 
-                IconButton(
-                    onClick = onContinueAsGuestClick,
-                    painter = painterResource(R.drawable.round_person_24),
+                IconTextButton(
+                    onClick = { onContinueAsGuestClick() },
+                    imageVector = Icons.Rounded.Person,
                     contentDescription = "Continue as guest",
                     text = "Continue as Guest",
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
             } else {
-                IconButton(
+                IconTextButton(
                     onClick = onLogoutClick,
-                    painter = painterResource(R.drawable.ic_round_logout_24),
+                    imageVector = Icons.AutoMirrored.Rounded.Logout,
                     contentDescription = stringResource(R.string.home_logoutButton_description),
                     text = stringResource(R.string.home_logoutButton_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
 
-                IconButton(
+                IconTextButton(
                     onClick = onPharmacyMapClick,
-                    painter = painterResource(R.drawable.round_map_24),
+                    imageVector = Icons.Rounded.Map,
                     contentDescription = stringResource(R.string.home_pharmacyMapButton_description),
                     text = stringResource(R.string.home_pharmacyMapButton_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
 
-                IconButton(
+                IconTextButton(
                     onClick = onSearchMedicineClick,
-                    painter = painterResource(R.drawable.ic_round_search_24),
+                    imageVector = Icons.Rounded.Search,
                     contentDescription = stringResource(R.string.home_searchMedicineButton_description),
                     text = stringResource(R.string.home_searchMedicineButton_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
             }
 
-            IconButton(
+            IconTextButton(
                 onClick = onAboutClick,
-                painter = painterResource(R.drawable.ic_round_info_24),
+                imageVector = Icons.Rounded.Info,
                 contentDescription = stringResource(R.string.home_aboutButton_description),
                 text = stringResource(R.string.home_aboutButton_text),
                 modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)

@@ -21,7 +21,7 @@ fun GoBackButton(onClick: () -> Unit) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
-        IconButton(
+        IconTextButton(
             onClick = onClick,
             painter = painterResource(R.drawable.ic_round_arrow_back_24),
             contentDescription = stringResource(R.string.backButton_text),
