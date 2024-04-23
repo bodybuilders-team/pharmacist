@@ -17,49 +17,75 @@ Summer Semester of 2023/2024
 
 ## Table of Contents 📜
 
-- [pharmacist](#pharmacist)
-    - [Authors](#authors)
-    - [Table of Contents 📜](#table-of-contents-)
-    - [Architecture 🏗️](#architecture-️)
-    - [How to Run ▶️](#how-to-run-️)
+- [Architecture 🏗️](#architecture-️)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
+- [How to Run ▶️](#how-to-run-️)
 
-<!--For more in-depth knowledge about the project, check the paper about it [here](./ist-meic-dad-g05.pdf).-->
+<!--For more in-depth knowledge about the project, check the paper about it [here](./ist-meic-cmu-g03.pdf).-->
 
 ---
 
 ## Architecture 🏗️
 
-_section in construction_
+### Backend
 
-<!--
-The solution to the project is divided into 4 projects:
+The backend code is located in the [`src/backend`](./src/backend) directory.
 
-* **DadtkvClient**: Client application that communicates with the Transaction Managers, using the DADTKVService
-  interface.
-* **DadtkvTransactionManager**: Transaction Manager application.
-* **DadtkvLeaseManager**: Lease Manager application.
-* **DadtkvCore**: Contains the interfaces and classes that are common to all the other projects, including the
-  configuration of the system. It also contains the System Manager application, which is used to start and shutdown the
-  system.
--->
+The backend is a **REST API** built using **[Spring Boot](https://spring.io/projects/spring-boot)** and
+**[Kotlin](https://kotlinlang.org/)**. It is responsible for managing the data and the business logic of the
+application.
+
+It's implemented following the **layered architecture** pattern, with the following layers:
+
+- **HTTP**: responsible for handling the HTTP requests and responses, and the HTTP pipeline.
+- **Service**: responsible for the business logic of the application.
+- **Repository**: responsible for managing the data.
+
+For simplicity, the backend uses an **in-memory database** to store the data. This means that the data is not persisted
+between runs of the application. A future improvement could be to use a **relational database** to store the data.
+
+### Frontend
+
+The frontend code is located in the [`src/frontend`](./src/frontend) directory.
+
+The frontend is a **mobile application** for **Android** built using **[Kotlin](https://kotlinlang.org/)** and
+**[Jetpack Compose](https://developer.android.com/develop/ui/compose)**. It is
+responsible for providing a user interface for the application.
+
+The frontend code is organized as follows:
+
+- [Domain](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/domain): contains the domain models of the
+  application.
+- [Service](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/service): contains the service classes that
+  interact with the backend.
+- [Session](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/session): contains the session classes that
+  manage the user session.
+- [UI](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/ui): contains the UI components of the application.
+    - [Screens](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/ui/screens): contains the screens of the
+      application, where each screen is implemented using a:
+        - **<ScreenName>Screen.kt**: the screen composable.
+        - **<ScreenName>ViewModel.kt**: the view model of the screen, responsible for managing the screen's state.
+        - **<ScreenName>Activity.kt**: the activity that hosts the screen.
+
 ---
 
 ## How to Run ▶️
 
-_section in construction_
+To run the project, follow these steps:
 
-<!--
-The project can be run using the System Manager application, which is located in the DadtkvCore project.
+1. Clone the repository:
 
-The System Manager only receives one argument, which is the path to the configuration file (relative to the solution). A
-configuration file is located in `DadtkvCore/Configuration/configuration_sample.txt`.
+```bash
+git clone
+```
 
-To run the system, follow these steps:
+2. Run the **Docker Compose** command in the `src/backend` directory to start the server:
 
-1. Open a terminal in the **solution's root directory**.
-2. Run `dotnet clean` to clean the solution (if needed).
-3. Run `dotnet build` to build the solution.
-4. Run `dotnet run --project DadtkvCore/DadtkvCore.csproj <configuration_file_path>` to run the System
-   Manager application. For example, as the configuration file is located in the Configuration folder, the command would
-   be `dotnet run --project DadtkvCore/DadtkvCore.csproj "./DadtkvCore/Configuration/configuration_sample.txt"`.
--->
+```bash
+cd src/backend
+docker-compose up
+```
+
+3. Open the frontend project in **Android Studio** and run the application on an **Android Emulator** or a **Physical
+   Device**.

@@ -106,7 +106,7 @@ class PharmacyViewModel(
      * If the pharmacy is marked as favorite, it will be removed from the user's favorites.
      * If the pharmacy is not marked as favorite, it will be added to the user's favorites.
      */
-    fun updateFavoriteStatus() { // TODO: Test if successfull
+    fun updateFavoriteStatus() {
         pharmacy?.let {
             viewModelScope.launch {
                 if (it.userMarkedAsFavorite) {
@@ -139,7 +139,7 @@ class PharmacyViewModel(
         }
     }
 
-    fun updateReportStatus() = pharmacy?.let { // TODO: Test this
+    fun updateReportStatus() = pharmacy?.let {
         viewModelScope.launch {
             if (it.userFlagged) {
                 val result = pharmacistService.usersService.unflagPharmacy(it.pharmacy.pharmacyId)

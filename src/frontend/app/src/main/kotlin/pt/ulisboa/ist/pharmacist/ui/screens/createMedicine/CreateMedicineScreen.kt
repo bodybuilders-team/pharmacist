@@ -52,14 +52,14 @@ fun CreateMedicineScreen(
             TextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Medicine Name") },
+                label = { Text("Medicine Name*") },
                 modifier = Modifier.padding(16.dp)
             )
 
             TextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Medicine Description") },
+                label = { Text("Medicine Description*") },
                 modifier = Modifier.padding(16.dp)
             )
 
