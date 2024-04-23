@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service.medicines
 
+import kotlinx.coroutines.flow.MutableSharedFlow
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineNotification
 import pt.ulisboa.ist.pharmacist.domain.users.User
 
@@ -8,13 +9,7 @@ import pt.ulisboa.ist.pharmacist.domain.users.User
  */
 interface MedicineNotificationService {
 
-    /**
-     * Finds the notifications for a given user.
-     *
-     * @param user the user
-     * @return the list of notifications
-     */
-    fun findNotifications(user: User): List<MedicineNotification>
+    fun getFlows(): MutableMap<Long, MutableSharedFlow<MedicineNotification>>
 
     /**
      * Tries to notify the user.
@@ -22,5 +17,5 @@ interface MedicineNotificationService {
      * @param user the user
      * @param notifyAction the action to notify the user
      */
-    fun tryToNotifyUser(user: User, notifyAction: (MedicineNotification) -> Unit)
+    suspend fun notifyUser(user: User, notifyAction: (MedicineNotification) -> Unit)
 }

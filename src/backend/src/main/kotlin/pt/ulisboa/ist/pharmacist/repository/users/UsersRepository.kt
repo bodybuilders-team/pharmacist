@@ -17,6 +17,8 @@ interface UsersRepository {
 
     fun findAll(pageable: OffsetPageRequest): Page<User>
 
+    fun findAll(): List<User>
+
     fun delete(user: User)
 
     fun count(): Long

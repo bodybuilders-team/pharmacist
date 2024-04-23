@@ -42,6 +42,7 @@ class MedicineSearchViewModel(
         Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
+                prefetchDistance = PREFETCH_DISTANCE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
@@ -76,5 +77,6 @@ class MedicineSearchViewModel(
 
     companion object {
         private const val PAGE_SIZE = 10
+        private const val PREFETCH_DISTANCE = 1
     }
 }

@@ -1,13 +1,18 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies
 
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineNotification
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
+import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
+import pt.ulisboa.ist.pharmacist.service.medicines.MedicineNotificationService
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
@@ -24,7 +29,9 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyWithUserDataDto
 @Service
 class PharmaciesServiceImpl(
     private val pharmaciesRepository: PharmaciesRepository,
-    private val medicinesRepository: MedicinesRepository
+    private val medicinesRepository: MedicinesRepository,
+    private val notificationsService: MedicineNotificationService,
+    private val usersRepo: UsersRepository
 ) : PharmaciesService {
 
     override fun getPharmacies(
@@ -103,7 +110,29 @@ class PharmaciesServiceImpl(
             operation = operation,
             quantity = quantity
         )
+
+        notifyMedicineStockChange(pharmacyId, medicineId, medicineStock)
+
         return ChangeMedicineStockOutputDto(medicineStock)
+    }
+
+    private fun notifyMedicineStockChange(pharmacyId: Long, medicineId: Long, medicineStock: MedicineStock) {
+
+        Thread {
+            val flows = notificationsService.getFlows()
+
+            runBlocking {
+                usersRepo.findAll().forEach { user ->
+                    if (user.favoritePharmacies.any { it.pharmacyId == pharmacyId }
+                        && user.medicinesToNotify.any { it.medicineId == medicineId }) {
+                        if (flows[user.userId] == null)
+                            flows[user.userId] = MutableSharedFlow()
+
+                        flows[user.userId]!!.emit(MedicineNotification(medicineStock, pharmacyId))
+                    }
+                }
+            }
+        }.start()
     }
 
     override fun getPharmacyById(user: User, pid: Long): PharmacyWithUserDataDto {

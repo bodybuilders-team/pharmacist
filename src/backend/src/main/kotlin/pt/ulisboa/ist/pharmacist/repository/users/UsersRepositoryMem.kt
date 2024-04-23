@@ -55,6 +55,10 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
         return PageImpl(pagedList, pageable, usersList.size.toLong())
     }
 
+    override fun findAll(): List<User> {
+        return users.values.toList()
+    }
+
     override fun delete(user: User) {
         users.remove(user.userId)
     }

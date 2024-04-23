@@ -1,15 +1,20 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.medicines
 
+import jakarta.validation.Valid
+import java.util.concurrent.Executors
+import kotlinx.coroutines.runBlocking
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
+import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.medicines.MedicineNotificationService
-import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
-import java.util.concurrent.Executors
 
 /**
  * A Medicine Notification Controller.
@@ -19,6 +24,7 @@ import java.util.concurrent.Executors
  */
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+@Authenticated
 class MedicineNotificationController(
     val medicineNotificationService: MedicineNotificationService,
     val usersRepository: UsersRepository
@@ -28,24 +34,24 @@ class MedicineNotificationController(
      * Stream medicine notifications to the user.
      */
     @GetMapping(Uris.MEDICINE_NOTIFICATIONS)
-    fun streamSseMvc(): SseEmitter {
+    fun streamSseMvc(
+        @Valid @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User
+    ): SseEmitter {
         val emitter = SseEmitter()
         val sseMvcExecutor = Executors.newSingleThreadExecutor()
 
-        // TODO obtain user from the request
-        val user = usersRepository.findAll(OffsetPageRequest(0, 1))
-            .first() ?: throw IllegalStateException("No users found")
-
         sseMvcExecutor.execute {
-            try {
-                medicineNotificationService.tryToNotifyUser(user) { notification ->
-                    val event = SseEmitter.event()
-                        .data(notification).build()
+            runBlocking {
+                try {
+                    medicineNotificationService.notifyUser(user) { notification ->
+                        val event = SseEmitter.event()
+                            .data(notification).build()
 
-                    emitter.send(event)
+                        emitter.send(event)
+                    }
+                } catch (ex: Exception) {
+                    emitter.completeWithError(ex)
                 }
-            } catch (ex: Exception) {
-                emitter.completeWithError(ex)
             }
         }
 

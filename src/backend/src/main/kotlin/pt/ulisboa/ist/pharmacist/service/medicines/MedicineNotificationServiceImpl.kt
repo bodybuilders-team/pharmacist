@@ -1,62 +1,47 @@
 package pt.ulisboa.ist.pharmacist.service.medicines
 
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineNotification
 import pt.ulisboa.ist.pharmacist.domain.users.User
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 /**
  * Service that handles the business logic of medicine notifications.
  */
 @Service
 class MedicineNotificationServiceImpl : MedicineNotificationService {
-    private val lock = ReentrantLock()
+    val userFlows = mutableMapOf<Long, MutableSharedFlow<MedicineNotification>>()
 
     data class MedicinePharmacyPair(
         val medicineId: Long,
         val pharmacyId: Long
     )
 
-    override fun findNotifications(user: User): List<MedicineNotification> = lock.withLock {
-        val medicineNotifications = mutableListOf<MedicineNotification>()
-
-        user.favoritePharmacies.forEach { pharmacy ->
-            medicineNotifications.addAll(pharmacy.medicines
-                .filter { it.medicine in user.medicinesToNotify }
-                .map { MedicineNotification(it, pharmacy.pharmacyId) })
-        }
-
-        return medicineNotifications
+    override fun getFlows(): MutableMap<Long, MutableSharedFlow<MedicineNotification>> {
+        return userFlows
     }
 
-    override fun tryToNotifyUser(user: User, notifyAction: (MedicineNotification) -> Unit) {
+    override suspend fun notifyUser(user: User, notifyAction: (MedicineNotification) -> Unit) {
         val previousStocks = mutableMapOf<MedicinePharmacyPair, Long>()
 
-        // TODO way to stop the loop
+        if (userFlows[user.userId] == null)
+            userFlows[user.userId] = MutableSharedFlow()
 
-        while (true) {
-            val notifications = findNotifications(user)
+        userFlows[user.userId]!!.collect { notification ->
+            val previousStock = previousStocks.put(
+                MedicinePharmacyPair(
+                    medicineId = notification.medicineStock.medicine.medicineId,
+                    pharmacyId = notification.pharmacyId
+                ),
+                notification.medicineStock.stock
+            ) ?: return@collect
 
-            for (notification in notifications) {
-                val previousStock = previousStocks.put(
-                    MedicinePharmacyPair(
-                        medicineId = notification.medicineStock.medicine.medicineId,
-                        pharmacyId = notification.pharmacyId
-                    ),
-                    notification.medicineStock.stock
-                ) ?: continue
-
-                if (previousStock <= STOCK_NOTIFICATION_THRESHOLD && notification.medicineStock.stock > STOCK_NOTIFICATION_THRESHOLD)
-                    notifyAction(notification)
-            }
-
-            Thread.sleep(NOTIFICATION_INTERVAL)
+            if (previousStock <= STOCK_NOTIFICATION_THRESHOLD && notification.medicineStock.stock > STOCK_NOTIFICATION_THRESHOLD)
+                notifyAction(notification)
         }
     }
 
     companion object {
-        const val NOTIFICATION_INTERVAL = 1000L
         const val STOCK_NOTIFICATION_THRESHOLD = 0L
     }
 }

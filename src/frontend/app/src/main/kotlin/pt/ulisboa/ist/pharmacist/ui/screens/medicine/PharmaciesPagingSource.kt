@@ -37,7 +37,7 @@ class PharmaciesPagingSource(
                     STARTING_KEY -> null
                     else -> max(STARTING_KEY, currentOffset - params.loadSize)
                 },
-                nextKey = if (result.data.pharmacies.isEmpty()) null else currentOffset + params.loadSize + 1
+                nextKey = if (result.data.pharmacies.isEmpty()) null else currentOffset + params.loadSize
             )
         } else {
             LoadResult.Error(Exception("Error loading data"))

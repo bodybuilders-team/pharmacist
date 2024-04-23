@@ -70,8 +70,8 @@ class MedicineViewModel(
     }
 
     companion object {
-        const val PAGE_SIZE = 10
-        const val PREFETCH_DISTANCE = 1
+        private const val PAGE_SIZE = 10
+        private const val PREFETCH_DISTANCE = 1
     }
 }
 

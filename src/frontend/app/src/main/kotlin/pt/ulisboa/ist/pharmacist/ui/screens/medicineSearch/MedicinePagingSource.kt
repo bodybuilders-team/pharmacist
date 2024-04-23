@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import kotlin.math.max
@@ -35,13 +36,18 @@ class MedicinePagingSource(
         )
 
         return if (result.isSuccess()) {
+            Log.d(
+                "MedicinePagingSource",
+                "limit = ${params.loadSize.toLong()}, offset = ${currentOffset.toLong()}, itemCount = ${result.data.medicines.size}"
+            )
+
             LoadResult.Page(
                 data = result.data.medicines,
                 prevKey = when (currentOffset) {
                     STARTING_KEY -> null
                     else -> max(STARTING_KEY, currentOffset - params.loadSize)
                 },
-                nextKey = if (result.data.medicines.isEmpty()) null else currentOffset + params.loadSize + 1
+                nextKey = if (result.data.medicines.isEmpty()) null else currentOffset + params.loadSize
             )
         } else {
             LoadResult.Error(Exception("Error loading data"))
