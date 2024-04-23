@@ -156,7 +156,7 @@ class UsersController(private val usersService: UsersService) {
      * @param uid the id of the user to flag the pharmacy
      * @param pid the id of the pharmacy to be flagged
      */
-    @GetMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
+    @PutMapping(Uris.USER_FLAGGED_PHARMACIES_GET_BY_ID)
     @Authenticated
     fun flagPharmacy(
         @PathVariable uid: Long,

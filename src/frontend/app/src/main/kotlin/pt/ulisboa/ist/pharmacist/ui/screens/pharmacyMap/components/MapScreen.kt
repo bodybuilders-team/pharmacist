@@ -5,8 +5,13 @@ import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,11 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
@@ -70,13 +77,12 @@ fun MapScreen(
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier
                 .fillMaxSize(),
             cameraPositionState = cameraPositionState,
+            uiSettings = MapUiSettings(zoomControlsEnabled = false),
             properties = mapProperties,
             onMyLocationButtonClick = {
                 setFollowMyLocation(!followMyLocation)
@@ -93,6 +99,8 @@ fun MapScreen(
                 MarkerInfoWindowContent(
                     state = MarkerState(position = pharmacy.location.toLatLng()),
                     title = pharmacy.name,
+                    // TODO: Different icon for favorite pharmacies
+                    //icon = if (pharmacy.userFavorite) Icons.Rounded.Favorite else null,
                     onInfoWindowClick = { onPharmacyDetailsClick(pharmacy.pharmacyId) }
                 ) { marker ->
                     Column {
@@ -125,37 +133,42 @@ fun MapScreen(
                 }
             }
         }
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Button(
-                onClick = {
-                    if (addingPharmacy) {
+        ExtendedFloatingActionButton(
+            onClick = {
+                if (addingPharmacy) {
+                    addingPharmacy = false
+                    newPharmacyMarkerState = null
+                } else {
+                    addingPharmacy = true
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp),
+            icon = {
+                Icon(
+                    if (!addingPharmacy) Icons.Rounded.Add else Icons.Rounded.Cancel,
+                    if (!addingPharmacy) "Add pharmacy" else "Cancel",
+                )
+            },
+            text = { Text(if (!addingPharmacy) "Add Pharmacy" else "Cancel") }
+        )
+        if (addingPharmacy) {
+            newPharmacyMarkerLocation?.let { markerLocation ->
+                AddPharmacyWindow(
+                    modifier = Modifier.align(if (isLandscape) Alignment.TopStart else Alignment.TopCenter),
+                    onGoToLocationButtonClick = { setPosition(markerLocation) },
+                    onAddPictureButtonClick = { /* TODO */ },
+                    onAddPharmacyFinishClick = { newPharmacyName ->
+                        onAddPharmacyFinishClick(
+                            newPharmacyName,
+                            Location(markerLocation.latitude, markerLocation.longitude)
+                        )
                         addingPharmacy = false
                         newPharmacyMarkerState = null
-                    } else addingPharmacy = true
-                }
-            ) {
-                Text(if (!addingPharmacy) "Add Pharmacy" else "Cancel")
-            }
-
-            if (addingPharmacy) {
-                newPharmacyMarkerLocation?.let { markerLocation ->
-                    AddPharmacyWindow(
-                        modifier = Modifier.align(
-                            alignment = if (isLandscape) Alignment.Start
-                            else Alignment.CenterHorizontally
-                        ),
-                        onGoToLocationButtonClick = { setPosition(markerLocation) },
-                        onAddPictureButtonClick = { /* TODO */ },
-                        onAddPharmacyFinishClick = { newPharmacyName ->
-                            onAddPharmacyFinishClick(
-                                newPharmacyName,
-                                Location(markerLocation.latitude, markerLocation.longitude)
-                            )
-                            addingPharmacy = false
-                            newPharmacyMarkerState = null
-                        }
-                    )
-                }
+                    }
+                )
             }
         }
     }

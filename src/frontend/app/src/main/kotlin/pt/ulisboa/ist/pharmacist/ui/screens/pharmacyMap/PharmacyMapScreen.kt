@@ -63,7 +63,9 @@ fun PharmacyMapScreen(
                     setPosition = setPosition
                 )
             else
-                LocationPermissionScreen(onPermissionGranted = { hasPermission = true })
+                LocationPermissionScreen(onPermissionGranted = {
+                    hasPermission = true
+                }) // TODO: Delete this and request other permissions in other places
         }
     }
 }
