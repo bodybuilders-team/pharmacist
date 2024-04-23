@@ -36,12 +36,12 @@ class MedicineViewModel(
     private val _pharmaciesState = Pager(
         config = PagingConfig(
             pageSize = PAGE_SIZE,
-            prefetchDistance = PREFETCH_DISTANCE
+            prefetchDistance = PREFETCH_DISTANCE,
+            enablePlaceholders = false
         ),
         pagingSourceFactory = {
             PharmaciesPagingSource(
                 pharmaciesService = pharmacistService.pharmaciesService,
-                pageSize = PAGE_SIZE,
                 mid = medicineId
             )
         },

@@ -4,10 +4,8 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -50,11 +48,10 @@ class MedicineSearchViewModel(
                 MedicinePagingSource(
                     medicinesService = pharmacistService.medicinesService,
                     query = search,
-                    pageSize = PAGE_SIZE,
                     location = location
                 )
             },
-        ).flow.cachedIn(viewModelScope)
+        ).flow
     }
 
     val medicinesState get() = _medicinesState
@@ -78,6 +75,6 @@ class MedicineSearchViewModel(
     }
 
     companion object {
-        private const val PAGE_SIZE = 3
+        private const val PAGE_SIZE = 10
     }
 }

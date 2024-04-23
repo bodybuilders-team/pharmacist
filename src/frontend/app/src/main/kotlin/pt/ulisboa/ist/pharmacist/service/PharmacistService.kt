@@ -43,7 +43,11 @@ class UploaderService(
     val sessionManager: SessionManager
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
-    suspend fun uploadBoxPhoto(signedUrl: String, boxPhoto: ByteArray, mimeType: MediaType): APIResult<Unit> {
+    suspend fun uploadBoxPhoto(
+        signedUrl: String,
+        boxPhoto: ByteArray,
+        mimeType: MediaType
+    ): APIResult<Unit> {
         return Request.Builder()
             .url(url = signedUrl)
             .put(

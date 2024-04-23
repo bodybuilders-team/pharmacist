@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,6 +66,10 @@ fun MedicineSearch(
     selectedMedicine: Medicine? = null
 ) {
     val medicinePagingItems = medicinesState.collectAsLazyPagingItems()
+
+    Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemCount}")
+    Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.loadState.refresh}")
+    Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemSnapshotList}")
 
     var query by remember { mutableStateOf("") }
 

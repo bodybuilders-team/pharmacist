@@ -102,9 +102,9 @@ class CreateMedicineActivity : PharmacistActivity() {
                     }
                 },
                 onSelectImage = {
-                    val galIntent = Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    galIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                    galIntent.setType("image/jpeg");
+                    val galIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                    galIntent.addCategory(Intent.CATEGORY_OPENABLE)
+                    galIntent.setType("image/jpeg")
 
                     val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 

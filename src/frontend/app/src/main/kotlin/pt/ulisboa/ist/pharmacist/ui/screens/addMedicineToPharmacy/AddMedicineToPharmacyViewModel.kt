@@ -60,7 +60,6 @@ class AddMedicineToPharmacyViewModel(
                 MedicinePagingSource(
                     pharmacistService.medicinesService,
                     search,
-                    pageSize = PAGE_SIZE,
                     location
                 )
             },
