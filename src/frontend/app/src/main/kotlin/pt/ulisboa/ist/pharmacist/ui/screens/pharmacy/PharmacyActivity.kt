@@ -5,8 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService.MedicineStockOperation.ADD
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService.MedicineStockOperation.REMOVE
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
@@ -64,13 +63,32 @@ class PharmacyActivity : PharmacistActivity() {
                     )
                 },
                 onAddStockClick = { medicineId ->
-                    viewModel.modifyStock(medicineId, ADD)
+                    viewModel.modifyStock(medicineId, MedicineStockOperation.ADD)
                 },
                 onRemoveStockClick = { medicineId ->
-                    viewModel.modifyStock(medicineId, REMOVE)
+                    viewModel.modifyStock(medicineId, MedicineStockOperation.REMOVE)
                 },
                 onFavoriteClick = {
                     viewModel.updateFavoriteStatus()
+                },
+                onShareClick = {
+                    viewModel.pharmacy?.let {
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TITLE, it.pharmacy.name)
+                            putExtra(
+                                Intent.EXTRA_TEXT,
+                                PHARMACY_SHARE_TEXT + " " + it.pharmacy.pictureUrl
+                            )
+                            setDataAndType(Uri.parse(it.pharmacy.pictureUrl), "image/*")
+                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        startActivity(shareIntent)
+                    }
+                },
+                onReportClick = {
+                    viewModel.updateReportStatus()
                 },
                 onRatingChanged = { rating ->
                     viewModel.updateRating(rating)
@@ -81,6 +99,7 @@ class PharmacyActivity : PharmacistActivity() {
 
     companion object {
         private const val PHARMACY_ID = "pharmacyId"
+        private const val PHARMACY_SHARE_TEXT = "Check out this pharmacy: "
 
         /**
          * Navigates to the [PharmacyActivity].

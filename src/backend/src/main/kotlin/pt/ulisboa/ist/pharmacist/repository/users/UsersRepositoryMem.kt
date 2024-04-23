@@ -21,8 +21,7 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
         val user = User(
             userId = userId,
             username = username,
-            passwordHash = passwordHash,
-            suspended = false,
+            passwordHash = passwordHash
         )
         users[userId] = user
         return user
@@ -70,5 +69,31 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
 
     override fun findByAccessTokenHash(accessToken: String): User? {
         return users.values.find { it.accessTokens.any { token -> token.tokenHash == accessToken } }
+    }
+
+    override fun flagPharmacy(userId: Long, pharmacyId: Long) {
+        val user = users[userId] ?: throw NotFoundException("User not found")
+        val pharmacy = dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
+
+        user.flaggedPharmacies.add(pharmacy)
+        pharmacy.totalFlags++
+
+        if (user.flaggedPharmacies.size > OBNOXIOUS_USER_THRESHOLD)
+            user.suspended = true
+    }
+
+    override fun unflagPharmacy(userId: Long, pharmacyId: Long) {
+        val user = users[userId] ?: throw NotFoundException("User not found")
+        val pharmacy = dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
+
+        user.flaggedPharmacies.remove(pharmacy)
+        pharmacy.totalFlags--
+
+        if (user.flaggedPharmacies.size <= OBNOXIOUS_USER_THRESHOLD)
+            user.suspended = false
+    }
+
+    companion object {
+        private const val OBNOXIOUS_USER_THRESHOLD = 3
     }
 }

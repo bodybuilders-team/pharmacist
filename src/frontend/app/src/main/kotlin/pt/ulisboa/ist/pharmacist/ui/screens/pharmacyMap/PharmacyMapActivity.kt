@@ -40,10 +40,9 @@ class PharmacyMapActivity : PharmacistActivity() {
                 onPharmacyDetailsClick = { pid ->
                     PharmacyActivity.navigate(this, pid)
                 },
-                onAddPharmacyFinishClick = { name, description, location ->
+                onAddPharmacyFinishClick = { name, location ->
                     viewModel.addPharmacy(
                         name = name,
-                        description = description,
                         picture = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
                         location = location
                     )

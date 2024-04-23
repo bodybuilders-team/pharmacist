@@ -14,9 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService.MedicineStockOperation.ADD
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.PharmaciesService.MedicineStockOperation.REMOVE
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -77,8 +75,8 @@ class PharmacyViewModel(
 
                 it.copy(
                     stock = it.stock + when (modificationEvent.operation) {
-                        ADD -> modificationEvent.quantity
-                        REMOVE -> -modificationEvent.quantity
+                        MedicineStockOperation.ADD -> modificationEvent.quantity
+                        MedicineStockOperation.REMOVE -> -modificationEvent.quantity
                     }
                 )
             }
@@ -141,9 +139,25 @@ class PharmacyViewModel(
         }
     }
 
+    fun updateReportStatus() = pharmacy?.let { // TODO: Test this
+        viewModelScope.launch {
+            if (it.userFlagged) {
+                val result = pharmacistService.usersService.unflagPharmacy(it.pharmacy.pharmacyId)
+
+                if (result.isSuccess())
+                    pharmacy = pharmacy?.copy(userFlagged = false)
+            } else {
+                val result = pharmacistService.usersService.flagPharmacy(it.pharmacy.pharmacyId)
+
+                if (result.isSuccess())
+                    pharmacy = pharmacy?.copy(userFlagged = true)
+            }
+        }
+    }
+
     fun modifyStock(
         medicineId: Long,
-        operation: PharmaciesService.MedicineStockOperation,
+        operation: MedicineStockOperation,
         quantity: Long = 1
     ) = pharmacy?.let {
         viewModelScope.launch {
@@ -155,13 +169,17 @@ class PharmacyViewModel(
             )
 
             if (result.isSuccess()) {
-                modificationEvents.value += StockModificationEvent(medicineId, operation, quantity)
+                modificationEvents.value += StockModificationEvent(
+                    medicineId,
+                    operation,
+                    quantity
+                )
             }
         }
     }
 
     fun addMedicine(medicineId: Long) {
-
+        // TODO: Implement
     }
 
 
@@ -180,7 +198,7 @@ class PharmacyViewModel(
     sealed class ModificationEvent {
         data class StockModificationEvent(
             val medicineId: Long,
-            val operation: PharmaciesService.MedicineStockOperation,
+            val operation: MedicineStockOperation,
             val quantity: Long
         ) : ModificationEvent()
     }

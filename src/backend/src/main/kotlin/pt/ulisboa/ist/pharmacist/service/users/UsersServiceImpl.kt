@@ -6,18 +6,13 @@ import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
-import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
-import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPaginationParamsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
-import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
-import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
-import pt.ulisboa.ist.pharmacist.service.utils.OffsetPageRequest
 import java.util.UUID
 
 /**
@@ -33,41 +28,6 @@ class UsersServiceImpl(
     private val pharmaciesRepository: PharmaciesRepository,
     private val hashingUtils: HashingUtils,
 ) : UsersService {
-
-    override fun addFavoritePharmacy(userId: Long, pharmacyId: Long) {
-        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
-        pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
-
-        usersRepository.addFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
-    }
-
-    override fun removeFavoritePharmacy(userId: Long, pharmacyId: Long) {
-        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
-        pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
-
-        usersRepository.removeFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
-    }
-
-    override fun getUsers(offset: Int, limit: Int, orderBy: UsersOrder, ascending: Boolean): UsersDto {
-        if (offset < 0) throw InvalidArgumentException("Offset must be a positive integer")
-        if (limit < 0) throw InvalidArgumentException("Limit must be a positive integer")
-
-        if (limit > MAX_USERS_LIMIT)
-            throw InvalidPaginationParamsException("Limit must be less or equal than $MAX_USERS_LIMIT")
-
-        return UsersDto(
-            users = usersRepository.findAll(
-                OffsetPageRequest(
-                    offset = offset.toLong(),
-                    limit = limit,
-                    sort = orderBy.toSort(ascending)
-                )
-            )
-                .toList()
-                .map(::UserDto),
-            totalCount = usersRepository.count().toInt()
-        )
-    }
 
     override fun register(username: String, password: String): RegisterOutputDto {
         if (usersRepository.existsByUsername(username = username))
@@ -147,8 +107,35 @@ class UsersServiceImpl(
         return UserDto(user = user)
     }
 
+    override fun addFavoritePharmacy(userId: Long, pharmacyId: Long) {
+        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+        pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
+
+        usersRepository.addFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
+    }
+
+    override fun removeFavoritePharmacy(userId: Long, pharmacyId: Long) {
+        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+        pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
+
+        usersRepository.removeFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
+    }
+
+    override fun flagPharmacy(userId: Long, pharmacyId: Long) {
+        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+        pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
+
+        usersRepository.flagPharmacy(userId = userId, pharmacyId = pharmacyId)
+    }
+
+    override fun unflagPharmacy(userId: Long, pharmacyId: Long) {
+        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+        pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
+
+        usersRepository.unflagPharmacy(userId = userId, pharmacyId = pharmacyId)
+    }
+
     companion object {
-        private const val MAX_USERS_LIMIT = 100
         private const val MIN_PASSWORD_LENGTH = 8
     }
 }

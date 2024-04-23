@@ -28,6 +28,7 @@ class PharmaciesServiceImpl(
 ) : PharmaciesService {
 
     override fun getPharmacies(
+        userId: Long?,
         location: Location?,
         range: Int?,
         medicine: Long?,
@@ -39,6 +40,7 @@ class PharmaciesServiceImpl(
         if (limit < 0) throw InvalidArgumentException("Limit must be a positive integer")
 
         val pharmacies = pharmaciesRepository.getPharmacies(
+            userId = userId,
             location = location,
             range = range,
             medicine = medicine,
@@ -108,13 +110,11 @@ class PharmaciesServiceImpl(
         val pharmacy =
             pharmaciesRepository.findById(pid) ?: throw NotFoundException("Pharmacy with id $pid does not exist")
 
-        val userRating = user.ratings[pid]
-        val userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy)
-
         return PharmacyWithUserDataDto(
             pharmacy,
-            userRating,
-            userMarkedAsFavorite
+            userRating = user.ratings[pid],
+            userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy),
+            userFlagged = user.flaggedPharmacies.contains(pharmacy)
         )
     }
 

@@ -5,11 +5,13 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 data class PharmacyWithUserDataDto(
     val pharmacy: PharmacyDto,
     val userRating: Int?,
-    val userMarkedAsFavorite: Boolean
+    val userMarkedAsFavorite: Boolean,
+    val userFlagged: Boolean
 ) {
-    constructor(pharmacy: Pharmacy, userRating: Int?, userMarkedAsFavorite: Boolean) : this(
+    constructor(pharmacy: Pharmacy, userRating: Int?, userMarkedAsFavorite: Boolean, userFlagged: Boolean) : this(
         pharmacy = PharmacyDto(pharmacy),
         userRating = userRating,
-        userMarkedAsFavorite = userMarkedAsFavorite
+        userMarkedAsFavorite = userMarkedAsFavorite,
+        userFlagged = userFlagged
     )
 }

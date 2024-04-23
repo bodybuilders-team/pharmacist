@@ -18,6 +18,7 @@ interface PharmaciesService {
     /**
      * Gets the pharmacies.
      *
+     * @param userId the id of the user that is requesting the pharmacies
      * @param location a location to filter the pharmacies
      * @param range the range to be used in the location filter
      * @param medicine a medicine to filter the pharmacies
@@ -26,6 +27,7 @@ interface PharmaciesService {
      * @param limit the limit to be used in the pagination
      */
     fun getPharmacies(
+        userId: Long?,
         location: Location?,
         range: Int?,
         medicine: Long?,

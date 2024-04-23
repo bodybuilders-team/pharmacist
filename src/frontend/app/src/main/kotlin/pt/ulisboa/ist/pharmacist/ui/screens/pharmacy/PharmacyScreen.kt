@@ -12,7 +12,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.OutlinedFlag
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -51,57 +55,56 @@ fun PharmacyScreen(
     onAddStockClick: (Long) -> Unit,
     onRemoveStockClick: (Long) -> Unit,
     onFavoriteClick: () -> Unit,
+    onReportClick: () -> Unit,
+    onShareClick: () -> Unit,
     onRatingChanged: (Int) -> Unit
 ) {
     val medicinesStock = medicinesState.collectAsLazyPagingItems()
 
-    if (loadingState == PharmacyViewModel.PharmacyLoadingState.LOADED && pharmacy != null) {
-        PharmacistScreen {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
+    PharmacistScreen {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (loadingState == PharmacyViewModel.PharmacyLoadingState.LOADED && pharmacy != null) {
                 MeteredAsyncImage(
                     url = pharmacy.pharmacy.pictureUrl,
                     contentDescription = "Pharmacy picture",
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
-                        .padding(top = 16.dp)
+                        .padding(top = 16.dp, bottom = 8.dp)
                 )
-
+                Text(
+                    text = pharmacy.pharmacy.name,
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Row {
-                    Text(
-                        text = pharmacy.pharmacy.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier
-                            .padding(8.dp),
-                    )
-                    IconButton(
-                        modifier = Modifier,
-                        onClick = onFavoriteClick,
-                    ) {
-                        Icon(
-                            if (pharmacy.userMarkedAsFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-                            contentDescription = "Add to notifications",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-
-                IconButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { onNavigateToPharmacyClick(pharmacy.pharmacy.location) },
-                ) {
-                    Row {
+                    IconButton(onClick = { onNavigateToPharmacyClick(pharmacy.pharmacy.location) }) {
                         Icon(
                             Icons.Rounded.LocationOn,
                             contentDescription = "Open in Maps",
                             tint = MaterialTheme.colorScheme.primary
                         )
-                        Text(
-                            text = "${pharmacy.pharmacy.location}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.align(Alignment.CenterVertically)
+                    }
+                    IconButton(onClick = onFavoriteClick) {
+                        Icon(
+                            if (pharmacy.userMarkedAsFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                            contentDescription = "Add to notifications",
+                            tint = if (pharmacy.userMarkedAsFavorite) Color(0xFFE91E63) else MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onReportClick) {
+                        Icon(
+                            if (pharmacy.userFlagged) Icons.Rounded.Flag else Icons.Rounded.OutlinedFlag,
+                            contentDescription = "Report",
+                            tint = Color.Red
+                        )
+                    }
+                    IconButton(onClick = onShareClick) {
+                        Icon(
+                            Icons.Rounded.Share,
+                            contentDescription = "Share",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -149,10 +152,11 @@ fun PharmacyScreen(
                         )
                     }
                 }
-            }
+            } else
+                Box {
+                    LoadingSpinner()
+                }
         }
-    } else
-        Box {
-            LoadingSpinner()
-        }
+    }
 }
+

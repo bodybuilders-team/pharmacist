@@ -45,7 +45,7 @@ fun MapScreen(
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
-    onAddPharmacyFinishClick: (newPharmacyName: String, newPharmacyDescription: String, location: Location) -> Unit,
+    onAddPharmacyFinishClick: (newPharmacyName: String, location: Location) -> Unit,
     setFollowMyLocation: (Boolean) -> Unit,
     setPosition: (LatLng) -> Unit
 ) {
@@ -146,10 +146,9 @@ fun MapScreen(
                         ),
                         onGoToLocationButtonClick = { setPosition(markerLocation) },
                         onAddPictureButtonClick = { /* TODO */ },
-                        onAddPharmacyFinishClick = { newPharmacyName, newPharmacyDescription ->
+                        onAddPharmacyFinishClick = { newPharmacyName ->
                             onAddPharmacyFinishClick(
                                 newPharmacyName,
-                                newPharmacyDescription,
                                 Location(markerLocation.latitude, markerLocation.longitude)
                             )
                             addingPharmacy = false

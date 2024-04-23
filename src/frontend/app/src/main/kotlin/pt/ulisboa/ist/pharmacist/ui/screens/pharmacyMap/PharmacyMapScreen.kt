@@ -38,7 +38,7 @@ fun PharmacyMapScreen(
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
-    onAddPharmacyFinishClick: (newPharmacyName: String, newPharmacyDescription: String, location: Location) -> Unit,
+    onAddPharmacyFinishClick: (newPharmacyName: String, location: Location) -> Unit,
     setFollowMyLocation: (Boolean) -> Unit,
     setPosition: (LatLng) -> Unit
 ) {

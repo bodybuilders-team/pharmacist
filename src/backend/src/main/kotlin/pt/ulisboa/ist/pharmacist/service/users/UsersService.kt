@@ -2,44 +2,13 @@ package pt.ulisboa.ist.pharmacist.service.users
 
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
-import pt.ulisboa.ist.pharmacist.service.users.dtos.UsersDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
-import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 
 /**
  * Service that handles the business logic of the users.
  */
 interface UsersService {
-
-    /**
-     * Adds a favorite pharmacy to the user.
-     *
-     * @param userId the id of the user
-     * @param pharmacyId the id of the pharmacy
-     */
-    fun addFavoritePharmacy(userId: Long, pharmacyId: Long)
-
-    /**
-     * Removes a favorite pharmacy from the user.
-     *
-     * @param userId the id of the user
-     * @param pharmacyId the id of the pharmacy
-     */
-    fun removeFavoritePharmacy(userId: Long, pharmacyId: Long)
-
-    /**
-     * Gets all users.
-     *
-     * @param offset the offset of the pagination
-     * @param limit the limit of the pagination
-     * @param orderBy the order by of the pagination
-     * @param ascending if the users should be ordered by points in ascending order
-     *
-     * @return the DTO with the information of the users
-     * @throws InvalidPaginationParamsException if the offset or limit are invalid
-     */
-    fun getUsers(offset: Int, limit: Int, orderBy: UsersOrder, ascending: Boolean): UsersDto
 
     /**
      * Registers a new user.
@@ -91,4 +60,36 @@ interface UsersService {
      * @throws NotFoundException if the user does not exist
      */
     fun getUser(userId: Long): UserDto
+
+    /**
+     * Adds a favorite pharmacy to the user.
+     *
+     * @param userId the id of the user
+     * @param pharmacyId the id of the pharmacy
+     */
+    fun addFavoritePharmacy(userId: Long, pharmacyId: Long)
+
+    /**
+     * Removes a favorite pharmacy from the user.
+     *
+     * @param userId the id of the user
+     * @param pharmacyId the id of the pharmacy
+     */
+    fun removeFavoritePharmacy(userId: Long, pharmacyId: Long)
+
+    /**
+     * Flags a pharmacy.
+     *
+     * @param userId the id of the user
+     * @param pharmacyId the id of the pharmacy
+     */
+    fun flagPharmacy(userId: Long, pharmacyId: Long)
+
+    /**
+     * Unflags a pharmacy.
+     *
+     * @param userId the id of the user
+     * @param pharmacyId the id of the pharmacy
+     */
+    fun unflagPharmacy(userId: Long, pharmacyId: Long)
 }

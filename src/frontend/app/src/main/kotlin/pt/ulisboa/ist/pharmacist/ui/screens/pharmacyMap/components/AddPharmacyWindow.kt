@@ -27,11 +27,9 @@ fun AddPharmacyWindow(
     modifier: Modifier,
     onGoToLocationButtonClick: () -> Unit,
     onAddPictureButtonClick: () -> Unit,
-    onAddPharmacyFinishClick: (newPharmacyName: String, newPharmacyDescription: String) -> Unit
+    onAddPharmacyFinishClick: (newPharmacyName: String) -> Unit
 ) {
-
     var newPharmacyName by rememberSaveable { mutableStateOf("") }
-    var newPharmacyDescription by rememberSaveable { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -49,17 +47,9 @@ fun AddPharmacyWindow(
             TextField(
                 value = newPharmacyName,
                 textStyle = MaterialTheme.typography.bodyMedium,
-                //fontWeight = FontWeight.Bold,
                 onValueChange = { newPharmacyName = it },
                 label = { Text("Pharmacy Name") },
                 placeholder = { Text("New Pharmacy") }
-            )
-            TextField(
-                value = newPharmacyDescription,
-                textStyle = MaterialTheme.typography.bodySmall,
-                onValueChange = { newPharmacyDescription = it },
-                label = { Text("Pharmacy Description") },
-                placeholder = { Text("No description") }
             )
             IconTextButton(
                 onClick = { onAddPictureButtonClick() },
@@ -69,9 +59,8 @@ fun AddPharmacyWindow(
             )
             Button(
                 onClick = {
-                    onAddPharmacyFinishClick(newPharmacyName, newPharmacyDescription)
+                    onAddPharmacyFinishClick(newPharmacyName)
                     newPharmacyName = ""
-                    newPharmacyDescription = ""
                 }
             ) {
                 Text("Finish")

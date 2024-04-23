@@ -24,7 +24,7 @@ class MedicinesService(
         offset: Long
     ): APIResult<GetMedicinesWithClosestPharmacyOutputModel> {
         return get<GetMedicinesWithClosestPharmacyOutputModel>(
-            link = Uris.getMedicines(
+            link = Uris.medicines(
                 substring,
                 location,
                 limit,
@@ -36,7 +36,7 @@ class MedicinesService(
 
     suspend fun getMedicineById(medicineId: Long): APIResult<Medicine> {
         return get<Medicine>(
-            link = Uris.getMedicineById(medicineId),
+            link = Uris.medicineById(medicineId),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )
     }

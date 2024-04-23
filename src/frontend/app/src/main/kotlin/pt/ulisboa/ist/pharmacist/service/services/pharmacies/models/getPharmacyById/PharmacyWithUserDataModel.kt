@@ -5,6 +5,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 data class PharmacyWithUserDataModel(
     val pharmacy: Pharmacy,
     val userRating: Int?,
-    val userMarkedAsFavorite: Boolean
+    val userMarkedAsFavorite: Boolean,
+    val userFlagged: Boolean
 )
 

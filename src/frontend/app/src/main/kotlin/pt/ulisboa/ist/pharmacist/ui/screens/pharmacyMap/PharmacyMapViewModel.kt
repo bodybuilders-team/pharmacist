@@ -110,11 +110,10 @@ class PharmacyMapViewModel(
         )
     }
 
-    fun addPharmacy(name: String, description: String, picture: String, location: Location) {
+    fun addPharmacy(name: String, picture: String, location: Location) {
         viewModelScope.launch {
             val result = pharmacistService.pharmaciesService.addPharmacy(
                 name = name,
-                description = description,
                 pictureUrl = picture,
                 location = location
             )

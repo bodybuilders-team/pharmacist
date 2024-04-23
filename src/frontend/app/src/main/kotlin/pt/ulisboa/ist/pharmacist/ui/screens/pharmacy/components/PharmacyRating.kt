@@ -74,7 +74,7 @@ fun PharmacyRating(
                             text = "${pharmacy.pharmacy.numberOfRatings[i - 1]}",
                             style = MaterialTheme.typography.bodySmall
                         )
-                        StarRatingBar(rating = i, densityFactor = 8f)
+                        StarRatingBar(rating = i, densityFactor = 8f, selectable = false)
                     }
                 }
             }
@@ -87,6 +87,7 @@ fun StarRatingBar(
     rating: Int,
     modifier: Modifier = Modifier,
     densityFactor: Float = 12f,
+    selectable: Boolean = true,
     onRatingChanged: (Int) -> Unit = {}
 ) {
     val density = LocalDensity.current.density
@@ -108,6 +109,7 @@ fun StarRatingBar(
                 tint = iconTintColor,
                 modifier = Modifier
                     .selectable(
+                        enabled = selectable,
                         selected = isSelected,
                         onClick = {
                             onRatingChanged(i)

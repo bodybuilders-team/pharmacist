@@ -1,17 +1,16 @@
 package pt.ulisboa.ist.pharmacist.service.services.users
 
 import com.google.gson.Gson
-import java.io.IOException
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
-import pt.ulisboa.ist.pharmacist.service.services.users.models.getUsers.GetUsersOutput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.login.LoginInput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.login.LoginOutput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.register.RegisterInput
 import pt.ulisboa.ist.pharmacist.service.services.users.models.register.RegisterOutput
 import pt.ulisboa.ist.pharmacist.service.utils.Uris
 import pt.ulisboa.ist.pharmacist.session.SessionManager
+import java.io.IOException
 
 /**
  * The service that handles the users requests.
@@ -27,18 +26,6 @@ class UsersService(
     jsonEncoder: Gson,
     val sessionManager: SessionManager
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
-
-    /**
-     * Gets all the users.
-     *
-     * @return the API result of the get users request
-     *
-     * @throws UnexpectedResponseException if there is an unexpected response from the server
-     * @throws IOException if there is an error while sending the request
-     */
-    suspend fun getUsers(): APIResult<GetUsersOutput> {
-        return get<GetUsersOutput>(link = Uris.USERS)
-    }
 
     /**
      * Registers the user with the given [username] and [password].
@@ -119,7 +106,7 @@ class UsersService(
      */
     suspend fun addFavorite(pharmacyId: Long): APIResult<Unit> =
         put(
-            link = Uris.favoritePharmaciesGetById(
+            link = Uris.userFavoritePharmacyById(
                 userId = sessionManager.usedId ?: throw IllegalStateException("No user id"),
                 pharmacyId = pharmacyId
             ),
@@ -133,7 +120,25 @@ class UsersService(
      */
     suspend fun removeFavorite(pharmacyId: Long): APIResult<Unit> =
         delete(
-            link = Uris.favoritePharmaciesGetById(
+            link = Uris.userFavoritePharmacyById(
+                userId = sessionManager.usedId ?: throw IllegalStateException("No user id"),
+                pharmacyId = pharmacyId
+            ),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
+        )
+
+    suspend fun flagPharmacy(pharmacyId: Long): APIResult<Unit> =
+        put(
+            link = Uris.userFlaggedPharmacyById(
+                userId = sessionManager.usedId ?: throw IllegalStateException("No user id"),
+                pharmacyId = pharmacyId
+            ),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
+        )
+
+    suspend fun unflagPharmacy(pharmacyId: Long): APIResult<Unit> =
+        delete(
+            link = Uris.userFlaggedPharmacyById(
                 userId = sessionManager.usedId ?: throw IllegalStateException("No user id"),
                 pharmacyId = pharmacyId
             ),

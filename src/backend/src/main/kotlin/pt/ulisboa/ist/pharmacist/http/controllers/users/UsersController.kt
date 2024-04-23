@@ -10,22 +10,17 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.getUser.GetUserOutputModel
-import pt.ulisboa.ist.pharmacist.http.controllers.users.models.getUsers.GetUsersOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.login.LoginInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.login.LoginOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.users.models.register.RegisterOutputModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor
-import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
-import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.users.UsersService
-import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 
 /**
  * Controller that handles the requests related to the users.
@@ -35,40 +30,6 @@ import pt.ulisboa.ist.pharmacist.service.users.utils.UsersOrder
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 class UsersController(private val usersService: UsersService) {
-
-    /**
-     * Handles the request to get all the users.
-     *
-     * @param offset the offset of the users to be returned
-     * @param limit the limit of the users to be returned
-     * @param orderBy the order by of the users to be returned
-     * @param sortDirection if the users should be ordered by points in ascending order
-     *
-     * @return the response to the request with all the users
-     */
-    @GetMapping(Uris.USERS)
-    @Authenticated
-    fun getUsers(
-        @RequestParam(Params.OFFSET_PARAM, defaultValue = Params.OFFSET_DEFAULT.toString()) offset: Int,
-        @RequestParam(Params.LIMIT_PARAM, defaultValue = Params.LIMIT_DEFAULT.toString()) limit: Int,
-        @RequestParam(Params.ORDER_BY_PARAM, required = false) orderBy: String?,
-        @RequestParam(Params.SORT_DIRECTION_PARAM, defaultValue = Params.SORT_DIR_DESCENDING) sortDirection: String
-    ): GetUsersOutputModel {
-        val usersDto = usersService.getUsers(
-            offset = offset,
-            limit = limit,
-            orderBy = if (orderBy != null) UsersOrder.valueOf(orderBy) else UsersOrder.POINTS,
-            ascending = when (sortDirection) {
-                Params.SORT_DIR_ASCENDING -> true
-                Params.SORT_DIR_DESCENDING -> false
-                else -> throw InvalidArgumentException(
-                    "Invalid sort order, must be ${Params.SORT_DIR_ASCENDING} or ${Params.SORT_DIR_DESCENDING}"
-                )
-            }
-        )
-
-        return GetUsersOutputModel(usersDto)
-    }
 
     /**
      * Handles the request to register a new user.
@@ -109,6 +70,20 @@ class UsersController(private val usersService: UsersService) {
     }
 
     /**
+     * Handles the request to log out a user.
+     *
+     * @return the response to the request
+     */
+    @PostMapping(Uris.USERS_LOGOUT)
+    @Authenticated
+    fun logout(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
+        @RequestAttribute(AuthenticationInterceptor.ACCESS_TOKEN_ATTRIBUTE) accessToken: String
+    ) {
+        usersService.logout(user = user, accessToken = accessToken)
+    }
+
+    /**
      * Handles the request to upgrade a guest user to a registered user.
      *
      * @param user the user to upgrade
@@ -129,6 +104,21 @@ class UsersController(private val usersService: UsersService) {
     }
 
     /**
+     * Handles the request to get a user.
+     *
+     * @param uid the id of the user to be returned
+     *
+     * @return the response to the request with the user
+     */
+    @GetMapping(Uris.USERS_GET_BY_ID)
+    @Authenticated
+    fun getUser(
+        @PathVariable uid: Long
+    ): GetUserOutputModel {
+        return GetUserOutputModel(usersService.getUser(userId = uid))
+    }
+
+    /**
      * Handles the request to add a pharmacy to the user's favorite pharmacies.
      *
      * @param uid the id of the user to add the pharmacy to
@@ -143,7 +133,6 @@ class UsersController(private val usersService: UsersService) {
     ) {
         usersService.addFavoritePharmacy(userId = uid, pharmacyId = pid)
     }
-
 
     /**
      * Handles the request to remove a pharmacy from the user's favorite pharmacies.
@@ -162,31 +151,32 @@ class UsersController(private val usersService: UsersService) {
     }
 
     /**
-     * Handles the request to log out a user.
+     * Handles the request to flag a pharmacy.
      *
-     * @return the response to the request
+     * @param uid the id of the user to flag the pharmacy
+     * @param pid the id of the pharmacy to be flagged
      */
-    @PostMapping(Uris.USERS_LOGOUT)
+    @GetMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
     @Authenticated
-    fun logout(
-        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
-        @RequestAttribute(AuthenticationInterceptor.ACCESS_TOKEN_ATTRIBUTE) accessToken: String
+    fun flagPharmacy(
+        @PathVariable uid: Long,
+        @PathVariable pid: Long
     ) {
-        usersService.logout(user = user, accessToken = accessToken)
+        usersService.flagPharmacy(userId = uid, pharmacyId = pid)
     }
 
     /**
-     * Handles the request to get a user.
+     * Handles the request to unflag a pharmacy.
      *
-     * @param uid the id of the user to be returned
-     *
-     * @return the response to the request with the user
+     * @param uid the id of the user to unflag the pharmacy
+     * @param pid the id of the pharmacy to be unflagged
      */
-    @GetMapping(Uris.USERS_GET_BY_ID)
+    @DeleteMapping(Uris.USER_FLAGGED_PHARMACIES_GET_BY_ID)
     @Authenticated
-    fun getUser(
-        @PathVariable uid: Long
-    ): GetUserOutputModel {
-        return GetUserOutputModel(usersService.getUser(userId = uid))
+    fun unflagPharmacy(
+        @PathVariable uid: Long,
+        @PathVariable pid: Long
+    ) {
+        usersService.unflagPharmacy(userId = uid, pharmacyId = pid)
     }
 }

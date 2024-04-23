@@ -10,7 +10,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
  * @property userId the id of the user
  * @property username the username of the user
  * @property passwordHash the hashed password of the user
- * @property suspended if the user is suspended
+ * @property flaggedPharmacies the pharmacies flagged by the user
  * @property favoritePharmacies the pharmacies marked as favorite by the user
  * @property medicinesToNotify the medicines the user wants to be notified about
  * @property accessTokens the access tokens of the user
@@ -20,13 +20,13 @@ data class User(
     val userId: Long,
     var username: String,
     var passwordHash: String,
-    val suspended: Boolean,
+    val flaggedPharmacies: MutableSet<Pharmacy> = mutableSetOf(),
     val favoritePharmacies: MutableSet<Pharmacy> = mutableSetOf(),
+    var suspended: Boolean = false,
     val medicinesToNotify: MutableSet<Medicine> = mutableSetOf(),
     val accessTokens: MutableSet<AccessToken> = mutableSetOf(),
     val ratings: MutableMap<Long, Int> = mutableMapOf()
 ) {
-
     init {
         if (username.length !in MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH)
             throw InvalidUserException(

@@ -6,6 +6,8 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.addPharmacy.AddPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.changeMedicineStock.ChangeMedicineStockModel
+import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacies.GetPharmaciesOutputModel
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.listAvailableMedicines.ListAvailableMedicinesOutputModel
@@ -44,7 +46,7 @@ class PharmaciesService(
         offset: Long? = null
     ): APIResult<GetPharmaciesOutputModel> {
         return get<GetPharmaciesOutputModel>(
-            link = Uris.getPharmacies(
+            link = Uris.pharmacies(
                 medicineId = medicineId,
                 limit = limit,
                 offset = offset
@@ -64,7 +66,7 @@ class PharmaciesService(
      */
     suspend fun getPharmacyById(id: Long): APIResult<PharmacyWithUserDataModel> {
         return get<PharmacyWithUserDataModel>(
-            link = Uris.getPharmacyById(id),
+            link = Uris.pharmacyById(id),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )
     }
@@ -86,7 +88,7 @@ class PharmaciesService(
         offset: Long? = null
     ): APIResult<ListAvailableMedicinesOutputModel> {
         return get<ListAvailableMedicinesOutputModel>(
-            link = Uris.listAvailableMedicines(
+            link = Uris.pharmacyMedicines(
                 pharmacyId = pharmacyId,
                 limit = limit,
                 offset = offset
@@ -97,7 +99,7 @@ class PharmaciesService(
 
     suspend fun ratePharmacy(pharmacyId: Long, rating: Int): APIResult<Unit> {
         return post<Unit>(
-            link = Uris.ratePharmacy(pharmacyId),
+            link = Uris.pharmacyRating(pharmacyId),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
             body = rating
         )
@@ -110,7 +112,7 @@ class PharmaciesService(
         stock: Long
     ): APIResult<Unit> {
         return patch<Unit>(
-            link = Uris.changeMedicineStock(pharmacyId, medicineId),
+            link = Uris.pharmacyMedicineById(pharmacyId, medicineId),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
             body = ChangeMedicineStockModel(operation, stock)
         )
@@ -122,27 +124,16 @@ class PharmaciesService(
         stock: Long
     ): APIResult<Unit> {
         return put<Unit>(
-            link = Uris.addNewMedicineToPharmacy(pharmacyId, medicineId),
+            link = Uris.pharmacyMedicineById(pharmacyId, medicineId),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token"),
             body = AddNewMedicineInputModel(stock)
         )
-    }
-
-    data class ChangeMedicineStockModel(
-        val operation: MedicineStockOperation,
-        val quantity: Long
-    )
-
-    enum class MedicineStockOperation {
-        ADD,
-        REMOVE
     }
 
     /**
      * Adds a new pharmacy.
      *
      * @param name the pharmacy name
-     * @param description the pharmacy description
      * @param pictureUrl the pharmacy picture's url
      * @param location the pharmacy location
      *
@@ -152,7 +143,6 @@ class PharmaciesService(
      */
     suspend fun addPharmacy(
         name: String,
-        description: String,
         pictureUrl: String,
         location: Location
     ): APIResult<AddPharmacyOutputModel> {

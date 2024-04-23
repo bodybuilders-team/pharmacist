@@ -47,6 +47,7 @@ class PharmaciesController(private val pharmaciesService: PharmaciesService) {
      */
     @GetMapping(Uris.PHARMACIES)
     fun getPharmacies(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
         @RequestParam(Params.LOCATION_PARAM, required = false) location: String?,
         @RequestParam(Params.RANGE_PARAM, required = false) range: Int?,
         @RequestParam(Params.MEDICINE_PARAM, required = false) medicine: Long?,
@@ -56,6 +57,7 @@ class PharmaciesController(private val pharmaciesService: PharmaciesService) {
     ): GetPharmaciesOutputModel {
         return GetPharmaciesOutputModel(
             pharmaciesService.getPharmacies(
+                userId = user.userId,
                 location = if (location == null) null else Location.parse(location),
                 range = range,
                 medicine = medicine,
@@ -154,7 +156,7 @@ class PharmaciesController(private val pharmaciesService: PharmaciesService) {
      * @param pid the id of the pharmacy
      * @param pharmacyRating the rating of the pharmacy
      */
-    @PostMapping(Uris.PHARMACY_RATE)
+    @PostMapping(Uris.PHARMACY_RATINGS)
     fun ratePharmacy(
         @PathVariable pid: String,
         @Valid @RequestBody pharmacyRating: Int, // TODO: Change to a model

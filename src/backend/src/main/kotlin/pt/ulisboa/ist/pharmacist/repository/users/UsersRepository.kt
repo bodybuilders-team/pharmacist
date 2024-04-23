@@ -11,10 +11,6 @@ interface UsersRepository {
 
     fun create(username: String, passwordHash: String): User
 
-    fun addFavoritePharmacy(userId: Long, pharmacyId: Long)
-
-    fun removeFavoritePharmacy(userId: Long, pharmacyId: Long)
-
     fun findByUsername(username: String): User?
 
     fun findById(userId: Long): User?
@@ -28,4 +24,12 @@ interface UsersRepository {
     fun existsByUsername(username: String): Boolean
 
     fun findByAccessTokenHash(accessToken: String): User?
+
+    fun addFavoritePharmacy(userId: Long, pharmacyId: Long)
+
+    fun removeFavoritePharmacy(userId: Long, pharmacyId: Long)
+
+    fun flagPharmacy(userId: Long, pharmacyId: Long)
+
+    fun unflagPharmacy(userId: Long, pharmacyId: Long)
 }
