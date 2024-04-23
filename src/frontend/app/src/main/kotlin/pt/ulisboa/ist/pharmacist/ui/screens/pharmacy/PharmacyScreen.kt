@@ -30,7 +30,7 @@ import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacyB
 import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
-import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.StarRatingBar
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyRating
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
@@ -95,7 +95,7 @@ fun PharmacyScreen(
                     Row {
                         Icon(
                             Icons.Rounded.LocationOn,
-                            contentDescription = "Open in maps",
+                            contentDescription = "Open in Maps",
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
@@ -106,8 +106,8 @@ fun PharmacyScreen(
                     }
                 }
 
-                StarRatingBar(
-                    rating = pharmacy.userRating ?: 0,
+                PharmacyRating(
+                    pharmacy = pharmacy,
                     onRatingChanged = onRatingChanged,
                 )
 

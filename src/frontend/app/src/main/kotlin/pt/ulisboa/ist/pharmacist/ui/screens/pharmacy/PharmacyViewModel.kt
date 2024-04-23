@@ -132,8 +132,12 @@ class PharmacyViewModel(
             val result =
                 pharmacistService.pharmaciesService.ratePharmacy(it.pharmacy.pharmacyId, rating)
 
-            if (result.isSuccess())
-                pharmacy = pharmacy?.copy(userRating = rating)
+            if (result.isSuccess()) {
+                val result2 =
+                    pharmacistService.pharmaciesService.getPharmacyById(it.pharmacy.pharmacyId)
+                if (result2.isSuccess())
+                    pharmacy = result2.data
+            }
         }
     }
 

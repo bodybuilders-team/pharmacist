@@ -30,7 +30,6 @@ class PharmacyActivity : PharmacistActivity() {
         )
     }
 
-
     private val addPharmacyResultLauncher = AddMedicineToPharmacyActivity
         .registerForResult(this) { medicineId ->
             if (medicineId != null)

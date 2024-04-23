@@ -127,12 +127,12 @@ class PharmaciesServiceImpl(
 
         if (userRating != null) {
             pharmacy.globalRatingSum -= userRating
-            pharmacy.numberOfRatings--
+            pharmacy.numberOfRatings[userRating - 1]--
         }
 
         user.ratings[pharmacyId] = rating
 
         pharmacy.globalRatingSum += rating
-        pharmacy.numberOfRatings++
+        pharmacy.numberOfRatings[rating - 1]++
     }
 }

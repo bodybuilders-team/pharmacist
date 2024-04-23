@@ -7,13 +7,15 @@ data class PharmacyDto(
     val name: String,
     val globalRating: Double?,
     val location: LocationDto,
-    val pictureUrl: String
+    val pictureUrl: String,
+    val numberOfRatings: Array<Int>
 ) {
     constructor(pharmacy: Pharmacy) : this(
         pharmacyId = pharmacy.pharmacyId,
         name = pharmacy.name,
         globalRating = pharmacy.globalRating,
         location = LocationDto(pharmacy.location),
-        pictureUrl = pharmacy.pictureUrl
+        pictureUrl = pharmacy.pictureUrl,
+        numberOfRatings = pharmacy.numberOfRatings
     )
 }
