@@ -9,7 +9,7 @@ import pt.ulisboa.ist.pharmacist.domain.users.User
  */
 interface MedicineNotificationService {
 
-    fun getFlows(): MutableMap<Long, MutableSharedFlow<MedicineNotification>>
+    fun getFlow(userId: Long):  MutableSharedFlow<MedicineNotification>
 
     /**
      * Tries to notify the user.

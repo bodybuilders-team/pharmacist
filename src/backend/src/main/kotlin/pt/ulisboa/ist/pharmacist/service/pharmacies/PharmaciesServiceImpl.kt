@@ -1,7 +1,5 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies
 
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineNotification
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
@@ -19,6 +17,7 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyWithUserDataDto
+import pt.ulisboa.ist.pharmacist.service.utils.runNewBlocking
 
 /**
  * Service that handles the business logic of the pharmacies.
@@ -98,11 +97,16 @@ class PharmaciesServiceImpl(
         operation: MedicineStock.Operation,
         quantity: Long
     ): ChangeMedicineStockOutputDto {
-        pharmaciesRepository.findById(pharmacyId)
+        val pharmacy = pharmaciesRepository.findById(pharmacyId)
             ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
+
         medicinesRepository.findById(medicineId)
             ?: throw NotFoundException("Medicine with id $medicineId does not exist")
+
         if (quantity < 0L) throw InvalidArgumentException("Quantity must be a positive integer")
+
+        val prevMedicineStock = pharmacy.medicines.find { it.medicine.medicineId == medicineId }
+            ?: throw NotFoundException("Medicine with id $medicineId does not exist in pharmacy with id $pharmacyId")
 
         val medicineStock = pharmaciesRepository.changeMedicineStock(
             pharmacyId = pharmacyId,
@@ -111,29 +115,24 @@ class PharmaciesServiceImpl(
             quantity = quantity
         )
 
-        notifyMedicineStockChange(pharmacyId, medicineId, medicineStock)
+        if (prevMedicineStock.stock == 0L)
+            notifyMedicineStockChange(pharmacyId, medicineId, medicineStock)
 
         return ChangeMedicineStockOutputDto(medicineStock)
     }
 
-    private fun notifyMedicineStockChange(pharmacyId: Long, medicineId: Long, medicineStock: MedicineStock) {
-
-        Thread {
-            val flows = notificationsService.getFlows()
-
-            runBlocking {
-                usersRepo.findAll().forEach { user ->
-                    if (user.favoritePharmacies.any { it.pharmacyId == pharmacyId }
-                        && user.medicinesToNotify.any { it.medicineId == medicineId }) {
-                        if (flows[user.userId] == null)
-                            flows[user.userId] = MutableSharedFlow()
-
-                        flows[user.userId]!!.emit(MedicineNotification(medicineStock, pharmacyId))
-                    }
+    private fun notifyMedicineStockChange(pharmacyId: Long, medicineId: Long, medicineStock: MedicineStock) =
+        runNewBlocking {
+            usersRepo.findAll().forEach { user ->
+                if (user.favoritePharmacies.any { it.pharmacyId == pharmacyId }
+                    && user.medicinesToNotify.any { it.medicineId == medicineId }) {
+                    notificationsService
+                        .getFlow(user.userId)
+                        .emit(MedicineNotification(medicineStock, pharmacyId))
                 }
             }
-        }.start()
-    }
+        }
+
 
     override fun getPharmacyById(user: User, pid: Long): PharmacyWithUserDataDto {
         val pharmacy =

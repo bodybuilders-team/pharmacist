@@ -52,7 +52,7 @@ class AuthenticationInterceptor(
     }
 
     companion object {
-        private const val AUTHORIZATION_HEADER = "Authorization"
+        const val AUTHORIZATION_HEADER = "Authorization"
         private const val BEARER_TOKEN_PREFIX = "Bearer "
 
         const val USER_ATTRIBUTE = "user"

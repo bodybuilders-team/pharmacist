@@ -34,6 +34,8 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
+
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
 }
 
 tasks.withType<KotlinCompile> {

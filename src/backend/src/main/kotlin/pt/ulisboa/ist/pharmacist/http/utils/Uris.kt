@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.pharmacist.http.utils
 
-import org.springframework.web.util.UriTemplate
 import java.net.URI
+import org.springframework.web.util.UriTemplate
 
 /**
  * The URIs of the API.
@@ -26,7 +26,7 @@ object Uris {
 
     const val MEDICINES = "/medicines"
     const val MEDICINES_GET_BY_ID = "/medicines/{mid}"
-    const val MEDICINE_NOTIFICATIONS = "/medicine-notifications"
+    const val MEDICINE_NOTIFICATIONS = "/medicines/notifications"
 
     const val CREATE_SIGNED_URL = "/create-signed-url"
 

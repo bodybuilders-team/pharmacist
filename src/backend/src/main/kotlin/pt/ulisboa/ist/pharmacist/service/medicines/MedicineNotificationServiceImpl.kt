@@ -12,36 +12,17 @@ import pt.ulisboa.ist.pharmacist.domain.users.User
 class MedicineNotificationServiceImpl : MedicineNotificationService {
     val userFlows = mutableMapOf<Long, MutableSharedFlow<MedicineNotification>>()
 
-    data class MedicinePharmacyPair(
-        val medicineId: Long,
-        val pharmacyId: Long
-    )
+    override fun getFlow(userId: Long): MutableSharedFlow<MedicineNotification> {
+        if (userFlows[userId] == null)
+            userFlows[userId] = MutableSharedFlow()
 
-    override fun getFlows(): MutableMap<Long, MutableSharedFlow<MedicineNotification>> {
-        return userFlows
+        return userFlows[userId] ?: throw RuntimeException("User flow not found")
     }
 
     override suspend fun notifyUser(user: User, notifyAction: (MedicineNotification) -> Unit) {
-        val previousStocks = mutableMapOf<MedicinePharmacyPair, Long>()
-
-        if (userFlows[user.userId] == null)
-            userFlows[user.userId] = MutableSharedFlow()
-
-        userFlows[user.userId]!!.collect { notification ->
-            val previousStock = previousStocks.put(
-                MedicinePharmacyPair(
-                    medicineId = notification.medicineStock.medicine.medicineId,
-                    pharmacyId = notification.pharmacyId
-                ),
-                notification.medicineStock.stock
-            ) ?: return@collect
-
-            if (previousStock <= STOCK_NOTIFICATION_THRESHOLD && notification.medicineStock.stock > STOCK_NOTIFICATION_THRESHOLD)
-                notifyAction(notification)
+        getFlow(user.userId).collect { notification ->
+            notifyAction(notification)
         }
     }
 
-    companion object {
-        const val STOCK_NOTIFICATION_THRESHOLD = 0L
-    }
 }

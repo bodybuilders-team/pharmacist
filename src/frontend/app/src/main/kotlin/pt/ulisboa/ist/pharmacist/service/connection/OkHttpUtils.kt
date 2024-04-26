@@ -64,3 +64,13 @@ fun Response.getBodyOrThrow(): ResponseBody =
  * @return the parsed object
  */
 inline fun <reified T> Gson.fromJson(json: JsonReader): T = fromJson(json, T::class.java)
+
+/**
+ * Parses an object of type [T] from the [json] stream.
+ *
+ * @receiver the Gson instance
+ * @param json the json String
+ *
+ * @return the parsed object
+ */
+inline fun <reified T> Gson.fromJson(json: String): T = fromJson(json, T::class.java)
