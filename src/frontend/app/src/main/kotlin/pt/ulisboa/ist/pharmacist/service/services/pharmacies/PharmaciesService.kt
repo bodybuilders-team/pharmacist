@@ -134,7 +134,7 @@ class PharmaciesService(
      * Adds a new pharmacy.
      *
      * @param name the pharmacy name
-     * @param pictureUrl the pharmacy picture's url
+     * @param pharmacyPhotoUrl the pharmacy picture's url
      * @param location the pharmacy location
      *
      * @return the API result of the add pharmacy request
@@ -143,7 +143,7 @@ class PharmaciesService(
      */
     suspend fun addPharmacy(
         name: String,
-        pictureUrl: String,
+        pharmacyPhotoUrl: String,
         location: Location
     ): APIResult<AddPharmacyOutputModel> {
         return post<AddPharmacyOutputModel>(
@@ -152,7 +152,7 @@ class PharmaciesService(
             body = mapOf(
                 "name" to name,
                 //"description" to description,
-                "pictureUrl" to pictureUrl,
+                "pictureUrl" to pharmacyPhotoUrl,
                 "location" to location
             )
         )

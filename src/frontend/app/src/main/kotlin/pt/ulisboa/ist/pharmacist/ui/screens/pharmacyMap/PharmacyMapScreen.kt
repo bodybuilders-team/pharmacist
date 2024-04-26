@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
@@ -38,7 +39,10 @@ fun PharmacyMapScreen(
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
+    onAddPictureButtonClick: () -> Unit,
     onAddPharmacyFinishClick: (newPharmacyName: String, location: Location) -> Unit,
+    onAddPharmacyCancelClick: () -> Unit,
+    newPharmacyPhoto: ImageBitmap?,
     setFollowMyLocation: (Boolean) -> Unit,
     setPosition: (LatLng) -> Unit
 ) {
@@ -58,7 +62,10 @@ fun PharmacyMapScreen(
                     cameraPositionState = cameraPositionState,
                     pharmacies = pharmacies,
                     onPharmacyDetailsClick = onPharmacyDetailsClick,
+                    onAddPictureButtonClick = onAddPictureButtonClick,
                     onAddPharmacyFinishClick = onAddPharmacyFinishClick,
+                    onAddPharmacyCancelClick = onAddPharmacyCancelClick,
+                    newPharmacyPhoto = newPharmacyPhoto,
                     setFollowMyLocation = setFollowMyLocation,
                     setPosition = setPosition
                 )

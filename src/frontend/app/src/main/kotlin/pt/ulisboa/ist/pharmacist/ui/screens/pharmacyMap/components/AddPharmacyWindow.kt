@@ -1,18 +1,19 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CameraAlt
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -24,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 
@@ -32,7 +34,8 @@ fun AddPharmacyWindow(
     modifier: Modifier,
     onGoToLocationButtonClick: () -> Unit,
     onAddPictureButtonClick: () -> Unit,
-    onAddPharmacyFinishClick: (newPharmacyName: String) -> Unit
+    onAddPharmacyFinishClick: (newPharmacyName: String) -> Unit,
+    newPharmacyPhoto: ImageBitmap?
 ) {
     var newPharmacyName by rememberSaveable { mutableStateOf("") }
 
@@ -41,7 +44,7 @@ fun AddPharmacyWindow(
             .background(Color.White, shape = RoundedCornerShape(8.dp))
             .then(modifier)
     ) {
-        Column {
+        Column(modifier = Modifier.width(IntrinsicSize.Max)) {
             Text(
                 text = "Pharmacy Details",
                 style = MaterialTheme.typography.titleMedium,
@@ -65,6 +68,19 @@ fun AddPharmacyWindow(
                 contentDescription = "Go to location",
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
+            if (newPharmacyPhoto != null)
+                Box(
+                    modifier
+                        .height(100.dp)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        bitmap = newPharmacyPhoto,
+                        contentDescription = "Pharmacy photo",
+                        modifier = Modifier.padding(2.dp)
+                    )
+                }
             IconTextButton(
                 onClick = { onAddPictureButtonClick() },
                 imageVector = Icons.Rounded.CameraAlt,
