@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivity.Companion.AuthenticationMethod

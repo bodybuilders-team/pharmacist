@@ -12,11 +12,11 @@ import androidx.paging.map
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.ModificationEvent.StockModificationEvent

@@ -30,7 +30,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.service.http.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.components.MedicineEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScreen

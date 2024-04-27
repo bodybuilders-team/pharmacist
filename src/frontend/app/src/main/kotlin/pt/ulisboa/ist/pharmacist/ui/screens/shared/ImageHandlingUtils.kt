@@ -13,8 +13,8 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.connection.isFailure
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.connection.isFailure
 
 data class HandleImageSelectionOutputData(
     val boxPhotoUrl: InputStream,

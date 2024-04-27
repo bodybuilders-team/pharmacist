@@ -7,7 +7,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.services.hasLocationPermission
+import pt.ulisboa.ist.pharmacist.service.hasLocationPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils

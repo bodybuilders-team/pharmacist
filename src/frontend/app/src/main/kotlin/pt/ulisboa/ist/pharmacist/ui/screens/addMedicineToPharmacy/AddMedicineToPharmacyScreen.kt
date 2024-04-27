@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.service.http.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearch
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton

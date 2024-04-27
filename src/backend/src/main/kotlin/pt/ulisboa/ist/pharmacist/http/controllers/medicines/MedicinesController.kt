@@ -52,19 +52,18 @@ class MedicinesController(private val medicinesService: MedicinesService) {
         )
     }
 
-
     /**
      * Handles the request to get a medicine by its id.
      *
-     * @param medicineId the id of the medicine
+     * @param mid the id of the medicine
      *
      * @return the medicine
      */
     @GetMapping(Uris.MEDICINES_GET_BY_ID)
     fun getMedicineById(
-        @PathVariable("mid") medicineId: Long
+        @PathVariable mid: Long
     ): ResponseEntity<GetMedicineOutputModel> {
-        val medicine = medicinesService.getMedicineById(medicineId)
+        val medicine = medicinesService.getMedicineById(mid)
         return ResponseEntity.ok(GetMedicineOutputModel(medicine))
     }
 

@@ -2,7 +2,7 @@ package pt.ulisboa.ist.pharmacist
 
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 
 /**

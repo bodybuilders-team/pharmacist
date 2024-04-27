@@ -18,9 +18,9 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.services.LocationService
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils

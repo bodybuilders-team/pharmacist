@@ -8,8 +8,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.connection.isFailure
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.connection.isFailure
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils

@@ -2,7 +2,7 @@ package pt.ulisboa.ist.pharmacist.ui.screens
 
 import androidx.activity.ComponentActivity
 import pt.ulisboa.ist.pharmacist.DependenciesContainer
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 

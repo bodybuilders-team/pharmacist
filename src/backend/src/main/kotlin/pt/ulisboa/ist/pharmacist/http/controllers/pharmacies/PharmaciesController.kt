@@ -161,7 +161,7 @@ class PharmaciesController(private val pharmaciesService: PharmaciesService) {
     @PostMapping(Uris.PHARMACY_RATINGS)
     fun ratePharmacy(
         @PathVariable pid: String,
-        @Valid @RequestBody pharmacyRating: Int, // TODO: Change to a model
+        @Valid @RequestBody pharmacyRating: Int,
         @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
     ) {
         pharmaciesService.ratePharmacy(

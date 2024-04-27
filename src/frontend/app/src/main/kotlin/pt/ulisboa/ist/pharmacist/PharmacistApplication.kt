@@ -10,7 +10,8 @@ import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.notifications.MedicineNotificationsBackgroundService
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.session.SessionManagerSharedPrefs
 
@@ -43,9 +44,9 @@ class PharmacistApplication : DependenciesContainer, Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             createNotificationsChannel()
-        }
+
         val serviceIntent = Intent(this, MedicineNotificationsBackgroundService::class.java)
 
         startService(serviceIntent)

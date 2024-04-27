@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.domain.pharmacies
 
+import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidMedicineStockException
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock.Operation.ADD
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock.Operation.REMOVE
@@ -17,6 +18,11 @@ data class MedicineStock(
 ) {
     val stock: Long
         get() = _stock
+
+    init {
+        if (_stock < 0)
+            throw InvalidMedicineStockException("Stock must be a non-negative number.")
+    }
 
     /**
      * Adds a quantity to the stock.

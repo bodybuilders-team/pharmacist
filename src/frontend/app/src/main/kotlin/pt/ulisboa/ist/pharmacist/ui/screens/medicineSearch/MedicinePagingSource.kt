@@ -5,9 +5,9 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import kotlin.math.max
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.services.medicines.MedicinesService
-import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.http.services.medicines.MedicinesService
+import pt.ulisboa.ist.pharmacist.service.http.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
 
 class MedicinePagingSource(
     private val medicinesService: MedicinesService,

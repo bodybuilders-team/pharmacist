@@ -28,19 +28,17 @@ data class User(
     val ratings: MutableMap<Long, Int> = mutableMapOf()
 ) {
     init {
+        if (userId < 0)
+            throw InvalidUserException("User id must be a positive number.")
+
         if (username.length !in MIN_USERNAME_LENGTH..MAX_USERNAME_LENGTH)
             throw InvalidUserException(
                 "Username must be between $MIN_USERNAME_LENGTH and $MAX_USERNAME_LENGTH characters long."
             )
-
-        if (passwordHash.length != PASSWORD_HASH_LENGTH)
-            throw InvalidUserException("Password hash must have a length of $PASSWORD_HASH_LENGTH.")
     }
 
     companion object {
         private const val MIN_USERNAME_LENGTH = 3
         private const val MAX_USERNAME_LENGTH = 128
-
-        const val PASSWORD_HASH_LENGTH = 128
     }
 }

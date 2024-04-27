@@ -1,5 +1,7 @@
 package pt.ulisboa.ist.pharmacist.domain.pharmacies
 
+import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidPharmacyException
+
 /**
  * A Pharmacy.
  *
@@ -25,6 +27,34 @@ data class Pharmacy(
     val medicines: MutableList<MedicineStock> = mutableListOf(),
     var totalFlags: Int = 0,
 ) {
+    init {
+        if (pharmacyId < 0)
+            throw InvalidPharmacyException("Pharmacy id must be a positive number.")
+
+        if (name.length !in MIN_PHARMACY_NAME_LENGTH..MAX_PHARMACY_NAME_LENGTH)
+            throw InvalidPharmacyException(
+                "Pharmacy name must be between $MIN_PHARMACY_NAME_LENGTH and $MAX_PHARMACY_NAME_LENGTH characters long."
+            )
+
+        if (pictureUrl.isNotEmpty() && !URL_REGEX.toRegex().matches(pictureUrl))
+            throw InvalidPharmacyException("Picture URL must be a valid URL.")
+
+        if (creatorId < 0)
+            throw InvalidPharmacyException("Creator id must be a positive number.")
+
+        if (globalRatingSum < 0)
+            throw InvalidPharmacyException("Global rating sum must be a non-negative number.")
+
+        if (numberOfRatings.any { it < 0 })
+            throw InvalidPharmacyException("Number of ratings must be non-negative.")
+
+        if (totalFlags < 0)
+            throw InvalidPharmacyException("Total flags must be a non-negative number.")
+
+        if (numberOfRatings.size != 5)
+            throw InvalidPharmacyException("Number of ratings must have size 5.")
+    }
+
     val globalRating: Double?
         get() = if (numberOfRatings.sum() == 0) null else globalRatingSum / numberOfRatings.sum()
 
@@ -39,5 +69,12 @@ data class Pharmacy(
 
     override fun hashCode(): Int {
         return pharmacyId.hashCode()
+    }
+
+    companion object {
+        private const val MIN_PHARMACY_NAME_LENGTH = 3
+        private const val MAX_PHARMACY_NAME_LENGTH = 128
+
+        private const val URL_REGEX = "^(http|https)://.*$"
     }
 }

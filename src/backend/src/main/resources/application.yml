@@ -26,9 +26,9 @@ logging:
   level:
     org:
       springframework:
-        web: DEBUG
-        security: DEBUG
-        data: DEBUG
+        web: INFO
+        security: INFO
+        data: INFO
     com:
-      pharmacist: DEBUG
-    root: debug
+      pharmacist: INFO
+    root: info

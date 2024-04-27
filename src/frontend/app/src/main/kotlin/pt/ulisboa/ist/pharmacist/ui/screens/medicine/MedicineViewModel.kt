@@ -9,8 +9,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.service.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.LOADED

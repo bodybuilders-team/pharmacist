@@ -9,10 +9,10 @@ import java.io.IOException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.connection.APIResult
-import pt.ulisboa.ist.pharmacist.service.connection.UnexpectedResponseException
-import pt.ulisboa.ist.pharmacist.service.connection.isFailure
-import pt.ulisboa.ist.pharmacist.service.media.Problem
+import pt.ulisboa.ist.pharmacist.service.http.connection.APIResult
+import pt.ulisboa.ist.pharmacist.service.http.connection.UnexpectedResponseException
+import pt.ulisboa.ist.pharmacist.service.http.connection.isFailure
+import pt.ulisboa.ist.pharmacist.service.http.media.Problem
 
 const val RETRY_DELAY = 1000L
 

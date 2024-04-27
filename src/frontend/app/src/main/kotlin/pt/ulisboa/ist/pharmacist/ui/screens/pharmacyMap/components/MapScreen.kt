@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -35,6 +37,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
@@ -46,6 +49,7 @@ import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
 /**
  * Screen to display the map
@@ -109,30 +113,36 @@ fun MapScreen(
                     pharmacies.find { p -> p.pharmacyId == pharmacyId }?.let { pharmacy ->
                         Column(
                             modifier = Modifier
-                                .size(300.dp)
+                                .fillMaxWidth()
+                                .height(300.dp)
+                                .padding(16.dp)
                                 .clickable {
                                     onPharmacyDetailsClick(pharmacy.pharmacyId)
                                 }
                         ) {
                             Text(
-                                pharmacy.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
+                                text = pharmacy.name,
+                                style = MaterialTheme.typography.titleLarge
                             )
                             if (pharmacy.globalRating != null)
                                 Text(
-                                    text = "Rating: ${
+                                    text = "${
                                         String.format("%.1f", pharmacy.globalRating)
-                                    } ⭐",
-                                    fontSize = 20.sp,
-                                    style = MaterialTheme.typography.bodySmall
+                                    } ⭐ (${pharmacy.numberOfRatings.sum()})",
+                                    style = MaterialTheme.typography.bodyLarge
                                 )
                             Text(
                                 "(click for more details)",
-                                style = MaterialTheme.typography.bodySmall,
-                                fontSize = 20.sp,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Light
+                            )
+                            MeteredAsyncImage(
+                                url = pharmacy.pictureUrl,
+                                contentDescription = "Pharmacy picture",
+                                modifier = Modifier
+                                    .fillMaxWidth(0.6f)
+                                    .padding(top = 16.dp, bottom = 8.dp)
+                                    .align(Alignment.CenterHorizontally)
                             )
                         }
                     }
@@ -165,8 +175,11 @@ fun MapScreen(
                     Marker(
                         state = MarkerState(position = pharmacy.location.toLatLng()),
                         //title = pharmacy.name,
-                        // TODO: Different icon for favorite pharmacies
-                        //icon = if (pharmacy.userFavorite) Icons.Rounded.Favorite else null,
+                        icon = when {
+                            clickedPharmacyMarker == pharmacy.pharmacyId -> BitmapDescriptorFactory.defaultMarker()
+                            // TODO: Different icon for favorite pharmacies
+                            else -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                        },
                         onClick = { _ ->
                             if (!addingPharmacy) {
                                 clickedPharmacyMarker = pharmacy.pharmacyId

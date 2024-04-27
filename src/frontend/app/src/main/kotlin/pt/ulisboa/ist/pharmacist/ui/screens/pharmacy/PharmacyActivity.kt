@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import pt.ulisboa.ist.pharmacist.service.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
