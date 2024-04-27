@@ -1,9 +1,7 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.createMedicine
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
@@ -13,15 +11,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasCameraPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateToForResult
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 /**
  * Activity for the [MedicineScreen].
@@ -126,14 +124,6 @@ class CreateMedicineActivity : PharmacistActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.hasCameraPermission = hasCameraPermission()
-    }
-
-
-    private fun hasCameraPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
     }
 
 

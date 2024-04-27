@@ -91,12 +91,14 @@ class PharmaciesController(private val pharmaciesService: PharmaciesService) {
      */
     @PostMapping(Uris.PHARMACIES)
     fun addPharmacy(
-        @Valid @RequestBody inputModel: AddPharmacyInputModel
+        @Valid @RequestBody inputModel: AddPharmacyInputModel,
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User
     ): ResponseEntity<AddPharmacyOutputModel> {
         val addedPharmacy = pharmaciesService.addPharmacy(
             name = inputModel.name,
             location = inputModel.location,
-            pictureUrl = inputModel.pictureUrl
+            pictureUrl = inputModel.pictureUrl,
+            creatorId = user.userId
         )
 
         return ResponseEntity

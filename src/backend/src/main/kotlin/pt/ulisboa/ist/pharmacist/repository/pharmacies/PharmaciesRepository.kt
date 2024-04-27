@@ -30,7 +30,7 @@ interface PharmaciesRepository {
         quantity: Long
     ): MedicineStock
 
-    fun create(name: String, location: Location, pictureUrl: String): Pharmacy
+    fun create(name: String, location: Location, pictureUrl: String, creatorId: Long): Pharmacy
 
     fun findByName(name: String): Pharmacy?
 

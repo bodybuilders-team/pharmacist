@@ -55,7 +55,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
                 else
                     pharmacies
             }
-            .filter { pharmacy -> pharmacy.totalFlags < FLAG_THRESHOLD }
+            .filter { pharmacy -> pharmacy.totalFlags < BANNED_PHARMACY_FLAG_THRESHOLD }
             .paginate(limit, offset)
     }
 
@@ -103,9 +103,13 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
         return medicineStock
     }
 
-    override fun create(name: String, location: Location, pictureUrl: String): Pharmacy {
+    override fun create(name: String, location: Location, pictureUrl: String, creatorId: Long): Pharmacy {
+        val creator = dataSource.users[creatorId] ?: throw NotFoundException("User with id $creatorId does not exist")
+        if (creator.suspended)
+            throw InvalidArgumentException("User with id $creatorId is suspended and cannot create a pharmacy")
+
         val pharmacyId = dataSource.pharmaciesCounter.getAndIncrement()
-        val pharmacy = Pharmacy(pharmacyId, name, location, pictureUrl)
+        val pharmacy = Pharmacy(pharmacyId, name, location, pictureUrl, creatorId)
         pharmacies[pharmacyId] = pharmacy
         return pharmacy
     }
@@ -127,6 +131,6 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
     }
 
     companion object {
-        private const val FLAG_THRESHOLD = 5
+        const val BANNED_PHARMACY_FLAG_THRESHOLD = 5
     }
 }

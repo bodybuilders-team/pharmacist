@@ -1,8 +1,8 @@
 package pt.ulisboa.ist.pharmacist.http.media
 
-import java.net.URI
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import java.net.URI
 
 /**
  * A problem that occurred during the processing of a request.

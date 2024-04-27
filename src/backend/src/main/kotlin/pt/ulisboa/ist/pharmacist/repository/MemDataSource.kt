@@ -1,12 +1,12 @@
 package pt.ulisboa.ist.pharmacist.repository
 
-import java.util.concurrent.atomic.AtomicLong
 import org.springframework.stereotype.Component
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * The in-memory data source.
@@ -23,6 +23,15 @@ class MemDataSource {
     final val medicinesCounter = AtomicLong(0)
 
     init {
+        users += mapOf(
+            0L to User(
+                0,
+                "admin",
+                "08748b318c4dd192aa5c24900469845bc400bb935484f3d4cda5034556fc888320de7201e4eb55091b33bda83253b9e772a6de3f7a0d47b944db013f450a6024"
+            )
+        )
+        usersCounter.set(users.size.toLong())
+
         medicines += mapOf(
             0L to Medicine(
                 0,
@@ -164,7 +173,8 @@ class MemDataSource {
                 0,
                 "Farmácia São João",
                 Location(38.736946, -9.133621),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                creatorId = 0L,
+                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[0L]!!, 100),
                     MedicineStock(medicines[1L]!!, 50),
@@ -175,7 +185,8 @@ class MemDataSource {
                 1,
                 "Farmácia do Chiado",
                 Location(38.7106, -9.1401),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                creatorId = 0L,
+                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[3L]!!, 100),
                     MedicineStock(medicines[4L]!!, 50),
@@ -186,7 +197,8 @@ class MemDataSource {
                 2,
                 "Farmácia do Rossio",
                 Location(38.7149, -9.1394),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                creatorId = 0L,
+                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[0L]!!, 100),
                     MedicineStock(medicines[4L]!!, 50),
@@ -197,7 +209,8 @@ class MemDataSource {
                 3,
                 "Farmácia do Restelo",
                 Location(38.7014, -9.2094),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                creatorId = 0L,
+                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[3L]!!, 100),
                     MedicineStock(medicines[1L]!!, 50),
@@ -208,19 +221,22 @@ class MemDataSource {
                 4,
                 "Farmácia do Areeiro",
                 Location(38.7425, -9.1321),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
+                creatorId = 0L,
+                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
             ),
             5L to Pharmacy(
                 5,
                 "Farmácia do Lumiar",
                 Location(38.7706, -9.1601),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
+                creatorId = 0L,
+                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
             ),
             6L to Pharmacy(
                 6,
                 "Farmácia do Parque",
                 Location(38.7606, -9.1501),
-                "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
+                creatorId = 0L,
+                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
             )
         )
         pharmaciesCounter.set(pharmacies.size.toLong())

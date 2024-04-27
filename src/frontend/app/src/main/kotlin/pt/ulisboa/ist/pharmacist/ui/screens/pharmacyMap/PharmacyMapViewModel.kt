@@ -44,6 +44,7 @@ class PharmacyMapViewModel(
         private set
 
     var hasLocationPermission by mutableStateOf(false)
+    var hasCameraPermission by mutableStateOf(false)
 
     var pharmacies by mutableStateOf<List<Pharmacy>>(emptyList())
         private set

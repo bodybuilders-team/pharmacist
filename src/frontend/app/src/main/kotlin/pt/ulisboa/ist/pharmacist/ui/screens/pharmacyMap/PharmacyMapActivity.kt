@@ -11,6 +11,7 @@ import pt.ulisboa.ist.pharmacist.service.services.hasLocationPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasCameraPermission
 
 /**
  * Activity for the [PharmacyMapScreen].
@@ -53,12 +54,14 @@ class PharmacyMapActivity : PharmacistActivity() {
         }
 
         viewModel.hasLocationPermission = hasLocationPermission()
+        viewModel.hasCameraPermission = hasCameraPermission()
         viewModel.loadPharmacyList()
 
         setContent {
             PharmacyMapScreen(
                 followMyLocation = viewModel.followMyLocation,
                 hasLocationPermission = viewModel.hasLocationPermission,
+                hasCameraPermission = viewModel.hasCameraPermission,
                 mapProperties = viewModel.mapProperties,
                 pharmacies = viewModel.pharmacies,
                 cameraPositionState = viewModel.cameraPositionState,
@@ -91,6 +94,7 @@ class PharmacyMapActivity : PharmacistActivity() {
         super.onResume()
 
         viewModel.hasLocationPermission = hasLocationPermission()
+        viewModel.hasCameraPermission = hasCameraPermission()
         viewModel.loadPharmacyList()
     }
 

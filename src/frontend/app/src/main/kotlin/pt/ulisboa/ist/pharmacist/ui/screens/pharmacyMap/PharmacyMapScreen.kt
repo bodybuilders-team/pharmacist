@@ -38,6 +38,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScr
 fun PharmacyMapScreen(
     followMyLocation: Boolean,
     hasLocationPermission: Boolean,
+    hasCameraPermission: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
     pharmacies: List<Pharmacy>,
@@ -55,7 +56,7 @@ fun PharmacyMapScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             var hasPermission by remember {
-                mutableStateOf(hasLocationPermission)
+                mutableStateOf(hasLocationPermission && hasCameraPermission)
             }
 
             if (hasPermission)
@@ -76,9 +77,12 @@ fun PharmacyMapScreen(
                 PermissionScreen(
                     onPermissionGranted = {
                         hasPermission = true
-                    }, permissionRequests = listOf(
+                    },
+                    permissionRequests = listOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.READ_MEDIA_IMAGES // TODO: Ask permission only when needed
                     ),
                     permissionTitle = stringResource(R.string.pharmacyMap_location_permission_title),
                     settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
