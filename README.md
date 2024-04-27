@@ -20,7 +20,7 @@ Summer Semester of 2023/2024
 - [Architecture 🏗️](#architecture-️)
     - [Backend](#backend)
     - [Frontend](#frontend)
-- [How to Run ▶️](#how-to-run-️)
+- [How to Run ▶️](#how-to-run)
 
 <!--For more in-depth knowledge about the project, check the paper about it [here](./ist-meic-cmu-g03.pdf).-->
 

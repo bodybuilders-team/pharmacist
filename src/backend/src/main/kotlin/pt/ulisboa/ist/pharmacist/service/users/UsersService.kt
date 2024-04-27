@@ -1,6 +1,10 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
+import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
+import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
+import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
