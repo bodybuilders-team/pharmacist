@@ -72,7 +72,7 @@ class AuthenticationActivity : PharmacistActivity() {
          */
         fun navigate(context: Context, authenticationMethod: AuthenticationMethod) {
             context.navigateTo<AuthenticationActivity> {
-                it.putExtra(AUTHENTICATION_METHOD, authenticationMethod.toString())
+                putExtra(AUTHENTICATION_METHOD, authenticationMethod.toString())
             }
         }
 

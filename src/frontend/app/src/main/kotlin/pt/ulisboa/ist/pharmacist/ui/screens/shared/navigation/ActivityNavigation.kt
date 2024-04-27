@@ -12,7 +12,7 @@ import androidx.activity.result.ActivityResultLauncher
  */
 fun <T> Context.navigateTo(
     clazz: Class<T>,
-    beforeNavigation: (Intent) -> Unit = {}
+    beforeNavigation: Intent.() -> Unit = {}
 ) {
     val intent = Intent(this, clazz)
 
@@ -26,7 +26,7 @@ fun <T> Context.navigateTo(
  * @param beforeNavigation a function that is called before the navigation is performed
  */
 inline fun <reified T> Context.navigateTo(
-    noinline beforeNavigation: (Intent) -> Unit = {}
+    noinline beforeNavigation: Intent.() -> Unit = {}
 ) {
     navigateTo(T::class.java, beforeNavigation)
 }
@@ -41,7 +41,7 @@ inline fun <reified T> Context.navigateTo(
 fun <T> Context.navigateToForResult(
     activityResultLauncher: ActivityResultLauncher<Intent>,
     clazz: Class<T>,
-    beforeNavigation: (Intent) -> Unit = {}
+    beforeNavigation: Intent.() -> Unit = {}
 ) {
     val intent = Intent(this, clazz)
 
@@ -51,7 +51,7 @@ fun <T> Context.navigateToForResult(
 
 inline fun <reified T> Context.navigateToForResult(
     activityResultLauncher: ActivityResultLauncher<Intent>,
-    noinline beforeNavigation: (Intent) -> Unit = {}
+    noinline beforeNavigation: Intent.() -> Unit = {}
 ) {
     navigateToForResult(activityResultLauncher, T::class.java, beforeNavigation)
 }

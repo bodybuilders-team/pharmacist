@@ -109,7 +109,7 @@ class PharmacyActivity : PharmacistActivity() {
          */
         fun navigate(context: Context, pharmacyId: Long) {
             context.navigateTo<PharmacyActivity> {
-                it.putExtra(PHARMACY_ID, pharmacyId)
+                putExtra(PHARMACY_ID, pharmacyId)
             }
         }
     }

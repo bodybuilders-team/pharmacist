@@ -1,6 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service.services.pharmacies
 
-import com.google.gson.Gson
+import android.content.Context
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.HTTPService
@@ -17,17 +17,14 @@ import pt.ulisboa.ist.pharmacist.session.SessionManager
 /**
  * The service that handles the pharmacies requests.
  *
- * @property apiEndpoint the API endpoint
  * @property httpClient the HTTP client
- * @property jsonEncoder the JSON encoder used to serialize/deserialize objects
  * @property sessionManager the session manager
  */
 class PharmaciesService(
-    apiEndpoint: String,
+    context: Context,
     httpClient: OkHttpClient,
-    jsonEncoder: Gson,
-    val sessionManager: SessionManager
-) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
+    sessionManager: SessionManager
+) : HTTPService(context, sessionManager, httpClient) {
 
     /**
      * Gets the pharmacies.

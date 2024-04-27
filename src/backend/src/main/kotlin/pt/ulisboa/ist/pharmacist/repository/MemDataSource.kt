@@ -1,12 +1,12 @@
 package pt.ulisboa.ist.pharmacist.repository
 
+import java.util.concurrent.atomic.AtomicLong
 import org.springframework.stereotype.Component
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.domain.users.User
-import java.util.concurrent.atomic.AtomicLong
 
 /**
  * The in-memory data source.

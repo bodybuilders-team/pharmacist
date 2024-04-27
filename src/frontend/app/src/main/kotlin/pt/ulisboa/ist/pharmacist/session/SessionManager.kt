@@ -38,6 +38,7 @@ interface SessionManager {
 
     /**
      * Clears the session.
+     *
      */
     fun clearSession()
 }

@@ -1,6 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service.services.medicines
 
-import com.google.gson.Gson
+import android.content.Context
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
@@ -11,11 +11,10 @@ import pt.ulisboa.ist.pharmacist.service.utils.Uris
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 
 class MedicinesService(
-    apiEndpoint: String,
+    context: Context,
     httpClient: OkHttpClient,
-    jsonEncoder: Gson,
-    val sessionManager: SessionManager
-) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
+    sessionManager: SessionManager
+) : HTTPService(context, sessionManager, httpClient) {
 
     suspend fun getMedicinesWithClosestPharmacy(
         substring: String,

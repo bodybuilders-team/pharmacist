@@ -82,9 +82,9 @@ interface PharmaciesService {
      * Gets a pharmacy by its id.
      *
      * @param user the user that is requesting the pharmacy
-     * @param pid the id of the pharmacy
+     * @param pharmacyId the id of the pharmacy
      */
-    fun getPharmacyById(user: User, pid: Long): PharmacyWithUserDataDto
+    fun getPharmacyById(user: User, pharmacyId: Long): PharmacyWithUserDataDto
 
     /**
      * Rates a pharmacy.

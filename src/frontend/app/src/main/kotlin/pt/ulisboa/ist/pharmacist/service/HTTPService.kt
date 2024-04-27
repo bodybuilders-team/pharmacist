@@ -1,32 +1,38 @@
 package pt.ulisboa.ist.pharmacist.service
 
-import com.google.gson.Gson
+import android.content.Context
+import android.content.Intent
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
 import java.io.IOException
+import java.net.HttpURLConnection
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
+import pt.ulisboa.ist.pharmacist.PharmacistApplication.Companion.API_ENDPOINT
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
 import pt.ulisboa.ist.pharmacist.service.connection.UnexpectedResponseException
-import pt.ulisboa.ist.pharmacist.service.connection.fromJson
 import pt.ulisboa.ist.pharmacist.service.connection.getBodyOrThrow
 import pt.ulisboa.ist.pharmacist.service.connection.send
 import pt.ulisboa.ist.pharmacist.service.media.Problem.Companion.problemMediaType
+import pt.ulisboa.ist.pharmacist.service.utils.SerializationUtils
+import pt.ulisboa.ist.pharmacist.service.utils.fromJson
+import pt.ulisboa.ist.pharmacist.session.SessionManager
+import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
 
 /**
  * A service that communicates with a HTTP server.
  *
- * @property apiEndpoint the base URL of the API
+ * @property API_ENDPOINT the base URL of the API
  * @property httpClient the HTTP client used to communicate with the server
- * @property jsonEncoder the JSON encoder used to serialize/deserialize objects
  */
 abstract class HTTPService(
-    protected val apiEndpoint: String,
-    protected val httpClient: OkHttpClient,
-    val jsonEncoder: Gson
+    val context: Context,
+    val sessionManager: SessionManager,
+    val httpClient: OkHttpClient
 ) {
 
     /**
@@ -40,16 +46,36 @@ abstract class HTTPService(
      */
     protected suspend inline fun <reified T> Request.getResponseResult(): APIResult<T> =
         this.send(httpClient) { response ->
+            if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                sessionManager.clearSession()
+
+                context.navigateTo<HomeActivity> {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+            }
+
             response.getBodyOrThrow().use { body ->
                 val contentType = body.contentType()
 
                 try {
                     when {
                         response.isSuccessful && contentType == applicationJsonMediaType ->
-                            APIResult.Success(data = jsonEncoder.fromJson<T>(JsonReader(body.charStream())))
+                            APIResult.Success(
+                                data = SerializationUtils.gson.fromJson<T>(
+                                    JsonReader(
+                                        body.charStream()
+                                    )
+                                )
+                            )
 
                         !response.isSuccessful && contentType == problemMediaType ->
-                            APIResult.Failure(error = jsonEncoder.fromJson(JsonReader(body.charStream())))
+                            APIResult.Failure(
+                                error = SerializationUtils.gson.fromJson(
+                                    JsonReader(
+                                        body.charStream()
+                                    )
+                                )
+                            )
 
                         response.isSuccessful &&
                                 T::class.java.isAssignableFrom(Unit::class.java) ->
@@ -74,7 +100,7 @@ abstract class HTTPService(
      */
     protected suspend inline fun <reified T> get(link: String): APIResult<T> =
         Request.Builder()
-            .url(apiEndpoint + link)
+            .url(API_ENDPOINT + link)
             .build().getResponseResult()
 
     /**
@@ -92,7 +118,7 @@ abstract class HTTPService(
         token: String
     ): APIResult<T> =
         Request.Builder()
-            .url(url = apiEndpoint + link)
+            .url(url = API_ENDPOINT + link)
             .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
             .build()
             .getResponseResult()
@@ -112,9 +138,9 @@ abstract class HTTPService(
         body: Any
     ): APIResult<T> =
         Request.Builder()
-            .url(url = apiEndpoint + link)
+            .url(url = API_ENDPOINT + link)
             .post(
-                body = jsonEncoder
+                body = SerializationUtils.gson
                     .toJson(body)
                     .toRequestBody(contentType = applicationJsonMediaType)
             )
@@ -139,11 +165,11 @@ abstract class HTTPService(
         body: Any? = null
     ): APIResult<T> =
         Request.Builder()
-            .url(url = apiEndpoint + link)
+            .url(url = API_ENDPOINT + link)
             .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
             .post(
                 body = body?.let {
-                    jsonEncoder
+                    SerializationUtils.gson
                         .toJson(body)
                         .toRequestBody(contentType = applicationJsonMediaType)
                 } ?: EMPTY_REQUEST
@@ -157,11 +183,11 @@ abstract class HTTPService(
         body: Any? = null
     ): APIResult<T> =
         Request.Builder()
-            .url(url = apiEndpoint + link)
+            .url(url = API_ENDPOINT + link)
             .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
             .patch(
                 body = body?.let {
-                    jsonEncoder
+                    SerializationUtils.gson
                         .toJson(body)
                         .toRequestBody(contentType = applicationJsonMediaType)
                 } ?: EMPTY_REQUEST
@@ -175,11 +201,11 @@ abstract class HTTPService(
         body: Any? = null
     ): APIResult<T> =
         Request.Builder()
-            .url(url = apiEndpoint + link)
+            .url(url = API_ENDPOINT + link)
             .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
             .put(
                 body = body?.let {
-                    jsonEncoder
+                    SerializationUtils.gson
                         .toJson(body)
                         .toRequestBody(contentType = applicationJsonMediaType)
                 } ?: EMPTY_REQUEST
@@ -192,7 +218,7 @@ abstract class HTTPService(
         token: String
     ): APIResult<T> =
         Request.Builder()
-            .url(url = apiEndpoint + link)
+            .url(url = API_ENDPOINT + link)
             .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
             .delete()
             .build()

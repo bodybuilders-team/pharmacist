@@ -9,12 +9,12 @@ import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.connection.isFailure
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 
 data class HandleImageSelectionOutputData(
     val boxPhotoUrl: InputStream,

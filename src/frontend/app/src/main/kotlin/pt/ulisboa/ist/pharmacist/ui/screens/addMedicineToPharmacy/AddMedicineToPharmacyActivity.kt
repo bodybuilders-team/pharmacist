@@ -86,7 +86,7 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
             pharmacyId: Long
         ) {
             context.navigateToForResult<AddMedicineToPharmacyActivity>(resultLauncher) {
-                it.putExtra(PHARMACY_ID, pharmacyId)
+                putExtra(PHARMACY_ID, pharmacyId)
             }
         }
 

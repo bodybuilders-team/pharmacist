@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicine
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
@@ -27,7 +28,7 @@ class MedicineActivity : PharmacistActivity() {
     }
 
     companion object {
-        private const val MEDICINE_ID = "medicineId"
+        const val MEDICINE_ID = "medicineId"
 
         /**
          * Navigates to the [MedicineActivity].
@@ -37,9 +38,16 @@ class MedicineActivity : PharmacistActivity() {
          */
         fun navigate(context: Context, medicineId: Long) {
             context.navigateTo<MedicineActivity> {
-                it.putExtra(MEDICINE_ID, medicineId)
+                putExtra(MEDICINE_ID, medicineId)
             }
         }
+
+        fun getNavigationIntent(context: Context, medicineId: Long): Intent {
+            return Intent(context, MedicineActivity::class.java).apply {
+                putExtra(MEDICINE_ID, medicineId)
+            }
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -9,6 +9,7 @@ import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import com.google.common.net.HttpHeaders.CONTENT_TYPE
 import jakarta.validation.Valid
+import java.util.concurrent.TimeUnit
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -19,7 +20,6 @@ import pt.ulisboa.ist.pharmacist.http.controllers.upload.models.SignedUrlModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.utils.ServerConfiguration
-import java.util.concurrent.TimeUnit
 
 
 @RestController

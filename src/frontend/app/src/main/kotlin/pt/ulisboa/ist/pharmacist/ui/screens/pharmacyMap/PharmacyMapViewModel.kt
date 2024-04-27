@@ -21,7 +21,6 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.services.LocationService
-import pt.ulisboa.ist.pharmacist.service.services.hasLocationPermission
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -45,7 +44,6 @@ class PharmacyMapViewModel(
         private set
 
     var hasLocationPermission by mutableStateOf(false)
-        private set
 
     var pharmacies by mutableStateOf<List<Pharmacy>>(emptyList())
         private set
@@ -148,14 +146,6 @@ class PharmacyMapViewModel(
         }
     }
 
-    /**
-     * Checks if the app has location access permission.
-     *
-     * @param context the context of the app
-     */
-    fun checkForLocationAccessPermission(context: Context) {
-        hasLocationPermission = context.hasLocationPermission()
-    }
 
     enum class PharmacyMapState {
         UNLOADED,

@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import pt.ulisboa.ist.pharmacist.service.services.hasLocationPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -43,10 +44,6 @@ class PharmacyMapActivity : PharmacistActivity() {
             }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.loadPharmacyList()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,8 +52,7 @@ class PharmacyMapActivity : PharmacistActivity() {
             viewModel.getCurrentLocation(this@PharmacyMapActivity)
         }
 
-        viewModel.checkForLocationAccessPermission(this)
-
+        viewModel.hasLocationPermission = hasLocationPermission()
         viewModel.loadPharmacyList()
 
         setContent {
@@ -90,4 +86,13 @@ class PharmacyMapActivity : PharmacistActivity() {
             )
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.hasLocationPermission = hasLocationPermission()
+        viewModel.loadPharmacyList()
+    }
+
+
 }

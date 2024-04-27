@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service.services.users
 
-import com.google.gson.Gson
+import android.content.Context
+import java.io.IOException
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.service.HTTPService
 import pt.ulisboa.ist.pharmacist.service.connection.APIResult
@@ -10,22 +11,18 @@ import pt.ulisboa.ist.pharmacist.service.services.users.models.register.Register
 import pt.ulisboa.ist.pharmacist.service.services.users.models.register.RegisterOutput
 import pt.ulisboa.ist.pharmacist.service.utils.Uris
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import java.io.IOException
 
 /**
  * The service that handles the users requests.
  *
- * @property apiEndpoint the API endpoint
  * @property httpClient the HTTP client
- * @property jsonEncoder the JSON encoder used to serialize/deserialize objects
  * @property sessionManager the session manager
  */
 class UsersService(
-    apiEndpoint: String,
+    context: Context,
     httpClient: OkHttpClient,
-    jsonEncoder: Gson,
-    val sessionManager: SessionManager
-) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
+    sessionManager: SessionManager
+) : HTTPService(context, sessionManager, httpClient) {
 
     /**
      * Registers the user with the given [username] and [password].

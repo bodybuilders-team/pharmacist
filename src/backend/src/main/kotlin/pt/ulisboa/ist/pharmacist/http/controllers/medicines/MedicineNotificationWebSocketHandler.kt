@@ -1,8 +1,6 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.medicines
 
 import kotlinx.coroutines.runBlocking
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketSession
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor.Companion.AUTHORIZATION_HEADER
@@ -38,6 +36,16 @@ class MedicineNotificationWebSocketHandler(
             ?: throw AuthenticationException("Invalid access token")
 
         runBlocking {
+//            while (true) {
+//                sendObject(
+//                    session, MedicineNotification(
+//                        MedicineStock(Medicine(1, "Paracetamol", "", ""), 10),
+//                        1
+//                    )
+//                )
+//                delay(5000)
+//            }
+
             medicineNotificationService.notifyUser(user) { notification ->
                 sendObject(session, notification)
             }

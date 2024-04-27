@@ -29,29 +29,4 @@ data class PharmacyModel(
         numberOfRatings = pharmacyDto.numberOfRatings
     )
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as PharmacyModel
-
-        if (pharmacyId != other.pharmacyId) return false
-        if (name != other.name) return false
-        if (location != other.location) return false
-        if (pictureUrl != other.pictureUrl) return false
-        if (globalRating != other.globalRating) return false
-        if (!numberOfRatings.contentEquals(other.numberOfRatings)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = pharmacyId.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + location.hashCode()
-        result = 31 * result + pictureUrl.hashCode()
-        result = 31 * result + (globalRating?.hashCode() ?: 0)
-        result = 31 * result + numberOfRatings.contentHashCode()
-        return result
-    }
 }

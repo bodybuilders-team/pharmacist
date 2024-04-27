@@ -2,7 +2,6 @@ package pt.ulisboa.ist.pharmacist.utils
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
-import org.springframework.scheduling.annotation.EnableScheduling
 
 /**
  * Configuration of the server.
@@ -11,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
  * @property tokenHashSecret the secret used to hash tokens
  */
 @Configuration
-@EnableScheduling
 class ServerConfiguration(
     @Value("\${server.config.secrets.password-secret}")
     val passwordSecret: String,

@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
+import android.Manifest
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,16 +22,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.service.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.components.MedicineEntry
-import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.LocationPermissionScreen
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 
 private const val TEXT_FIELD_WIDTH_FACTOR = 0.8f
@@ -79,7 +82,17 @@ fun MedicineSearch(
     }
 
     if (!hasPermission) {
-        LocationPermissionScreen(onPermissionGranted = { hasPermission = true })
+        PermissionScreen(
+            onPermissionGranted = {
+                hasPermission = true
+            }, permissionRequests = listOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            permissionTitle = stringResource(R.string.pharmacyMap_location_permission_title),
+            settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
+            settingsPermissionNoteButtonText = stringResource(R.string.pharmacyMap_location_permission_settings_button)
+        )
         return
     }
 

@@ -1,6 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service
 
-import com.google.gson.Gson
+import android.content.Context
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -17,31 +17,28 @@ import pt.ulisboa.ist.pharmacist.session.SessionManager
  *
  * @param apiEndpoint the API endpoint
  * @param httpClient the HTTP client
- * @param jsonEncoder the JSON encoder used to serialize/deserialize objects
  *
  * @property usersService the service that handles the users
  * @property pharmaciesService the service that handles the pharmacies
  * @property medicinesService the service that handles the medicines
  */
 class PharmacistService(
-    apiEndpoint: String,
+    context: Context,
     httpClient: OkHttpClient,
-    jsonEncoder: Gson,
     sessionManager: SessionManager
-) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
+) : HTTPService(context, sessionManager, httpClient) {
 
-    val uploaderService = UploaderService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
-    val usersService = UsersService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
-    val pharmaciesService = PharmaciesService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
-    val medicinesService = MedicinesService(apiEndpoint, httpClient, jsonEncoder, sessionManager)
+    val uploaderService = UploaderService(context, httpClient, sessionManager)
+    val usersService = UsersService(context, httpClient, sessionManager)
+    val pharmaciesService = PharmaciesService(context, httpClient, sessionManager)
+    val medicinesService = MedicinesService(context, httpClient, sessionManager)
 }
 
 class UploaderService(
-    apiEndpoint: String,
+    context: Context,
     httpClient: OkHttpClient,
-    jsonEncoder: Gson,
-    val sessionManager: SessionManager
-) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
+    sessionManager: SessionManager
+) : HTTPService(context, sessionManager, httpClient) {
 
     suspend fun uploadBoxPhoto(
         signedUrl: String,

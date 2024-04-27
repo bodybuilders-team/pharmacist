@@ -25,7 +25,7 @@ class CreateMedicineViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
-
+    var hasCameraPermission by mutableStateOf(false)
     private var boxPhotoUrl by mutableStateOf<String?>(null)
     var boxPhoto by mutableStateOf<ImageBitmap?>(null)
     var state by mutableStateOf(CreateMedicineState.NOT_STARTED)

@@ -20,8 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
 
 
@@ -34,11 +37,25 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
  */
 @Composable
 fun CreateMedicineScreen(
+    hasCameraPermission: Boolean,
     boxPhoto: ImageBitmap?,
     onSelectImage: () -> Unit,
     onCreateMedicine: (String, String) -> Unit
 ) {
     PharmacistScreen {
+        var _hasCameraPermission by remember { mutableStateOf(hasCameraPermission) }
+
+        if (!_hasCameraPermission) {
+            PermissionScreen(
+                onPermissionGranted = { _hasCameraPermission = true },
+                permissionRequests = listOf(android.Manifest.permission.CAMERA),
+                permissionTitle = stringResource(R.string.camera_permission),
+                settingsPermissionNote = stringResource(R.string.camera_settings_permission_note),
+                settingsPermissionNoteButtonText = stringResource(R.string.camera_settings_permission_note_button_text)
+            )
+
+            return@PharmacistScreen
+        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()

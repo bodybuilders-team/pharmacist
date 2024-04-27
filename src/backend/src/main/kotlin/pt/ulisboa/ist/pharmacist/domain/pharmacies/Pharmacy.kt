@@ -32,25 +32,10 @@ data class Pharmacy(
 
         other as Pharmacy
 
-        if (pharmacyId != other.pharmacyId) return false
-        if (name != other.name) return false
-        if (location != other.location) return false
-        if (pictureUrl != other.pictureUrl) return false
-        if (globalRatingSum != other.globalRatingSum) return false
-        if (!numberOfRatings.contentEquals(other.numberOfRatings)) return false
-        if (medicines != other.medicines) return false
-
-        return true
+        return pharmacyId == other.pharmacyId
     }
 
     override fun hashCode(): Int {
-        var result = pharmacyId.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + location.hashCode()
-        result = 31 * result + pictureUrl.hashCode()
-        result = 31 * result + globalRatingSum.hashCode()
-        result = 31 * result + numberOfRatings.contentHashCode()
-        result = 31 * result + medicines.hashCode()
-        return result
+        return pharmacyId.hashCode()
     }
 }

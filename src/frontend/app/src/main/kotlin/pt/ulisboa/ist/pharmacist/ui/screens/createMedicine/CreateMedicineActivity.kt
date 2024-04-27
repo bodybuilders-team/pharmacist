@@ -1,21 +1,30 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.createMedicine
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateToForResult
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
- * Activity for the [CreateMedicineScreen].
+ * Activity for the [MedicineScreen].
  */
 class CreateMedicineActivity : PharmacistActivity() {
 
@@ -38,40 +47,95 @@ class CreateMedicineActivity : PharmacistActivity() {
         }
 
     private fun handleImageSelection(result: ActivityResult) {
-        ImageHandlingUtils.handleImageSelection(contentResolver, result)
-            ?.let { (inputStream, mediaType) ->
-                viewModel.uploadBoxPhoto(inputStream.readBytes(), mediaType)
-            }
+        val uri = result.data?.data
+
+        if (uri == null) {
+            Log.e("CreateMedicineActivity", "Failed to get uri")
+            return
+        }
+
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+
+        if (inputStream == null) {
+            Log.e("CreateMedicineActivity", "Failed to open input stream")
+            return
+        }
+
+        val mimeTypeStr = contentResolver.getType(uri)
+        val mimeType = mimeTypeStr?.toMediaType()
+
+        if (mimeType == null) {
+            Log.e("CreateMedicineActivity", "Failed to get mime type")
+            return
+        }
+
+        viewModel.uploadBoxPhoto(inputStream.readBytes(), mimeType)
     }
 
     private fun handleTakePhoto(result: ActivityResult) {
-        ImageHandlingUtils.handleTakePhoto(result)
-            ?.let { (boxPhotoData, mediaType) ->
-                viewModel.uploadBoxPhoto(boxPhotoData, mediaType)
-            }
+        val imageBitmap = result.data?.extras?.get("data")
+
+        if (imageBitmap !is Bitmap) {
+            Log.e("CreateMedicineActivity", "Failed to get image bitmap")
+            return
+        }
+
+        val stream = ByteArrayOutputStream()
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val imageBytes = stream.toByteArray()
+
+        viewModel.uploadBoxPhoto(imageBytes, "image/jpeg".toMediaType())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewModel.hasCameraPermission = hasCameraPermission()
+
         setContent {
             CreateMedicineScreen(
+                hasCameraPermission = viewModel.hasCameraPermission,
                 boxPhoto = viewModel.boxPhoto,
                 onCreateMedicine = { name, description ->
-                    val mid = viewModel.createMedicine(name, description)
-                    if (mid != null) {
-                        val resultIntent = Intent()
-                        resultIntent.putExtra(MEDICINE_ID, mid)
-                        setResult(RESULT_OK, resultIntent)
-                        finish()
+                    lifecycleScope.launch {
+                        val mid = viewModel.createMedicine(name, description)
+                        if (mid != null) {
+                            val resultIntent = Intent()
+                            resultIntent.putExtra(MEDICINE_ID, mid)
+                            setResult(RESULT_OK, resultIntent)
+                            finish()
+                        }
                     }
                 },
                 onSelectImage = {
-                    imageResultLauncher.launch(ImageHandlingUtils.getChooserIntent())
+                    val galIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                    galIntent.addCategory(Intent.CATEGORY_OPENABLE)
+                    galIntent.setType("image/jpeg")
+
+                    val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+                    val chooser = Intent.createChooser(galIntent, "Some text here")
+                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(camIntent))
+
+                    imageResultLauncher.launch(chooser)
                 }
             )
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.hasCameraPermission = hasCameraPermission()
+    }
+
+
+    private fun hasCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
 
     companion object {
         private const val MEDICINE_ID = "medicineId"
@@ -93,6 +157,5 @@ class CreateMedicineActivity : PharmacistActivity() {
                 callback(medicineId)
             }
     }
-
 
 }

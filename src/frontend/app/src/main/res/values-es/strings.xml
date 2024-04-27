@@ -5,7 +5,7 @@
 
     <!-- Pharmacy Map -->
     <string name="pharmacyMap_location_permission_title">Permiso de Ubicación Requerido</string>
-    <string name="pharmacyMap_location_permission_button">Conceder Permiso de Ubicación</string>
+    <string name="permission_button">Conceder Permiso de Ubicación</string>
 
     <string name="pharmacyMap_detailsButton_text">Detalles</string>
     <string name="pharmacyMap_detailsButton_description">Botón para la pantalla de detalles de farmacia</string>

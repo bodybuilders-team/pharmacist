@@ -27,9 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
+import kotlin.math.min
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
-import kotlin.math.min
 
 /**
  * A medicine entry in the pharmacy medicine list.

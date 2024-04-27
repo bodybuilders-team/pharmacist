@@ -134,13 +134,14 @@ class PharmaciesServiceImpl(
         }
 
 
-    override fun getPharmacyById(user: User, pid: Long): PharmacyWithUserDataDto {
+    override fun getPharmacyById(user: User, pharmacyId: Long): PharmacyWithUserDataDto {
         val pharmacy =
-            pharmaciesRepository.findById(pid) ?: throw NotFoundException("Pharmacy with id $pid does not exist")
+            pharmaciesRepository.findById(pharmacyId)
+                ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
 
         return PharmacyWithUserDataDto(
             pharmacy,
-            userRating = user.ratings[pid],
+            userRating = user.ratings[pharmacyId],
             userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy),
             userFlagged = user.flaggedPharmacies.contains(pharmacy)
         )

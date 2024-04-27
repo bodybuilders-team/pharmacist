@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

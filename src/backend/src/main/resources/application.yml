@@ -21,6 +21,14 @@ spring:
     deserialization:
       fail-on-unknown-properties: true
 
+# Set debug log level
 logging:
   level:
-    org.springframework.web: INFO
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG
+        data: DEBUG
+    com:
+      pharmacist: DEBUG
+    root: debug
