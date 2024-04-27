@@ -104,40 +104,40 @@ fun HomeScreen(
                 IconTextButton(
                     onClick = onLoginClick,
                     imageVector = Icons.AutoMirrored.Rounded.Login,
-                    contentDescription = stringResource(R.string.home_loginButton_description),
-                    text = stringResource(R.string.home_loginButton_text),
+                    contentDescription = stringResource(R.string.home_login_button_description),
+                    text = stringResource(R.string.home_login_button_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
 
                 IconTextButton(
                     onClick = onRegisterClick,
                     imageVector = Icons.Rounded.PersonAdd,
-                    contentDescription = stringResource(R.string.home_registerButton_description),
-                    text = stringResource(R.string.home_registerButton_text),
+                    contentDescription = stringResource(R.string.home_register_button_description),
+                    text = stringResource(R.string.home_register_button_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
 
                 IconTextButton(
                     onClick = { onContinueAsGuestClick() },
                     imageVector = Icons.Rounded.Person,
-                    contentDescription = "Continue as guest",
-                    text = "Continue as Guest",
+                    contentDescription = stringResource(R.string.continue_as_guest),
+                    text = stringResource(R.string.continue_as_guest),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
             } else {
                 IconTextButton(
                     onClick = onPharmacyMapClick,
                     imageVector = Icons.Rounded.Map,
-                    contentDescription = stringResource(R.string.home_pharmacyMapButton_description),
-                    text = stringResource(R.string.home_pharmacyMapButton_text),
+                    contentDescription = stringResource(R.string.home_pharmacy_map_button_description),
+                    text = stringResource(R.string.home_pharmacy_map_button_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
 
                 IconTextButton(
                     onClick = onSearchMedicineClick,
                     imageVector = Icons.Rounded.Search,
-                    contentDescription = stringResource(R.string.home_searchMedicineButton_description),
-                    text = stringResource(R.string.home_searchMedicineButton_text),
+                    contentDescription = stringResource(R.string.home_search_medicine_button_description),
+                    text = stringResource(R.string.home_search_medicine_button_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
 
@@ -145,16 +145,16 @@ fun HomeScreen(
                     IconTextButton(
                         onClick = onUpgradeAccountClick,
                         imageVector = Icons.Rounded.Upgrade,
-                        contentDescription = "Upgrade account",
-                        text = "Upgrade account",
+                        contentDescription = stringResource(R.string.upgrade_account),
+                        text = stringResource(R.string.upgrade_account),
                         modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                     )
 
                 IconTextButton(
                     onClick = onLogoutClick,
                     imageVector = Icons.AutoMirrored.Rounded.Logout,
-                    contentDescription = stringResource(R.string.home_logoutButton_description),
-                    text = stringResource(R.string.home_logoutButton_text),
+                    contentDescription = stringResource(R.string.home_logout_button_description),
+                    text = stringResource(R.string.home_logout_button_text),
                     modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
                 )
             }
@@ -162,8 +162,8 @@ fun HomeScreen(
             IconTextButton(
                 onClick = onAboutClick,
                 imageVector = Icons.Rounded.Info,
-                contentDescription = stringResource(R.string.home_aboutButton_description),
-                text = stringResource(R.string.home_aboutButton_text),
+                contentDescription = stringResource(R.string.home_about_button_description),
+                text = stringResource(R.string.home_about_button_text),
                 modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
             )
         }

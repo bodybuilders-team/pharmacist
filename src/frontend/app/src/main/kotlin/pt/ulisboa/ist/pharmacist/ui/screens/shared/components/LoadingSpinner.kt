@@ -22,8 +22,8 @@ private const val STROKE_WIDTH = 4
  */
 @Composable
 fun LoadingSpinner(
-    text: String = stringResource(R.string.defaultLoading_text),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    text: String = stringResource(R.string.default_loading_text),
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

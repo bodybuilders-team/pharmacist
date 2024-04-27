@@ -2,62 +2,62 @@
     <string name="app_name" translatable="false">PharmacIST</string>
     <string name="logo_content_description" translatable="false">Pharmacist Logo</string>
 
-    <string name="backButton_text">Go Back</string>
-    <string name="defaultLoading_text">Loading…</string>
+    <string name="back_button_text">Go Back</string>
+    <string name="default_loading_text">Loading…</string>
 
     <!-- Pharmacy Map -->
-    <string name="pharmacyMap_location_permission_title">Location Permission Required</string>
-    <string name="permission_button">Grant Permission</string>
+    <string name="pharmacy_map_location_permission_title">Location Permission Required</string>
+    <string name="grant_permission_button">Grant Permission</string>
 
-    <string name="pharmacyMap_detailsButton_text">Details</string>
-    <string name="pharmacyMap_detailsButton_description">Button to pharmacy details screen</string>
+    <string name="pharmacy_map_details_button_text">Details</string>
+    <string name="pharmacy_map_details_button_description">Button to pharmacy details screen</string>
 
     <!-- Home -->
-    <string name="home_loginButton_text">Login</string>
-    <string name="home_loginButton_description">Button to login screen</string>
+    <string name="home_login_button_text">Login</string>
+    <string name="home_login_button_description">Button to login screen</string>
 
-    <string name="home_registerButton_text">Register</string>
-    <string name="home_registerButton_description">Button to register screen</string>
+    <string name="home_register_button_text">Register</string>
+    <string name="home_register_button_description">Button to register screen</string>
 
-    <string name="home_aboutButton_text">About</string>
-    <string name="home_aboutButton_description">Button to about screen</string>
+    <string name="home_about_button_text">About</string>
+    <string name="home_about_button_description">Button to about screen</string>
 
-    <string name="home_pharmacyMapButton_text">Pharmacy Map</string>
-    <string name="home_pharmacyMapButton_description">Button to pharmacy map screen</string>
+    <string name="home_pharmacy_map_button_text">Pharmacy Map</string>
+    <string name="home_pharmacy_map_button_description">Button to pharmacy map screen</string>
 
-    <string name="home_addPharmacyButton_description">Button to add pharmacy screen</string>
-    <string name="home_addPharmacyButton_text">Add Pharmacy</string>
+    <string name="home_add_pharmacy_button_description">Button to add pharmacy screen</string>
+    <string name="home_add_pharmacy_Button_text">Add Pharmacy</string>
 
-    <string name="home_searchMedicineButton_description">Button to search medicine screen</string>
-    <string name="home_searchMedicineButton_text">Search Medicine</string>
+    <string name="home_search_medicine_button_description">Button to search medicine screen</string>
+    <string name="home_search_medicine_button_text">Search Medicine</string>
 
-    <string name="home_logoutButton_text">Logout</string>
-    <string name="home_logoutButton_description">Button to logout</string>
+    <string name="home_logout_button_text">Logout</string>
+    <string name="home_logout_button_description">Button to logout</string>
 
     <string name="home_welcome_text">Welcome, to PharmacIST, %s!</string>
     <string name="home_welcome_guest_text">Welcome, to PharmacIST!</string>
 
     <!-- Authentication (Both Login and Register) -->
-    <string name="authentication_message_invalidUsername">Username should have at least 3 characters.</string>
-    <string name="authentication_message_invalidPassword">Password should have at least 8 characters.</string>
-    <string name="authentication_usernameTextField_label">Username</string>
-    <string name="authentication_passwordTextField_label">Password</string>
+    <string name="authentication_message_invalid_username">Username should have at least 3 characters.</string>
+    <string name="authentication_message_invalid_password">Password should have at least 8 characters.</string>
+    <string name="authentication_username_text_field_label">Username</string>
+    <string name="authentication_password_text_field_label">Password</string>
 
     <!-- Login -->
     <string name="login_title">Login</string>
-    <string name="login_loginButton_text">Login</string>
-    <string name="login_loginButton_description">Button to login</string>
+    <string name="login_login_button_text">Login</string>
+    <string name="login_login_button_description">Button to login</string>
 
-    <string name="login_message_usernameNotFound">Username doesn\'t exist.</string>
-    <string name="login_message_wrongPassword">Password is wrong.</string>
+    <string name="login_message_username_not_found">Username doesn\'t exist.</string>
+    <string name="login_message_wrong_password">Password is wrong.</string>
     <string name="login_message_successful">Login was successful.</string>
 
     <!-- Register -->
     <string name="register_title">Register</string>
-    <string name="register_registerButton_text">Register</string>
-    <string name="register_registerButton_description">Button to register</string>
+    <string name="register_register_button_text">Register</string>
+    <string name="register_register_button_description">Button to register</string>
 
-    <string name="register_emailTextField_label" translatable="false">Email</string>
+    <string name="register_email_text_field_label" translatable="false">Email</string>
     <string name="register_message_invalidEmail">Invalid Email</string>
     <string name="register_message_userExists">Username already exists.</string>
     <string name="register_message_successful">User registered successfully.</string>
@@ -69,13 +69,51 @@
     <string name="about_githubLogo_contentDescription">Github Logo</string>
     <string name="about_emailIcon_contentDescription">Email Icon</string>
     <string name="google_maps_key">AIzaSyAGLB3LgU6a1M8WhPLP_UyddHXx64075zw</string>
-    <string name="medicines_notification_channel_name">Pharmacist</string>
-    <string name="medicines_notification_channel_description">Nothing\n</string>
+
+    <!-- Medicine Notification -->
+    <string name="medicines_notification_channel_name" translatable="false">Pharmacist</string>
+    <string name="medicines_notification_channel_description" translatable="false">Nothing\n</string>
     <string name="medicine_notification_title">Medicines Notification Title</string>
     <string name="medicine_notification_text">New Medicine %1$s with %2%d quantity added to %3$d</string>
+    <string name="pharmacy_map_camera_permission_title">Camera Permission Required</string>
     <string name="pharmacyMap_location_permission_note">App needs both approximate &amp; precise location for full features. Since you previously denied these settings, you must go to the permission settings and allow them.</string>
-    <string name="pharmacyMap_location_permission_settings_button">Go to Settings</string>
+    <string name="pharmacyMap_camera_permission_note">To take or upload a photo, you need to grant the camera permission and storage permission.</string>
+    <string name="permission_settings_button">Go to Settings</string>
     <string name="camera_permission">Camera Permission</string>
     <string name="camera_settings_permission_note">To take a photo of the medicine box, you need to grant the camera permission.</string>
     <string name="camera_settings_permission_note_button_text">Grant Camera Permission</string>
+    <string name="pharmacyMap_tapOnMap_text">Tap on the map to select pharmacy location</string>
+    <string name="pharmacyMap_addPharmacy_button_text">Add pharmacy</string>
+    <string name="pharmacyMap_cancel_button_text">Cancel</string>
+    <string name="pharmacyMap_addPharmacy_button_description">Add pharmacy</string>
+    <string name="pharmacyMap_cancel_button_description">Cancel</string>
+    <string name="pharmacyMap_pharmacyPicture_description">Pharmacy picture</string>
+    <string name="pharmacyMap_clickForDetails_text">(click for more details)</string>
+    <string name="medicine_addToNotifications_button_description">Add to notifications</string>
+    <string name="medicine_availableInXPharmacies_text">Available in %1$s pharmacies</string>
+    <string name="medicine_boxPhoto_description">Box Photo</string>
+    <string name="pharmacy_rating_text">Rating:</string>
+    <string name="continue_as_guest">Continue as guest</string>
+    <string name="available_medicines">Available Medicines</string>
+    <string name="create_medicine">Create Medicine</string>
+    <string name="add_medicine_to_pharmacy">Add Medicine To Pharmacy</string>
+    <string name="medicines_available">medicines available</string>
+    <string name="share">Share</string>
+    <string name="add_medicine">Add medicine</string>
+    <string name="take_photo_select_image">Take photo/Select image</string>
+    <string name="medicine_description">Medicine Description*</string>
+    <string name="medicine_name">Medicine Name*</string>
+    <string name="upgrade_account">Upgrade account</string>
+    <string name="no_pharmacy_available">No pharmacy available</string>
+    <string name="pharmacy_details">Pharmacy Details</string>
+    <string name="pharmacy_name">Pharmacy Name*</string>
+    <string name="new_pharmacy">New Pharmacy</string>
+    <string name="go_to_location">Go to Location</string>
+    <string name="create_pharmacy">Create Pharmacy</string>
+    <string name="rate_this_pharmacy">"Rate this pharmacy: "</string>
+    <string name="add_stock">Add stock</string>
+    <string name="remove_stock">Remove stock</string>
+    <string name="search_button">Search Button</string>
+    <string name="open_in_maps">Open in Maps</string>
+    <string name="report_pharmacy">Report Pharmacy</string>
 </resources>

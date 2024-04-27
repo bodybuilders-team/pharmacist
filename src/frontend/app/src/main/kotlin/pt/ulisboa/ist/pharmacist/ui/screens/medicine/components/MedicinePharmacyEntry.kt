@@ -22,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
@@ -60,7 +62,7 @@ fun MedicinePharmacyEntry(
         }) {
         MeteredAsyncImage(
             url = pharmacy.pictureUrl,
-            contentDescription = "Pharmacy picture",
+            contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
             modifier = Modifier
                 .width(100.dp)
                 .align(Alignment.CenterVertically)
@@ -83,7 +85,12 @@ fun MedicinePharmacyEntry(
             )
             if (pharmacy.globalRating != null)
                 Text(
-                    text = "Rating: ${String.format("%.1f", pharmacy.globalRating)} ⭐",
+                    text = stringResource(R.string.pharmacy_rating_text) + "${
+                        String.format(
+                            "%.1f",
+                            pharmacy.globalRating
+                        )
+                    } ⭐",
                     style = MaterialTheme.typography.bodyMedium
                 )
         }

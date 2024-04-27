@@ -21,7 +21,7 @@ import pt.ulisboa.ist.pharmacist.service.http.utils.SerializationUtils
 import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
 
 /**
  * A service that communicates with a HTTP server.

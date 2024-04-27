@@ -9,29 +9,23 @@ import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isFailure
-
-data class HandleImageSelectionOutputData(
-    val boxPhotoUrl: InputStream,
-    val mediaType: MediaType
-)
-
-data class HandleTakePhotoOutputData(
-    val boxPhotoData: ByteArray,
-    val mediaType: MediaType
-)
-
-data class UploadBoxPhotoOutputData(
-    val boxPhotoUrl: String,
-    val boxPhoto: ImageBitmap
-)
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 object ImageHandlingUtils {
+
+    /**
+     * Handles the image selection result.
+     *
+     * @param contentResolver the content resolver
+     * @param result the activity result
+     *
+     * @return the output data of the image selection handling
+     */
     fun handleImageSelection(
         contentResolver: ContentResolver,
         result: ActivityResult
@@ -61,6 +55,13 @@ object ImageHandlingUtils {
         return HandleImageSelectionOutputData(inputStream, mimeType)
     }
 
+    /**
+     * Handles the take photo result.
+     *
+     * @param result the activity result
+     *
+     * @return the output data of the take photo handling
+     */
     fun handleTakePhoto(result: ActivityResult): HandleTakePhotoOutputData? {
         val imageBitmap = result.data?.extras?.get("data")
 
@@ -76,6 +77,15 @@ object ImageHandlingUtils {
         return HandleTakePhotoOutputData(imageBytes, "image/jpeg".toMediaType())
     }
 
+    /**
+     * Uploads the box photo.
+     *
+     * @param boxPhotoData the box photo data
+     * @param mediaType the media type
+     * @param pharmacistService the pharmacist service
+     *
+     * @return the output data of the box photo upload
+     */
     suspend fun uploadBoxPhoto(
         boxPhotoData: ByteArray,
         mediaType: MediaType,
@@ -114,6 +124,11 @@ object ImageHandlingUtils {
         return UploadBoxPhotoOutputData(boxPhotoUrl, boxPhoto)
     }
 
+    /**
+     * Gets the chooser intent.
+     *
+     * @return the chooser intent
+     */
     fun getChooserIntent(): Intent {
         val galIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         galIntent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -127,3 +142,18 @@ object ImageHandlingUtils {
         return chooser
     }
 }
+
+data class HandleImageSelectionOutputData(
+    val boxPhotoUrl: InputStream,
+    val mediaType: MediaType
+)
+
+data class HandleTakePhotoOutputData(
+    val boxPhotoData: ByteArray,
+    val mediaType: MediaType
+)
+
+data class UploadBoxPhotoOutputData(
+    val boxPhotoUrl: String,
+    val boxPhoto: ImageBitmap
+)

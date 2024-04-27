@@ -22,7 +22,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import pt.ulisboa.ist.pharmacist.R
 import kotlin.math.min
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
@@ -76,7 +78,7 @@ fun MedicineEntry(
         ) {
             MeteredAsyncImage(
                 url = medicine.boxPhotoUrl,
-                contentDescription = "Pharmacy picture",
+                contentDescription = stringResource(R.string.medicine_boxPhoto_description),
                 modifier = Modifier
                     .width(100.dp)
                     .align(Alignment.CenterVertically)
@@ -106,7 +108,7 @@ fun MedicineEntry(
                     )
                 else
                     Text(
-                        text = "No pharmacy available",
+                        text = stringResource(R.string.no_pharmacy_available),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.weight(0.1f)
                     )

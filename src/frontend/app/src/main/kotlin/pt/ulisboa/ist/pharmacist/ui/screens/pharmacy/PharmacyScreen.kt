@@ -25,10 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
@@ -69,7 +71,7 @@ fun PharmacyScreen(
             if (loadingState == PharmacyViewModel.PharmacyLoadingState.LOADED && pharmacy != null) {
                 MeteredAsyncImage(
                     url = pharmacy.pharmacy.pictureUrl,
-                    contentDescription = "Pharmacy picture",
+                    contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .padding(top = 16.dp, bottom = 8.dp)
@@ -82,28 +84,28 @@ fun PharmacyScreen(
                     IconButton(onClick = { onNavigateToPharmacyClick(pharmacy.pharmacy.location) }) {
                         Icon(
                             Icons.Rounded.LocationOn,
-                            contentDescription = "Open in Maps",
+                            contentDescription = stringResource(R.string.open_in_maps),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
                     IconButton(onClick = onFavoriteClick) {
                         Icon(
                             if (pharmacy.userMarkedAsFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-                            contentDescription = "Add to notifications",
+                            contentDescription = stringResource(R.string.medicine_addToNotifications_button_description),
                             tint = if (pharmacy.userMarkedAsFavorite) Color(0xFFE91E63) else MaterialTheme.colorScheme.primary
                         )
                     }
                     IconButton(onClick = onReportClick) {
                         Icon(
                             if (pharmacy.userFlagged) Icons.Rounded.Flag else Icons.Rounded.OutlinedFlag,
-                            contentDescription = "Report",
+                            contentDescription = stringResource(R.string.report_pharmacy),
                             tint = Color.Red
                         )
                     }
                     IconButton(onClick = onShareClick) {
                         Icon(
                             Icons.Rounded.Share,
-                            contentDescription = "Share",
+                            contentDescription = stringResource(R.string.share),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -115,7 +117,7 @@ fun PharmacyScreen(
                 )
 
                 Text(
-                    text = "${medicinesStock.itemCount} medicines available",
+                    text = "${medicinesStock.itemCount}" + stringResource(R.string.medicines_available),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(8.dp)
@@ -128,10 +130,10 @@ fun PharmacyScreen(
                 ) {
                     Icon(
                         Icons.Rounded.Add,
-                        contentDescription = "Add medicine"
+                        contentDescription = stringResource(R.string.add_medicine)
                     )
                     Text(
-                        text = "Add New Medicine",
+                        text = stringResource(R.string.add_medicine),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

@@ -53,12 +53,12 @@ fun PermissionScreen(
             }
         }
 
-        if (!isGranted) {
+        if (isGranted) {
+            showSettingsPermissionsNote = false
+            onPermissionGranted()
+        } else {
             showSettingsPermissionsNote = true
         }
-
-        if (isGranted)
-            onPermissionGranted()
     }
 
     val context = LocalContext.current
@@ -98,7 +98,7 @@ fun PermissionScreen(
                     permissionLauncher.launch(permissionRequests.toTypedArray())
                 }
             ) {
-                Text(text = stringResource(R.string.permission_button))
+                Text(text = stringResource(R.string.grant_permission_button))
             }
     }
 }

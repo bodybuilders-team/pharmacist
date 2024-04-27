@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasCameraPermission
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateToForResult
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateToForResult
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 import java.io.ByteArrayOutputStream
 import java.io.InputStream

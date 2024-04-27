@@ -1,7 +1,9 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components
 
+import android.Manifest
 import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Cancel
@@ -32,11 +34,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
@@ -47,6 +50,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
@@ -61,6 +65,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
+    hasCameraPermission: Boolean,
     followMyLocation: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
@@ -104,6 +109,9 @@ fun MapScreen(
     )
     val scaffoldSheetScope = rememberCoroutineScope()
 
+
+    var hasCameraPermission_ by remember { mutableStateOf(hasCameraPermission) }
+
     BottomSheetScaffold(
         scaffoldState = scaffoldSheetState,
         sheetPeekHeight = 0.dp,
@@ -132,13 +140,13 @@ fun MapScreen(
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             Text(
-                                "(click for more details)",
+                                text = stringResource(R.string.pharmacyMap_clickForDetails_text),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Light
                             )
                             MeteredAsyncImage(
                                 url = pharmacy.pictureUrl,
-                                contentDescription = "Pharmacy picture",
+                                contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
                                 modifier = Modifier
                                     .fillMaxWidth(0.6f)
                                     .padding(top = 16.dp, bottom = 8.dp)
@@ -150,100 +158,140 @@ fun MapScreen(
             }
         }) {
         Box(modifier = Modifier.fillMaxSize()) {
-            GoogleMap(
-                modifier = Modifier
-                    .fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                uiSettings = MapUiSettings(zoomControlsEnabled = false),
-                properties = mapProperties,
-                onMyLocationButtonClick = {
-                    setFollowMyLocation(!followMyLocation)
-                    false
-                },
-                onMapClick = { clickedLocation ->
-                    if (addingPharmacy && newPharmacyMarkerState == null) {
-                        newPharmacyMarkerState = MarkerState(clickedLocation)
-                        setPosition(clickedLocation)
+            if (addingPharmacy && !hasCameraPermission_) {
+                PermissionScreen(
+                    onPermissionGranted = {
+                        hasCameraPermission_ = true
+                    },
+                    permissionRequests = listOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.READ_MEDIA_IMAGES
+                    ),
+                    permissionTitle = stringResource(R.string.pharmacy_map_camera_permission_title),
+                    settingsPermissionNote = stringResource(R.string.pharmacyMap_camera_permission_note),
+                    settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
+                )
+            } else {
+                GoogleMap(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    uiSettings = MapUiSettings(zoomControlsEnabled = false),
+                    properties = mapProperties,
+                    onMyLocationButtonClick = {
+                        setFollowMyLocation(!followMyLocation)
+                        false
+                    },
+                    onMapClick = { clickedLocation ->
+                        if (addingPharmacy && newPharmacyMarkerState == null) {
+                            newPharmacyMarkerState = MarkerState(clickedLocation)
+                            setPosition(clickedLocation)
+                        }
+                        scaffoldSheetScope.launch {
+                            scaffoldSheetState.bottomSheetState.hide()
+                        }
+                        clickedPharmacyMarker = null
                     }
-                    scaffoldSheetScope.launch {
-                        scaffoldSheetState.bottomSheetState.hide()
-                    }
-                    clickedPharmacyMarker = null
-                }
-            ) {
-                pharmacies.forEach { pharmacy ->
-                    Marker(
-                        state = MarkerState(position = pharmacy.location.toLatLng()),
-                        //title = pharmacy.name,
-                        icon = when {
-                            clickedPharmacyMarker == pharmacy.pharmacyId -> BitmapDescriptorFactory.defaultMarker()
-                            // TODO: Different icon for favorite pharmacies
-                            else -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                        },
-                        onClick = { _ ->
-                            if (!addingPharmacy) {
-                                clickedPharmacyMarker = pharmacy.pharmacyId
-                                scaffoldSheetScope.launch {
-                                    scaffoldSheetState.bottomSheetState.expand()
+                ) {
+                    pharmacies.forEach { pharmacy ->
+                        Marker(
+                            state = MarkerState(position = pharmacy.location.toLatLng()),
+                            //title = pharmacy.name,
+                            icon = when {
+                                clickedPharmacyMarker == pharmacy.pharmacyId -> BitmapDescriptorFactory.defaultMarker()
+                                // TODO: Different icon for favorite pharmacies
+                                else -> BitmapDescriptorFactory.defaultMarker(
+                                    BitmapDescriptorFactory.HUE_GREEN
+                                )
+                            },
+                            onClick = { _ ->
+                                if (!addingPharmacy) {
+                                    clickedPharmacyMarker = pharmacy.pharmacyId
+                                    scaffoldSheetScope.launch {
+                                        scaffoldSheetState.bottomSheetState.expand()
+                                    }
                                 }
-                            }
-                            false
-                        },
-                        onInfoWindowClick = { onPharmacyDetailsClick(pharmacy.pharmacyId) }
-                    )
+                                false
+                            },
+                            onInfoWindowClick = { onPharmacyDetailsClick(pharmacy.pharmacyId) }
+                        )
+                    }
+
+                    if (addingPharmacy) {
+                        newPharmacyMarkerState?.let { markerState ->
+                            Marker(
+                                state = markerState,
+                                draggable = true
+                            )
+                        }
+                    }
                 }
 
                 if (addingPharmacy) {
-                    newPharmacyMarkerState?.let { markerState ->
-                        Marker(
-                            state = markerState,
-                            draggable = true
-                        )
-                    }
-                }
-            }
-
-            if (addingPharmacy) {
-                newPharmacyMarkerLocation?.let { markerLocation ->
-                    AddPharmacyWindow(
-                        modifier = Modifier.align(if (isLandscape) Alignment.TopStart else Alignment.TopCenter),
-                        onGoToLocationButtonClick = { setPosition(markerLocation) },
-                        onAddPictureButtonClick = { onAddPictureButtonClick() },
-                        onAddPharmacyFinishClick = { newPharmacyName ->
-                            onAddPharmacyFinishClick(
-                                newPharmacyName,
-                                Location(markerLocation.latitude, markerLocation.longitude)
+                    if (newPharmacyMarkerState == null)
+                        Box(
+                            modifier = Modifier
+                                .background(Color.White, shape = RoundedCornerShape(8.dp))
+                                .align(if (isLandscape) Alignment.TopStart else Alignment.Center)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.pharmacyMap_tapOnMap_text),
+                                modifier = Modifier.align(Alignment.TopCenter),
+                                style = MaterialTheme.typography.bodyMedium
                             )
+                        }
+                    else
+                        newPharmacyMarkerLocation?.let { markerLocation ->
+                            AddPharmacyWindow(
+                                modifier = Modifier.align(if (isLandscape) Alignment.TopStart else Alignment.TopCenter),
+                                onGoToLocationButtonClick = { setPosition(markerLocation) },
+                                onAddPictureButtonClick = { onAddPictureButtonClick() },
+                                onAddPharmacyFinishClick = { newPharmacyName ->
+                                    onAddPharmacyFinishClick(
+                                        newPharmacyName,
+                                        Location(markerLocation.latitude, markerLocation.longitude)
+                                    )
+                                    addingPharmacy = false
+                                    newPharmacyMarkerState = null
+                                },
+                                newPharmacyPhoto = newPharmacyPhoto
+                            )
+                        }
+                }
+
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        if (addingPharmacy) {
                             addingPharmacy = false
                             newPharmacyMarkerState = null
-                        },
-                        newPharmacyPhoto = newPharmacyPhoto
-                    )
-                }
-            }
-
-            ExtendedFloatingActionButton(
-                onClick = {
-                    if (addingPharmacy) {
-                        addingPharmacy = false
-                        newPharmacyMarkerState = null
-                        onAddPharmacyCancelClick()
-                    } else {
-                        addingPharmacy = true
+                            onAddPharmacyCancelClick()
+                        } else {
+                            addingPharmacy = true
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(24.dp),
+                    icon = {
+                        Icon(
+                            if (!addingPharmacy) Icons.Rounded.Add else Icons.Rounded.Cancel,
+                            if (!addingPharmacy)
+                                stringResource(R.string.pharmacyMap_addPharmacy_button_text)
+                            else
+                                stringResource(R.string.pharmacyMap_cancel_button_text),
+                        )
+                    },
+                    text = {
+                        Text(
+                            if (!addingPharmacy)
+                                stringResource(R.string.pharmacyMap_addPharmacy_button_description)
+                            else
+                                stringResource(R.string.pharmacyMap_cancel_button_description)
+                        )
                     }
-                },
-                containerColor = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(24.dp),
-                icon = {
-                    Icon(
-                        if (!addingPharmacy) Icons.Rounded.Add else Icons.Rounded.Cancel,
-                        if (!addingPharmacy) "Add pharmacy" else "Cancel",
-                    )
-                },
-                text = { Text(if (!addingPharmacy) "Add Pharmacy" else "Cancel") }
-            )
+                )
+            }
         }
     }
 }

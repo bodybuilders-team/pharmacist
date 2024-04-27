@@ -55,12 +55,11 @@ fun PharmacyMapScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            var hasPermission by remember {
-                mutableStateOf(hasLocationPermission && hasCameraPermission)
-            }
+            var hasLocationPermission_ by remember { mutableStateOf(hasLocationPermission) }
 
-            if (hasPermission)
+            if (hasLocationPermission_)
                 MapScreen(
+                    hasCameraPermission = hasCameraPermission,
                     followMyLocation = followMyLocation,
                     mapProperties = mapProperties,
                     cameraPositionState = cameraPositionState,
@@ -76,17 +75,15 @@ fun PharmacyMapScreen(
             else
                 PermissionScreen(
                     onPermissionGranted = {
-                        hasPermission = true
+                        hasLocationPermission_ = true
                     },
                     permissionRequests = listOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.READ_MEDIA_IMAGES // TODO: Ask permission only when needed
                     ),
-                    permissionTitle = stringResource(R.string.pharmacyMap_location_permission_title),
+                    permissionTitle = stringResource(R.string.pharmacy_map_location_permission_title),
                     settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
-                    settingsPermissionNoteButtonText = stringResource(R.string.pharmacyMap_location_permission_settings_button)
+                    settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
                 )
         }
     }

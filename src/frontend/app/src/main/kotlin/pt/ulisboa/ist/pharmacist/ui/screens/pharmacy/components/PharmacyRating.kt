@@ -17,9 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.ui.theme.Gold
 
@@ -41,7 +43,7 @@ fun PharmacyRating(
         modifier = Modifier.fillMaxWidth(0.8f)
     ) {
         Text(
-            text = "Rate this pharmacy: ",
+            text = stringResource(R.string.rate_this_pharmacy),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )

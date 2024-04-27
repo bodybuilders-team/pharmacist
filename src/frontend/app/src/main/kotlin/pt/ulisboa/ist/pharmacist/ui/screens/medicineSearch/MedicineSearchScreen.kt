@@ -89,9 +89,9 @@ fun MedicineSearch(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ),
-            permissionTitle = stringResource(R.string.pharmacyMap_location_permission_title),
+            permissionTitle = stringResource(R.string.pharmacy_map_location_permission_title),
             settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
-            settingsPermissionNoteButtonText = stringResource(R.string.pharmacyMap_location_permission_settings_button)
+            settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
         )
         return
     }
@@ -118,7 +118,7 @@ fun MedicineSearch(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { onSearch(query) }
             ) {
-                Icon(Icons.Rounded.Search, contentDescription = "Search Button")
+                Icon(Icons.Rounded.Search, contentDescription = stringResource(R.string.search_button))
             }
         }
 

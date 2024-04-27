@@ -21,11 +21,11 @@ fun UsernameTextField(
     onUsernameChangeCallback: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val invalidUsernameMessage = stringResource(R.string.authentication_message_invalidUsername)
+    val invalidUsernameMessage = stringResource(R.string.authentication_message_invalid_username)
     val invalidUsername = username.isNotEmpty() && !validateUsername(username)
 
     AuthenticationTextField(
-        label = stringResource(R.string.authentication_usernameTextField_label),
+        label = stringResource(R.string.authentication_username_text_field_label),
         value = username,
         onValueChange = onUsernameChangeCallback,
         modifier = Modifier

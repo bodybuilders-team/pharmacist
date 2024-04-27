@@ -63,20 +63,20 @@ fun CreateMedicineScreen(
             var name by remember { mutableStateOf("") }
             var description by remember { mutableStateOf("") }
 
-            ScreenTitle(title = "Create Medicine")
+            ScreenTitle(title = stringResource(R.string.create_medicine))
 
             // TODO: Add validation of these fields
             TextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Medicine Name*") },
+                label = { Text(stringResource(R.string.medicine_name)) },
                 modifier = Modifier.padding(16.dp)
             )
 
             TextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Medicine Description*") },
+                label = { Text(stringResource(R.string.medicine_description)) },
                 modifier = Modifier.padding(16.dp)
             )
 
@@ -84,7 +84,7 @@ fun CreateMedicineScreen(
                 if (boxPhoto != null)
                     Image(
                         bitmap = boxPhoto,
-                        contentDescription = "Box photo",
+                        contentDescription = stringResource(R.string.medicine_boxPhoto_description),
                         modifier = Modifier.padding(16.dp)
                     )
 
@@ -94,7 +94,7 @@ fun CreateMedicineScreen(
                 ) {
                     Icon(
                         Icons.Rounded.Image,
-                        contentDescription = "Take photo/Select image",
+                        contentDescription = stringResource(R.string.take_photo_select_image),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -103,8 +103,8 @@ fun CreateMedicineScreen(
             pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton(
                 onClick = { onCreateMedicine(name, description) },
                 imageVector = Icons.Rounded.Add,
-                text = "Create Medicine",
-                contentDescription = "Create Medicine",
+                text = stringResource(R.string.create_medicine),
+                contentDescription = stringResource(R.string.create_medicine),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )

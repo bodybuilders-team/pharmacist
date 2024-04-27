@@ -15,10 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
@@ -52,7 +54,7 @@ fun MedicineSearchScreen(
             ) {
                 MeteredAsyncImage(
                     url = medicine.boxPhotoUrl,
-                    contentDescription = "Box Photo",
+                    contentDescription = stringResource(R.string.medicine_boxPhoto_description),
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .padding(top = 16.dp)
@@ -76,14 +78,17 @@ fun MedicineSearchScreen(
                     onClick = { /*TODO*/ },
                 ) {
                     Icon(
-                        Icons.Rounded.Notifications, // Icons.Rounded.NotificationsActive
-                        contentDescription = "Add to notifications",
+                        Icons.Rounded.Notifications, // TODO: Icons.Rounded.NotificationsActive
+                        contentDescription = stringResource(R.string.medicine_addToNotifications_button_description),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
                 Text(
-                    text = "Available in ${pharmacies.itemCount} pharmacies",
+                    text = stringResource(
+                        R.string.medicine_availableInXPharmacies_text,
+                        pharmacies.itemCount
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(8.dp)

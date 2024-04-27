@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation
+package pt.ulisboa.ist.pharmacist.ui.screens.shared
 
 import android.content.Context
 import android.content.Intent

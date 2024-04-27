@@ -26,7 +26,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import pt.ulisboa.ist.pharmacist.R
 import kotlin.math.min
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
@@ -79,7 +81,7 @@ fun PharmacyMedicineEntry(
             }) {
             MeteredAsyncImage(
                 url = medicine.boxPhotoUrl,
-                contentDescription = "Medicine picture",
+                contentDescription = stringResource(R.string.medicine_boxPhoto_description),
                 modifier = Modifier
                     .width(100.dp)
                     .align(Alignment.CenterVertically)
@@ -118,7 +120,7 @@ fun PharmacyMedicineEntry(
             ) {
                 Icon(
                     Icons.Rounded.Add,
-                    contentDescription = "Add stock",
+                    contentDescription = stringResource(R.string.add_stock),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -133,7 +135,7 @@ fun PharmacyMedicineEntry(
             ) {
                 Icon(
                     Icons.Rounded.Remove,
-                    contentDescription = "Remove stock",
+                    contentDescription = stringResource(R.string.remove_stock),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

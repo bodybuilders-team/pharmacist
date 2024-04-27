@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**

@@ -24,8 +24,8 @@ fun GoBackButton(onClick: () -> Unit) {
         IconTextButton(
             onClick = onClick,
             painter = painterResource(R.drawable.ic_round_arrow_back_24),
-            contentDescription = stringResource(R.string.backButton_text),
-            text = stringResource(R.string.backButton_text)
+            contentDescription = stringResource(R.string.back_button_text),
+            text = stringResource(R.string.back_button_text)
         )
     }
 }

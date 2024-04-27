@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="backButton_text">Voltar</string>
-    <string name="defaultLoading_text" tools:ignore="TypographyEllipsis">Carregando...</string>
+    <string name="back_button_text">Voltar</string>
+    <string name="default_loading_text" tools:ignore="TypographyEllipsis">Carregando...</string>
 
     <!-- Pharmacy Map -->
-    <string name="pharmacyMap_location_permission_title">Permissão de Localização Necessária</string>
-    <string name="permission_button">Conceder Permissão de Localização</string>
+    <string name="pharmacy_map_location_permission_title">Permissão de Localização Necessária</string>
+    <string name="grant_permission_button">Conceder Permissão de Localização</string>
 
-    <string name="pharmacyMap_detailsButton_text">Detalhes</string>
-    <string name="pharmacyMap_detailsButton_description">Botão para o ecrã de detalhes da farmácia</string>
+    <string name="pharmacy_map_details_button_text">Detalhes</string>
+    <string name="pharmacy_map_details_button_description">Botão para o ecrã de detalhes da farmácia</string>
 
     <!-- Home -->
-    <string name="home_loginButton_text">Entrar</string>
-    <string name="home_loginButton_description">Botão para o ecrã de início de sessão</string>
+    <string name="home_login_button_text">Entrar</string>
+    <string name="home_login_button_description">Botão para o ecrã de início de sessão</string>
 
-    <string name="home_registerButton_text">Registar</string>
-    <string name="home_registerButton_description">Botão para o ecrã de registo</string>
+    <string name="home_register_button_text">Registar</string>
+    <string name="home_register_button_description">Botão para o ecrã de registo</string>
 
-    <string name="home_aboutButton_text">Sobre</string>
-    <string name="home_aboutButton_description">Botão para o ecrã com informação dos desenvolvedores</string>
+    <string name="home_about_button_text">Sobre</string>
+    <string name="home_about_button_description">Botão para o ecrã com informação dos desenvolvedores</string>
 
-    <string name="home_pharmacyMapButton_text">Mapa de Farmácias</string>
-    <string name="home_pharmacyMapButton_description">Botão para o ecrã com o mapa de farmácias</string>
+    <string name="home_pharmacy_map_button_text">Mapa de Farmácias</string>
+    <string name="home_pharmacy_map_button_description">Botão para o ecrã com o mapa de farmácias</string>
 
-    <string name="home_addPharmacyButton_description">Botão para adicionar farmácia</string>
-    <string name="home_addPharmacyButton_text">Adicionar Farmácia</string>
+    <string name="home_add_pharmacy_button_description">Botão para adicionar farmácia</string>
+    <string name="home_add_pharmacy_Button_text">Adicionar Farmácia</string>
 
-    <string name="home_searchMedicineButton_description">Botão para procurar medicamento</string>
-    <string name="home_searchMedicineButton_text">Procurar Medicamento</string>
+    <string name="home_search_medicine_button_description">Botão para procurar medicamento</string>
+    <string name="home_search_medicine_button_text">Procurar Medicamento</string>
 
-    <string name="home_logoutButton_description">Botão para fechar sessão</string>
-    <string name="home_logoutButton_text">Fechar sessão</string>
+    <string name="home_logout_button_description">Botão para fechar sessão</string>
+    <string name="home_logout_button_text">Fechar sessão</string>
 
     <string name="home_welcome_text">Bem-vindo ao PharmacIST, %s!</string>
     <string name="home_welcome_guest_text">Bem-vindo ao PharmacIST!</string>
 
     <!-- Authentication (Both Login and Register) -->
-    <string name="authentication_message_invalidUsername">Username deve ter pelo menos 3 caracteres.</string>
-    <string name="authentication_message_invalidPassword">Palavra-passe deve ter pelo menos 8 caracteres.</string>
-    <string name="authentication_usernameTextField_label">Nome de Utilizador</string>
-    <string name="authentication_passwordTextField_label">Palavra-passe</string>
+    <string name="authentication_message_invalid_username">Username deve ter pelo menos 3 caracteres.</string>
+    <string name="authentication_message_invalid_password">Palavra-passe deve ter pelo menos 8 caracteres.</string>
+    <string name="authentication_username_text_field_label">Nome de Utilizador</string>
+    <string name="authentication_password_text_field_label">Palavra-passe</string>
 
     <!-- Login -->
     <string name="login_title">Iniciar Sessão</string>
-    <string name="login_loginButton_text">Iniciar Sessão</string>
-    <string name="login_loginButton_description">Botão para iniciar sessão</string>
+    <string name="login_login_button_text">Iniciar Sessão</string>
+    <string name="login_login_button_description">Botão para iniciar sessão</string>
 
-    <string name="login_message_usernameNotFound">Nome de utilizador não existe.</string>
-    <string name="login_message_wrongPassword">Palavra-passe está errada.</string>
+    <string name="login_message_username_not_found">Nome de utilizador não existe.</string>
+    <string name="login_message_wrong_password">Palavra-passe está errada.</string>
     <string name="login_message_successful">Início de sessão realizado um sucesso.</string>
 
     <!-- Register -->
     <string name="register_title">Registar</string>
-    <string name="register_registerButton_text">Registar</string>
-    <string name="register_registerButton_description">Botão para registar</string>
+    <string name="register_register_button_text">Registar</string>
+    <string name="register_register_button_description">Botão para registar</string>
 
     <string name="register_message_invalidEmail">Email inválido</string>
     <string name="register_message_userExists">Nome de utilizador já existe.</string>
@@ -65,4 +65,48 @@
     <string name="about_repoGithub_text">"O código desta aplicação está disponível aqui: "</string>
     <string name="about_githubLogo_contentDescription">Logo do Github</string>
     <string name="about_emailIcon_contentDescription">Ícone de email</string>
+
+    <string name="medicine_notification_title">Título da Notificação de Medicamentos</string>
+    <string name="medicine_notification_text">Novo Medicamento %1$s com %2$d quantidade adicionado a %3$d</string>
+    <string name="pharmacy_map_camera_permission_title">Permissão de Câmera Necessária</string>
+    <string name="pharmacyMap_location_permission_note">O aplicativo precisa de localização aproximada e precisa para recursos completos. Como você negou essas configurações anteriormente, é necessário ir às configurações de permissão e permiti-las.</string>
+    <string name="pharmacyMap_camera_permission_note">Para tirar ou enviar uma foto, você precisa conceder permissão de câmera e permissão de armazenamento.</string>
+    <string name="permission_settings_button">Ir para Configurações</string>
+    <string name="camera_permission">Permissão de Câmera</string>
+    <string name="camera_settings_permission_note">Para tirar uma foto da caixa de remédios, você precisa conceder permissão de câmera.</string>
+    <string name="camera_settings_permission_note_button_text">Conceder Permissão de Câmera</string>
+    <string name="pharmacyMap_tapOnMap_text">Toque no mapa para selecionar a localização da farmácia</string>
+    <string name="pharmacyMap_addPharmacy_button_text">Adicionar farmácia</string>
+    <string name="pharmacyMap_cancel_button_text">Cancelar</string>
+    <string name="pharmacyMap_addPharmacy_button_description">Adicionar farmácia</string>
+    <string name="pharmacyMap_cancel_button_description">Cancelar</string>
+    <string name="pharmacyMap_pharmacyPicture_description">Foto da Farmácia</string>
+    <string name="pharmacyMap_clickForDetails_text">(clique para mais detalhes)</string>
+    <string name="medicine_addToNotifications_button_description">Adicionar às notificações</string>
+    <string name="medicine_availableInXPharmacies_text">Disponível em %1$s farmácias</string>
+    <string name="medicine_boxPhoto_description">Foto da Caixa de Remédio</string>
+    <string name="pharmacy_rating_text">Classificação:</string>
+    <string name="continue_as_guest">Continuar como convidado</string>
+    <string name="available_medicines">Medicamentos Disponíveis</string>
+    <string name="create_medicine">Criar Medicamento</string>
+    <string name="add_medicine_to_pharmacy">Adicionar Medicamento à Farmácia</string>
+    <string name="medicines_available">medicamentos disponíveis</string>
+    <string name="share">Compartilhar</string>
+    <string name="add_medicine">Adicionar medicamento</string>
+    <string name="take_photo_select_image">Tirar foto/Selecionar imagem</string>
+    <string name="medicine_description">Descrição do Medicamento*</string>
+    <string name="medicine_name">Nome do Medicamento*</string>
+    <string name="upgrade_account">Atualizar conta</string>
+    <string name="no_pharmacy_available">Nenhuma farmácia disponível</string>
+    <string name="pharmacy_details">Detalhes da Farmácia</string>
+    <string name="pharmacy_name">Nome da Farmácia*</string>
+    <string name="new_pharmacy">Nova Farmácia</string>
+    <string name="go_to_location">Ir para Localização</string>
+    <string name="create_pharmacy">Criar Farmácia</string>
+    <string name="rate_this_pharmacy">"Avaliar esta farmácia: "</string>
+    <string name="add_stock">Adicionar estoque</string>
+    <string name="remove_stock">Remover estoque</string>
+    <string name="search_button">Botão de Pesquisa</string>
+    <string name="open_in_maps">Abrir no Mapas</string>
+    <string name="report_pharmacy">Denunciar Farmácia</string>
 </resources>

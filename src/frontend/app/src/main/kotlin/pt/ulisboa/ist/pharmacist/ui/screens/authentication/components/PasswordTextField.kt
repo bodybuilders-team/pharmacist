@@ -20,11 +20,11 @@ fun PasswordTextField(
     password: String,
     onPasswordChangeCallback: (String) -> Unit
 ) {
-    val invalidPasswordMessage = stringResource(R.string.authentication_message_invalidPassword)
+    val invalidPasswordMessage = stringResource(R.string.authentication_message_invalid_password)
     val invalidPassword = password.isNotEmpty() && !validatePassword(password)
 
     AuthenticationTextField(
-        label = stringResource(R.string.authentication_passwordTextField_label),
+        label = stringResource(R.string.authentication_password_text_field_label),
         value = password,
         onValueChange = onPasswordChangeCallback,
         visualTransformation = PasswordVisualTransformation(),

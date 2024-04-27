@@ -15,9 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.service.http.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearch
@@ -42,7 +44,7 @@ fun AddMedicineToPharmacyScreen(
     PharmacistTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
-                text = "Available Medicines",
+                text = stringResource(R.string.available_medicines),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -78,8 +80,8 @@ fun AddMedicineToPharmacyScreen(
             IconTextButton(
                 onClick = createMedicine,
                 imageVector = Icons.Rounded.Add,
-                text = "Create Medicine",
-                contentDescription = "Create Medicine",
+                text = stringResource(R.string.create_medicine),
+                contentDescription = stringResource(R.string.create_medicine),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
@@ -91,8 +93,8 @@ fun AddMedicineToPharmacyScreen(
                 },
                 enabled = selectedMedicine != null,
                 imageVector = Icons.Rounded.Add,
-                text = "Add Medicine To Pharmacy",
-                contentDescription = "Add Medicine To Pharmacy",
+                text = stringResource(R.string.add_medicine_to_pharmacy),
+                contentDescription = stringResource(R.string.add_medicine_to_pharmacy),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )

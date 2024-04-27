@@ -10,7 +10,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.about.AboutActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
 
 /**
  * Activity for the [HomeScreen].

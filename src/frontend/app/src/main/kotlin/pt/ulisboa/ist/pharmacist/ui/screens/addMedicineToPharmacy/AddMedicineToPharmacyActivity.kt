@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.createMedicine.CreateMedicineActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateToForResult
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateToForResult
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**

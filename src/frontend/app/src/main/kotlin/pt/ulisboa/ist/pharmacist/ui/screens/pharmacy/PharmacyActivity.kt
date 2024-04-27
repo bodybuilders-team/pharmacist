@@ -9,7 +9,7 @@ import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeM
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigation.navigateTo
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
