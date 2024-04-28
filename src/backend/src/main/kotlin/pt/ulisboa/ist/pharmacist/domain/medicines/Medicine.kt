@@ -34,6 +34,19 @@ data class Medicine(
             throw InvalidMedicineException("Box photo URL must be a valid URL.")
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Medicine
+
+        return medicineId == other.medicineId
+    }
+
+    override fun hashCode(): Int {
+        return medicineId.hashCode()
+    }
+
     companion object {
         private const val MIN_MEDICINE_NAME_LENGTH = 3
         private const val MAX_MEDICINE_NAME_LENGTH = 128

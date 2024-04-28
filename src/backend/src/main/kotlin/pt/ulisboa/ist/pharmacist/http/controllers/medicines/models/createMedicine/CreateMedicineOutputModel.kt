@@ -1,6 +1,6 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.createMedicine
 
-import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
+import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineDto
 
 /**
  * Output model for the create medicine use case.

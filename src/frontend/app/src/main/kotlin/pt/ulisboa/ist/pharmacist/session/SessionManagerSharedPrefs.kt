@@ -16,7 +16,7 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         context.getSharedPreferences(SESSION_PREFS, Context.MODE_PRIVATE)
     }
 
-    override val usedId: Long?
+    override val userId: Long?
         get() = if (prefs.contains(USER_ID)) prefs.getLong(USER_ID, -1) else null
 
     override val accessToken: String?

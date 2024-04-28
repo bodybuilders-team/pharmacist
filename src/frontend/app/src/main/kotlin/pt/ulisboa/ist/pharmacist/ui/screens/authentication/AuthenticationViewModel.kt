@@ -93,7 +93,7 @@ class AuthenticationViewModel(
 
         authenticationState = if (result.isSuccess()) {
             sessionManager.setSession(
-                sessionManager.usedId!!,
+                sessionManager.userId!!,
                 sessionManager.accessToken!!,
                 username
             )

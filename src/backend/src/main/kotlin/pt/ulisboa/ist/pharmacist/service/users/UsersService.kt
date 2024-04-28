@@ -68,32 +68,32 @@ interface UsersService {
     /**
      * Adds a favorite pharmacy to the user.
      *
-     * @param userId the id of the user
      * @param pharmacyId the id of the pharmacy
      */
-    fun addFavoritePharmacy(userId: Long, pharmacyId: Long)
+    fun addFavoritePharmacy(user: User, pharmacyId: Long)
 
     /**
      * Removes a favorite pharmacy from the user.
      *
-     * @param userId the id of the user
      * @param pharmacyId the id of the pharmacy
      */
-    fun removeFavoritePharmacy(userId: Long, pharmacyId: Long)
+    fun removeFavoritePharmacy(user: User, pharmacyId: Long)
 
     /**
      * Flags a pharmacy.
      *
-     * @param userId the id of the user
      * @param pharmacyId the id of the pharmacy
      */
-    fun flagPharmacy(userId: Long, pharmacyId: Long)
+    fun flagPharmacy(user: User, pharmacyId: Long)
 
     /**
      * Unflags a pharmacy.
      *
-     * @param userId the id of the user
      * @param pharmacyId the id of the pharmacy
      */
-    fun unflagPharmacy(userId: Long, pharmacyId: Long)
+    fun unflagPharmacy(user: User, pharmacyId: Long)
+
+    fun addMedicineNotification(user: User, medicineId: Long)
+
+    fun removeMedicineNotification(user: User, medicineId: Long)
 }

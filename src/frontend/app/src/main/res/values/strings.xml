@@ -74,7 +74,7 @@
     <string name="medicines_notification_channel_name" translatable="false">Pharmacist</string>
     <string name="medicines_notification_channel_description" translatable="false">Nothing\n</string>
     <string name="medicine_notification_title">Medicines Notification Title</string>
-    <string name="medicine_notification_text">New Medicine %1$s with %2%d quantity added to %3$d</string>
+    <string name="medicine_notification_text">New Medicine %1$s with %2$d quantity added to %3$d</string>
     <string name="pharmacy_map_camera_permission_title">Camera Permission Required</string>
     <string name="pharmacyMap_location_permission_note">App needs both approximate &amp; precise location for full features. Since you previously denied these settings, you must go to the permission settings and allow them.</string>
     <string name="pharmacyMap_camera_permission_note">To take or upload a photo, you need to grant the camera permission and storage permission.</string>

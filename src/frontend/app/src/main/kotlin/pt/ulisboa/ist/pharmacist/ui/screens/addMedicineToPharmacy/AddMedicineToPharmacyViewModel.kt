@@ -110,7 +110,7 @@ class AddMedicineToPharmacyViewModel(
         }
 
         val medicine = result.data
-        selectedMedicine = medicine
+        selectedMedicine = medicine.medicine
     }
 
 

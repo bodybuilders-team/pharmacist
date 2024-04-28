@@ -128,10 +128,14 @@ class UsersController(private val usersService: UsersService) {
     @PutMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
     @Authenticated
     fun addFavoritePharmacy(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
         @PathVariable uid: Long,
         @PathVariable pid: Long
     ) {
-        usersService.addFavoritePharmacy(userId = uid, pharmacyId = pid)
+        if (user.userId != uid)
+            throw RuntimeException("User with id ${user.userId} cannot add a pharmacy to user with id $uid")
+
+        usersService.addFavoritePharmacy(user = user, pharmacyId = pid)
     }
 
     /**
@@ -144,10 +148,14 @@ class UsersController(private val usersService: UsersService) {
     @DeleteMapping(Uris.USER_FAVORITE_PHARMACIES_GET_BY_ID)
     @Authenticated
     fun removeFavoritePharmacy(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
         @PathVariable uid: Long,
         @PathVariable pid: Long
     ) {
-        usersService.removeFavoritePharmacy(userId = uid, pharmacyId = pid)
+        if (user.userId != uid)
+            throw RuntimeException("User with id ${user.userId} does not correspond to the path variable $uid")
+
+        usersService.removeFavoritePharmacy(user = user, pharmacyId = pid)
     }
 
     /**
@@ -159,10 +167,14 @@ class UsersController(private val usersService: UsersService) {
     @PutMapping(Uris.USER_FLAGGED_PHARMACIES_GET_BY_ID)
     @Authenticated
     fun flagPharmacy(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
         @PathVariable uid: Long,
         @PathVariable pid: Long
     ) {
-        usersService.flagPharmacy(userId = uid, pharmacyId = pid)
+        if (user.userId != uid)
+            throw RuntimeException("User with id ${user.userId} does not correspond to the path variable $uid")
+
+        usersService.flagPharmacy(user = user, pharmacyId = pid)
     }
 
     /**
@@ -174,9 +186,39 @@ class UsersController(private val usersService: UsersService) {
     @DeleteMapping(Uris.USER_FLAGGED_PHARMACIES_GET_BY_ID)
     @Authenticated
     fun unflagPharmacy(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
         @PathVariable uid: Long,
         @PathVariable pid: Long
     ) {
-        usersService.unflagPharmacy(userId = uid, pharmacyId = pid)
+        if (user.userId != uid)
+            throw RuntimeException("User with id ${user.userId} does not correspond to the path variable $uid")
+
+        usersService.unflagPharmacy(user = user, pharmacyId = pid)
+    }
+
+    @PutMapping(Uris.USER_MEDICINE_NOTIFICATIONS)
+    @Authenticated
+    fun addMedicineNotification(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
+        @PathVariable uid: Long,
+        @PathVariable mid: Long
+    ) {
+        if (user.userId != uid)
+            throw RuntimeException("User with id ${user.userId} does not correspond to the path variable $uid")
+
+        usersService.addMedicineNotification(user = user, medicineId = mid)
+    }
+
+    @DeleteMapping(Uris.USER_MEDICINE_NOTIFICATIONS)
+    @Authenticated
+    fun removeMedicineNotification(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
+        @PathVariable uid: Long,
+        @PathVariable mid: Long
+    ) {
+        if (user.userId != uid)
+            throw RuntimeException("User with id ${user.userId} does not correspond to the path variable $uid")
+
+        usersService.removeMedicineNotification(user = user, medicineId = mid)
     }
 }

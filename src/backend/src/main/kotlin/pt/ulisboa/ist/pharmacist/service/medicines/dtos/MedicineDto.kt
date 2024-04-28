@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.service.pharmacies.dtos
+package pt.ulisboa.ist.pharmacist.service.medicines.dtos
 
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 

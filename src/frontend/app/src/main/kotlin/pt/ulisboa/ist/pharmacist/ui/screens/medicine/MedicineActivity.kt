@@ -57,12 +57,15 @@ class MedicineActivity : PharmacistActivity() {
             viewModel.loadMedicine(medicineId)
 
         setContent {
-            MedicineSearchScreen(
-                medicine = viewModel.medicine,
+            MedicineScreen(
+                medicineModel = viewModel.medicine,
                 loadingState = viewModel.loadingState,
                 pharmaciesState = viewModel.pharmaciesState,
                 onPharmacyClick = { pharmacy ->
                     PharmacyActivity.navigate(this, pharmacy.pharmacyId)
+                },
+                toggleMedicineNotification = {
+                    viewModel.toggleMedicineNotification()
                 }
             )
         }

@@ -20,7 +20,7 @@ class SessionManagerInMemory : SessionManager {
     override val username
         get() = _username
 
-    override val usedId: Long?
+    override val userId: Long?
         get() = _userId
 
     override val isGuest: Boolean

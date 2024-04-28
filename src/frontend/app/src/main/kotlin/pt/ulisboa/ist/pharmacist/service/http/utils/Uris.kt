@@ -15,6 +15,7 @@ object Uris {
     const val USER_FAVORITE_PHARMACIES_GET_BY_ID = "/users/{uid}/favorite-pharmacies/{pid}"
     const val USER_FLAGGED_PHARMACIES = "/users/{uid}/flagged-pharmacies"
     const val USER_FLAGGED_PHARMACIES_GET_BY_ID = "/users/{uid}/flagged-pharmacies/{pid}"
+    const val USER_MEDICINE_NOTIFICATIONS = "/users/{uid}/medicine-notifications/{mid}"
 
     const val PHARMACIES = "/pharmacies"
     const val PHARMACIES_GET_BY_ID = "/pharmacies/{pid}"
@@ -69,4 +70,9 @@ object Uris {
         USER_FLAGGED_PHARMACIES_GET_BY_ID
             .replace("{uid}", userId.toString())
             .replace("{pid}", pharmacyId.toString())
+
+    fun medicineNotification(userId: Long, medicineId: Long): String =
+        USER_MEDICINE_NOTIFICATIONS
+            .replace("{uid}", userId.toString())
+            .replace("{mid}", medicineId.toString())
 }

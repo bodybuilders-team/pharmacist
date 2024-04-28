@@ -1,6 +1,6 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.medicines.models
 
-import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
+import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineDto
 
 /**
  * A model for a medicine.

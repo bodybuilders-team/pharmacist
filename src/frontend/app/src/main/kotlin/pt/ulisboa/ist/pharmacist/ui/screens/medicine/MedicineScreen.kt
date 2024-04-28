@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +22,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.medicines.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.components.MedicinePharmacyEntry
@@ -32,19 +33,23 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 /**
  * Medicine screen.
  *
- * @param medicine the medicine to display
+ * @param medicineModel the medicine to display
  * @param loadingState the loading state of the medicine
  * @param pharmaciesState the pharmacies that have the medicine
  * @param onPharmacyClick the action to perform when a pharmacy is clicked
  */
 @Composable
-fun MedicineSearchScreen(
-    medicine: Medicine?,
+fun MedicineScreen(
+    medicineModel: GetMedicineOutputModel?,
     loadingState: MedicineViewModel.MedicineLoadingState,
     pharmaciesState: Flow<PagingData<Pharmacy>>,
-    onPharmacyClick: (Pharmacy) -> Unit
+    onPharmacyClick: (Pharmacy) -> Unit,
+    toggleMedicineNotification: () -> Unit
 ) {
-    if (loadingState == MedicineViewModel.MedicineLoadingState.LOADED && medicine != null) {
+
+    if (loadingState == MedicineViewModel.MedicineLoadingState.LOADED && medicineModel != null) {
+        val (medicine, notificationsActive) = medicineModel
+
         val pharmacies = pharmaciesState.collectAsLazyPagingItems()
 
         PharmacistScreen {
@@ -75,10 +80,10 @@ fun MedicineSearchScreen(
 
                 IconButton(
                     modifier = Modifier,
-                    onClick = { /*TODO*/ },
+                    onClick =toggleMedicineNotification,
                 ) {
                     Icon(
-                        Icons.Rounded.Notifications, // TODO: Icons.Rounded.NotificationsActive
+                        if (notificationsActive) Icons.Rounded.NotificationsOff else Icons.Rounded.NotificationsActive, // Icons.Rounded.NotificationsActive
                         contentDescription = stringResource(R.string.medicine_addToNotifications_button_description),
                         tint = MaterialTheme.colorScheme.primary
                     )

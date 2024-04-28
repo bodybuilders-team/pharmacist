@@ -7,11 +7,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.takeWhile
 import pt.ulisboa.ist.pharmacist.DependenciesContainer
 import pt.ulisboa.ist.pharmacist.PharmacistApplication
@@ -44,14 +46,16 @@ class MedicineNotificationsBackgroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         runNewBlocking {
             while (true) {
-                if (dependenciesContainer.sessionManager.isLoggedIn() && checkNotiPermission())
+                if (dependenciesContainer.sessionManager.isLoggedIn() && checkNotiPermission()) {
                     getNotifications()
+                }
 
                 delay(5000) //TODO: Remove delay
+                Log.d(TAG, "Checking notifications after delay")
             }
         }
 
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -65,9 +69,11 @@ class MedicineNotificationsBackgroundService : Service() {
      * Get the notifications from the server and show them to the user.
      */
     private suspend fun getNotifications() {
+        Log.d(TAG, "Getting notifications")
         val flow = medicineNotificationService
             .getUpdateFlow<MedicineNotification>()
 
+        Log.d(TAG, "Notifications flow started")
         flow.takeWhile { dependenciesContainer.sessionManager.isLoggedIn() }
             .collect { notification ->
                 val notiIntent = MedicineActivity.getNavigationIntent(
@@ -117,10 +123,12 @@ class MedicineNotificationsBackgroundService : Service() {
                     notify(NOTIFICATION_ID, notificationCompat)
                 }
             }
+        Log.d(TAG, "Notifications flow ended")
     }
 
 
     companion object {
         private const val NOTIFICATION_ID = 1
+        const val TAG = "MedicineNotificationsBackgroundService"
     }
 }

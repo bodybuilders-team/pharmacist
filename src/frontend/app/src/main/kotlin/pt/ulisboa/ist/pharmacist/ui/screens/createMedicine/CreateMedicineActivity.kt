@@ -3,6 +3,7 @@ package pt.ulisboa.ist.pharmacist.ui.screens.createMedicine
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -11,6 +12,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
@@ -33,11 +35,12 @@ class CreateMedicineActivity : PharmacistActivity() {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val imageResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode != RESULT_OK) return@registerForActivityResult
 
-            if (result.data?.extras?.get("data") is Bitmap) {
+            if (result.data?.extras?.getParcelable("data", Bitmap::class.java) != null) {
                 handleTakePhoto(result)
             } else {
                 handleImageSelection(result)
@@ -70,8 +73,9 @@ class CreateMedicineActivity : PharmacistActivity() {
         viewModel.uploadBoxPhoto(inputStream.readBytes(), mimeType)
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun handleTakePhoto(result: ActivityResult) {
-        val imageBitmap = result.data?.extras?.get("data")
+        val imageBitmap = result.data?.extras?.getParcelable("data", Bitmap::class.java)
 
         if (imageBitmap !is Bitmap) {
             Log.e("CreateMedicineActivity", "Failed to get image bitmap")
@@ -85,6 +89,7 @@ class CreateMedicineActivity : PharmacistActivity() {
         viewModel.uploadBoxPhoto(imageBytes, "image/jpeg".toMediaType())
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

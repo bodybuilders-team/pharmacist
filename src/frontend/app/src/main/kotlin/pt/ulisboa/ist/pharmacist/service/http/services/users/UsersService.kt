@@ -104,7 +104,7 @@ class UsersService(
     suspend fun addFavorite(pharmacyId: Long): APIResult<Unit> =
         put(
             link = Uris.userFavoritePharmacyById(
-                userId = sessionManager.usedId ?: throw IllegalStateException("No user id"),
+                userId = sessionManager.userId ?: throw IllegalStateException("No user id"),
                 pharmacyId = pharmacyId
             ),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
@@ -118,7 +118,7 @@ class UsersService(
     suspend fun removeFavorite(pharmacyId: Long): APIResult<Unit> =
         delete(
             link = Uris.userFavoritePharmacyById(
-                userId = sessionManager.usedId ?: throw IllegalStateException("No user id"),
+                userId = sessionManager.userId ?: throw IllegalStateException("No user id"),
                 pharmacyId = pharmacyId
             ),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
@@ -127,7 +127,7 @@ class UsersService(
     suspend fun flagPharmacy(pharmacyId: Long): APIResult<Unit> =
         put(
             link = Uris.userFlaggedPharmacyById(
-                userId = sessionManager.usedId ?: throw IllegalStateException("No user id"),
+                userId = sessionManager.userId ?: throw IllegalStateException("No user id"),
                 pharmacyId = pharmacyId
             ),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
@@ -136,7 +136,7 @@ class UsersService(
     suspend fun unflagPharmacy(pharmacyId: Long): APIResult<Unit> =
         delete(
             link = Uris.userFlaggedPharmacyById(
-                userId = sessionManager.usedId ?: throw IllegalStateException("No user id"),
+                userId = sessionManager.userId ?: throw IllegalStateException("No user id"),
                 pharmacyId = pharmacyId
             ),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")

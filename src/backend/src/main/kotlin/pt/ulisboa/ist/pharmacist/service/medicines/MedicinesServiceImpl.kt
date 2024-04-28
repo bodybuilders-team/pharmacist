@@ -2,10 +2,12 @@ package pt.ulisboa.ist.pharmacist.service.medicines
 
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
+import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicinesWithClosestPharmacyOutputDto
-import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
+import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineDto
 
 /**
  * Service that handles the business logic of the medicines.
@@ -41,10 +43,12 @@ class MedicinesServiceImpl(
         return MedicineDto(medicine)
     }
 
-    override fun getMedicineById(medicineId: Long): MedicineDto {
+    override fun getMedicineById(user: User, medicineId: Long): GetMedicineOutputDto {
         val medicine = medicinesRepository.findById(medicineId)
             ?: throw InvalidArgumentException("Medicine with id $medicineId does not exist")
 
-        return MedicineDto(medicine)
+        val medicineNotificationActive = user.medicinesToNotify.contains(medicine)
+
+        return GetMedicineOutputDto(medicine, medicineNotificationActive)
     }
 }

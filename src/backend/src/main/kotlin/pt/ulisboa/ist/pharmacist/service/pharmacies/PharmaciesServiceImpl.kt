@@ -88,6 +88,10 @@ class PharmaciesServiceImpl(
             medicineId = medicineId,
             quantity = quantity
         )
+
+        if (medicineStock.stock > 0L)
+            notifyMedicineStockChange(pharmacyId, medicineId, medicineStock)
+
         return AddNewMedicineOutputDto(medicineStock)
     }
 
@@ -105,7 +109,7 @@ class PharmaciesServiceImpl(
 
         if (quantity < 0L) throw InvalidArgumentException("Quantity must be a positive integer")
 
-        val prevMedicineStock = pharmacy.medicines.find { it.medicine.medicineId == medicineId }
+        val prevMedicineStock = pharmacy.medicines.find { it.medicine.medicineId == medicineId }?.stock
             ?: throw NotFoundException("Medicine with id $medicineId does not exist in pharmacy with id $pharmacyId")
 
         val medicineStock = pharmaciesRepository.changeMedicineStock(
@@ -115,7 +119,7 @@ class PharmaciesServiceImpl(
             quantity = quantity
         )
 
-        if (prevMedicineStock.stock == 0L)
+        if (prevMedicineStock == 0L && medicineStock.stock > 0L)
             notifyMedicineStockChange(pharmacyId, medicineId, medicineStock)
 
         return ChangeMedicineStockOutputDto(medicineStock)

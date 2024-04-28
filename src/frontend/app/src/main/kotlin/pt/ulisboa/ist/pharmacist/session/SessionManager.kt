@@ -3,13 +3,13 @@ package pt.ulisboa.ist.pharmacist.session
 /**
  * Responsible for holding a user's session.
  *
- * @property usedId the user's id
+ * @property userId the user's id
  * @property accessToken the user's access token
  * @property username the user's username
  * @property isGuest true if the user is a guest, false otherwise
  */
 interface SessionManager {
-    val usedId: Long?
+    val userId: Long?
     val accessToken: String?
     val username: String?
     val isGuest: Boolean

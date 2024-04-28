@@ -1,8 +1,10 @@
 package pt.ulisboa.ist.pharmacist.service.medicines
 
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.GetMedicinesWithClosestPharmacyOutputDto
-import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineDto
+import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineDto
 
 /**
  * Service that handles the business logic of the medicines.
@@ -40,5 +42,5 @@ interface MedicinesService {
      * @param medicineId the id of the medicine
      * @return the medicine
      */
-    fun getMedicineById(medicineId: Long): MedicineDto
+    fun getMedicineById(user: User, medicineId: Long): GetMedicineOutputDto
 }

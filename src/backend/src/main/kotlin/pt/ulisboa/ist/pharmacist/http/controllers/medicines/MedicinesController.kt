@@ -6,16 +6,19 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.createMedicine.CreateMedicineInputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.createMedicine.CreateMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.getMedicineById.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.http.controllers.medicines.models.getMedicines.GetMedicinesWithClosestPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.Authenticated
+import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor
 import pt.ulisboa.ist.pharmacist.http.utils.Params
 import pt.ulisboa.ist.pharmacist.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.medicines.MedicinesService
@@ -55,15 +58,17 @@ class MedicinesController(private val medicinesService: MedicinesService) {
     /**
      * Handles the request to get a medicine by its id.
      *
-     * @param mid the id of the medicine
+     * @param medicineId the id of the medicine
      *
      * @return the medicine
      */
     @GetMapping(Uris.MEDICINES_GET_BY_ID)
     fun getMedicineById(
+        @RequestAttribute(AuthenticationInterceptor.USER_ATTRIBUTE) user: User,
         @PathVariable mid: Long
     ): ResponseEntity<GetMedicineOutputModel> {
-        val medicine = medicinesService.getMedicineById(mid)
+        val medicine = medicinesService.getMedicineById(user, mid)
+
         return ResponseEntity.ok(GetMedicineOutputModel(medicine))
     }
 

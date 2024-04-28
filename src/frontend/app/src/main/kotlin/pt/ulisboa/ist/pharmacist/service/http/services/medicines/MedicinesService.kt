@@ -2,7 +2,7 @@ package pt.ulisboa.ist.pharmacist.service.http.services.medicines
 
 import android.content.Context
 import okhttp3.OkHttpClient
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.medicines.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.http.HTTPService
 import pt.ulisboa.ist.pharmacist.service.http.connection.APIResult
@@ -33,8 +33,8 @@ class MedicinesService(
         )
     }
 
-    suspend fun getMedicineById(medicineId: Long): APIResult<Medicine> {
-        return get<Medicine>(
+    suspend fun getMedicineById(medicineId: Long): APIResult<GetMedicineOutputModel> {
+        return get<GetMedicineOutputModel>(
             link = Uris.medicineById(medicineId),
             token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
         )
@@ -56,6 +56,23 @@ class MedicinesService(
         )
 
     }
+
+    suspend fun addMedicineNotification(medicineId: Long) =
+        put<Unit>(
+            link = Uris.medicineNotification(
+                sessionManager.userId ?: throw IllegalStateException("No user id"), medicineId
+            ),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
+        )
+
+    suspend fun removeMedicineNotification(medicineId: Long) =
+        delete<Unit>(
+            link = Uris.medicineNotification(
+                sessionManager.userId ?: throw IllegalStateException("No user id"), medicineId
+            ),
+            token = sessionManager.accessToken ?: throw IllegalStateException("No access token")
+        )
+
 
     data class CreateMedicineInputModel(
         val name: String,

@@ -8,7 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.medicines.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -25,12 +25,12 @@ import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineL
 class MedicineViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager,
-    medicineId: Long
+    val medicineId: Long
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
 
-    var medicine: Medicine? by mutableStateOf(null)
+    var medicine: GetMedicineOutputModel? by mutableStateOf(null)
         private set
 
     private val _pharmaciesState = Pager(
@@ -60,6 +60,22 @@ class MedicineViewModel(
             medicine = result.data
 
         loadingState = LOADED
+    }
+
+    fun toggleMedicineNotification() = viewModelScope.launch {
+        medicine?.let { (_, notificationsActive) ->
+
+            if (!notificationsActive) {
+                val result = pharmacistService.medicinesService.addMedicineNotification(medicineId)
+                if (result.isSuccess())
+                    medicine = medicine?.copy(notificationsActive = true)
+            } else {
+                val result = pharmacistService.medicinesService.removeMedicineNotification(medicineId)
+                if (result.isSuccess())
+                    medicine = medicine?.copy(notificationsActive = false)
+            }
+
+        }
     }
 
 

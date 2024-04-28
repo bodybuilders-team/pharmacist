@@ -1,8 +1,10 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
+import java.util.UUID
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
@@ -13,7 +15,6 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
 import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
-import java.util.UUID
 
 /**
  * Service that handles the business logic of the users.
@@ -26,6 +27,7 @@ import java.util.UUID
 class UsersServiceImpl(
     private val usersRepository: UsersRepository,
     private val pharmaciesRepository: PharmaciesRepository,
+    private val medicinesRepository: MedicinesRepository,
     private val hashingUtils: HashingUtils,
 ) : UsersService {
 
@@ -107,32 +109,42 @@ class UsersServiceImpl(
         return UserDto(user = user)
     }
 
-    override fun addFavoritePharmacy(userId: Long, pharmacyId: Long) {
-        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+    override fun addFavoritePharmacy(user: User, pharmacyId: Long) {
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
-        usersRepository.addFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
+        usersRepository.addFavoritePharmacy(userId = user.userId, pharmacyId = pharmacyId)
     }
 
-    override fun removeFavoritePharmacy(userId: Long, pharmacyId: Long) {
-        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+    override fun removeFavoritePharmacy(user: User, pharmacyId: Long) {
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
-        usersRepository.removeFavoritePharmacy(userId = userId, pharmacyId = pharmacyId)
+        usersRepository.removeFavoritePharmacy(userId = user.userId, pharmacyId = pharmacyId)
     }
 
-    override fun flagPharmacy(userId: Long, pharmacyId: Long) {
-        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+    override fun flagPharmacy(user: User, pharmacyId: Long) {
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
-        usersRepository.flagPharmacy(userId = userId, pharmacyId = pharmacyId)
+        usersRepository.flagPharmacy(userId = user.userId, pharmacyId = pharmacyId)
     }
 
-    override fun unflagPharmacy(userId: Long, pharmacyId: Long) {
-        usersRepository.findById(userId) ?: throw NotFoundException("User with id $userId not found")
+    override fun unflagPharmacy(user: User, pharmacyId: Long) {
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
-        usersRepository.unflagPharmacy(userId = userId, pharmacyId = pharmacyId)
+        usersRepository.unflagPharmacy(userId = user.userId, pharmacyId = pharmacyId)
+    }
+
+    override fun addMedicineNotification(user: User, medicineId: Long) {
+        val medicine = medicinesRepository.findById(medicineId)
+            ?: throw NotFoundException("Medicine with id $medicineId not found")
+
+        user.medicinesToNotify.add(medicine)
+    }
+
+    override fun removeMedicineNotification(user: User, medicineId: Long) {
+        val medicine = medicinesRepository.findById(medicineId)
+            ?: throw NotFoundException("Medicine with id $medicineId not found")
+
+        user.medicinesToNotify.remove(medicine)
     }
 
     companion object {

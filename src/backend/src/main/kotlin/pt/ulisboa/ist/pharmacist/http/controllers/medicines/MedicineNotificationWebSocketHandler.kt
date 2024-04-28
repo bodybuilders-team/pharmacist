@@ -1,8 +1,12 @@
 package pt.ulisboa.ist.pharmacist.http.controllers.medicines
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketSession
+import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineNotification
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor.Companion.AUTHORIZATION_HEADER
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor.Companion.parseBearerToken
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
@@ -39,11 +43,16 @@ class MedicineNotificationWebSocketHandler(
 //            while (true) {
 //                sendObject(
 //                    session, MedicineNotification(
-//                        MedicineStock(Medicine(1, "Paracetamol", "", ""), 10),
+//                        MedicineStock( Medicine(
+//                            6,
+//                            "Alprazolam",
+//                            "Anxiolytic",
+//                            "https://cdn.aerohealthcare.com/wp-content/uploads/2023/01/HV20G.png"
+//                        ), 10),
 //                        1
 //                    )
 //                )
-//                delay(5000)
+//                delay(4000)
 //            }
 
             medicineNotificationService.notifyUser(user) { notification ->
