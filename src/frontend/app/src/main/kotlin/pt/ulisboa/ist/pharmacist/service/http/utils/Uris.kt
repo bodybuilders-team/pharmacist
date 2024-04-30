@@ -26,7 +26,8 @@ object Uris {
 
     const val MEDICINES = "/medicines"
     const val MEDICINES_GET_BY_ID = "/medicines/{mid}"
-    const val MEDICINE_NOTIFICATIONS = "/medicine-notifications"
+
+    const val UPDATE_SUBSCRIPTIONS = "/update-subscriptions"
 
     const val CREATE_SIGNED_URL = "/create-signed-url"
 

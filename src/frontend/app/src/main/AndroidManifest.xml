@@ -69,7 +69,7 @@
             android:name=".ui.screens.createMedicine.CreateMedicineActivity"
             android:theme="@style/Theme.Pharmacist" />
 
-        <service android:name="pt.ulisboa.ist.pharmacist.service.notifications.MedicineNotificationsBackgroundService" />
-        <receiver android:name="pt.ulisboa.ist.pharmacist.service.notifications.MedicineNotificationsBroadcastReceiver" />
+        <service android:name="pt.ulisboa.ist.pharmacist.service.notifications.RealTimeUpdatesBackgroundService" />
+        <receiver android:name="pt.ulisboa.ist.pharmacist.service.notifications.RealTimeUpdatesBroadcastReceiver" />
     </application>
 </manifest>

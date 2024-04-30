@@ -19,6 +19,6 @@ abstract class JsonWebSocketHandler<I>(private val inputType: Class<I>) : TextWe
         session.sendMessage(TextMessage(mapper.writeValueAsString(obj)))
     }
 
-    abstract fun handleObject(session: WebSocketSession?, obj: I)
+    abstract fun handleObject(session: WebSocketSession, obj: I)
 
 }

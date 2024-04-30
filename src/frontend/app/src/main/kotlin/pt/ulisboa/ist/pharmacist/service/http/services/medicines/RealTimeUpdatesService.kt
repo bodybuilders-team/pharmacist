@@ -13,18 +13,20 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
-import pt.ulisboa.ist.pharmacist.service.notifications.MedicineNotificationsBackgroundService.Companion.TAG
+import pt.ulisboa.ist.pharmacist.service.notifications.RealTimeUpdatesBackgroundService.Companion.TAG
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 
-class MedicineNotificationService(
+class RealTimeUpdatesService(
     val apiEndpoint: String,
     val sessionManager: SessionManager,
     val httpClient: OkHttpClient
 ) {
+    private var webSocket: WebSocket? = null
 
 
-    inline fun <reified T> getUpdateFlow(): Flow<T> = callbackFlow {
+    fun getUpdateFlow(): Flow<RealTimeUpdate> = callbackFlow {
         val listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 super.onOpen(webSocket, response)
@@ -32,7 +34,7 @@ class MedicineNotificationService(
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                val message = Gson().fromJson<T>(text)
+                val message = Gson().fromJson<RealTimeUpdate>(text)
                 trySend(message)
                 Log.d(TAG, "WebSocket message received")
             }
@@ -63,19 +65,30 @@ class MedicineNotificationService(
         }
 
         val request = Request.Builder()
-            .url("$apiEndpoint/medicines-notifications")
+            .url(apiEndpoint + Uris.UPDATE_SUBSCRIPTIONS)
             .addHeader("Authorization", "Bearer ${sessionManager.accessToken}")
             .build()
 
 
-        val webSocket = httpClient.newWebSocket(request, listener)
+        webSocket = httpClient.newWebSocket(request, listener)
 
         awaitClose {
-            webSocket.close(1000, null)
+            webSocket?.close(1000, null)
             Log.d(TAG, "WebSocket closed")
         }
     }
 }
+
+object RealTimeUpdateTypes {
+    const val PHARMACY = "pharmacy"
+    const val PHARMACY_MEDICINE_STOCK = "pharmacy-medicine-stock"
+    const val MEDICINE_NOTIFICATION = "medicine-notification"
+}
+
+data class RealTimeUpdate(
+    val type: String,
+    val data: String
+)
 
 data class MedicineNotification(
     val medicineStock: MedicineStock,

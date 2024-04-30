@@ -1,23 +1,21 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies
 
 import org.springframework.stereotype.Service
-import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineNotification
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.http.controllers.RealTimeUpdatePublishing
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
-import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
-import pt.ulisboa.ist.pharmacist.service.medicines.MedicineNotificationService
+import pt.ulisboa.ist.pharmacist.service.medicines.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyWithUserDataDto
-import pt.ulisboa.ist.pharmacist.service.utils.runNewBlocking
 
 /**
  * Service that handles the business logic of the pharmacies.
@@ -29,8 +27,7 @@ import pt.ulisboa.ist.pharmacist.service.utils.runNewBlocking
 class PharmaciesServiceImpl(
     private val pharmaciesRepository: PharmaciesRepository,
     private val medicinesRepository: MedicinesRepository,
-    private val notificationsService: MedicineNotificationService,
-    private val usersRepo: UsersRepository
+    private val realTimeUpdatesService: RealTimeUpdatesService
 ) : PharmaciesService {
 
     override fun getPharmacies(
@@ -119,6 +116,14 @@ class PharmaciesServiceImpl(
             quantity = quantity
         )
 
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.pharmacyMedicineStock(
+                pharmacyId = pharmacyId,
+                medicineId = medicineId,
+                stock = medicineStock.stock
+            )
+        )
+
         if (prevMedicineStock == 0L && medicineStock.stock > 0L)
             notifyMedicineStockChange(pharmacyId, medicineId, medicineStock)
 
@@ -126,16 +131,13 @@ class PharmaciesServiceImpl(
     }
 
     private fun notifyMedicineStockChange(pharmacyId: Long, medicineId: Long, medicineStock: MedicineStock) =
-        runNewBlocking {
-            usersRepo.findAll().forEach { user ->
-                if (user.favoritePharmacies.any { it.pharmacyId == pharmacyId }
-                    && user.medicinesToNotify.any { it.medicineId == medicineId }) {
-                    notificationsService
-                        .getFlow(user.userId)
-                        .emit(MedicineNotification(medicineStock, pharmacyId))
-                }
-            }
-        }
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.medicineNotification(
+                pharmacyId = pharmacyId,
+                medicineId = medicineId,
+                stock = medicineStock.stock
+            )
+        )
 
 
     override fun getPharmacyById(user: User, pharmacyId: Long): PharmacyWithUserDataDto {
@@ -159,13 +161,28 @@ class PharmaciesServiceImpl(
         val userRating = user.ratings[pharmacyId]
 
         if (userRating != null) {
-            pharmacy.globalRatingSum -= userRating
-            pharmacy.numberOfRatings[userRating - 1]--
+            synchronized(pharmacy) {
+                pharmacy.globalRatingSum -= userRating
+                pharmacy.numberOfRatings[userRating - 1]--
+            }
         }
 
         user.ratings[pharmacyId] = rating
 
-        pharmacy.globalRatingSum += rating
-        pharmacy.numberOfRatings[rating - 1]++
+        val newGlobalRatingSum: Double
+        val newNumberOfRatings: List<Int>
+        synchronized(pharmacy) {
+            pharmacy.globalRatingSum += rating
+            pharmacy.numberOfRatings[rating - 1]++
+            newGlobalRatingSum = pharmacy.globalRatingSum
+            newNumberOfRatings = pharmacy.numberOfRatings.toList()
+        }
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.pharmacy(
+                pharmacyId = pharmacyId,
+                globalRatingSum = newGlobalRatingSum,
+                numberOfRatings = newNumberOfRatings
+            )
+        )
     }
 }
