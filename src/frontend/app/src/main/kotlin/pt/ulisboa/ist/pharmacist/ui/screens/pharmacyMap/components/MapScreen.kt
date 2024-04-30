@@ -164,8 +164,7 @@ fun MapScreen(
                         hasCameraPermission_ = true
                     },
                     permissionRequests = listOf(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.READ_MEDIA_IMAGES
+                        Manifest.permission.CAMERA
                     ),
                     permissionTitle = stringResource(R.string.pharmacy_map_camera_permission_title),
                     settingsPermissionNote = stringResource(R.string.pharmacyMap_camera_permission_note),

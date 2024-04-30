@@ -2,7 +2,6 @@ package pt.ulisboa.ist.pharmacist.service.http.services.medicines
 
 import android.util.Log
 import com.google.gson.Gson
-import java.net.HttpURLConnection
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -17,6 +16,7 @@ import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
 import pt.ulisboa.ist.pharmacist.service.notifications.RealTimeUpdatesBackgroundService.Companion.TAG
 import pt.ulisboa.ist.pharmacist.session.SessionManager
+import java.net.HttpURLConnection
 
 class RealTimeUpdatesService(
     val apiEndpoint: String,
@@ -34,6 +34,11 @@ class RealTimeUpdatesService(
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
+                if (!sessionManager.isLoggedIn()) {
+                    Log.d(TAG, "User is not logged in. Closing update flow channel")
+                    close()
+                    return
+                }
                 val message = Gson().fromJson<RealTimeUpdate>(text)
                 trySend(message)
                 Log.d(TAG, "WebSocket message received")

@@ -13,7 +13,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.takeWhile
 import pt.ulisboa.ist.pharmacist.DependenciesContainer
 import pt.ulisboa.ist.pharmacist.PharmacistApplication
 import pt.ulisboa.ist.pharmacist.PharmacistApplication.Companion.API_ENDPOINT
@@ -69,19 +68,18 @@ class RealTimeUpdatesBackgroundService : Service() {
             .getUpdateFlow()
 
         Log.d(TAG, "Real time updates flow started")
-        flow.takeWhile { dependenciesContainer.sessionManager.isLoggedIn() }
-            .collect { realTimeUpdate ->
-                when (realTimeUpdate.type) {
-                    PHARMACY, PHARMACY_MEDICINE_STOCK -> {}
-                    MEDICINE_NOTIFICATION -> {
-                        if (checkNotificationPermission()) {
-                            val medicineNotification =
-                                Gson().fromJson<MedicineNotification>(realTimeUpdate.data)
-                            showMedicineNotification(medicineNotification)
-                        }
+        flow.collect { realTimeUpdate ->
+            when (realTimeUpdate.type) {
+                PHARMACY, PHARMACY_MEDICINE_STOCK -> {}
+                MEDICINE_NOTIFICATION -> {
+                    if (checkNotificationPermission()) {
+                        val medicineNotification =
+                            Gson().fromJson<MedicineNotification>(realTimeUpdate.data)
+                        showMedicineNotification(medicineNotification)
                     }
                 }
             }
+        }
         Log.d(TAG, "Real time updates flow ended")
     }
 
