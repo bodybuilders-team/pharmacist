@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.service.users
 
-import java.util.UUID
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
@@ -15,6 +14,7 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
 import pt.ulisboa.ist.pharmacist.service.utils.HashingUtils
+import java.util.UUID
 
 /**
  * Service that handles the business logic of the users.

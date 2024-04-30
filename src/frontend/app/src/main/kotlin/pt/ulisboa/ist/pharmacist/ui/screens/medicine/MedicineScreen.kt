@@ -80,7 +80,7 @@ fun MedicineScreen(
 
                 IconButton(
                     modifier = Modifier,
-                    onClick =toggleMedicineNotification,
+                    onClick = toggleMedicineNotification,
                 ) {
                     Icon(
                         if (notificationsActive) Icons.Rounded.NotificationsOff else Icons.Rounded.NotificationsActive, // Icons.Rounded.NotificationsActive

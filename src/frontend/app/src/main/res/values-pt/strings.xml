@@ -109,4 +109,5 @@
     <string name="search_button">Botão de Pesquisa</string>
     <string name="open_in_maps">Abrir no Mapas</string>
     <string name="report_pharmacy">Denunciar Farmácia</string>
+    <string name="pharmacyMap_searchPlaces_text">Procurar lugares</string>
 </resources>

@@ -2,11 +2,12 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
 import android.graphics.Bitmap
 import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.res.stringResource
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.launch
@@ -16,13 +17,23 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasCameraPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [PharmacyMapScreen].
  */
 class PharmacyMapActivity : PharmacistActivity() {
 
-    private val viewModel by getViewModel(::PharmacyMapViewModel)
+    private val viewModel by viewModelInit {
+        Places.initialize(this, getString(R.string.google_maps_key))
+
+        PharmacyMapViewModel(
+            dependenciesContainer.pharmacistService,
+            dependenciesContainer.sessionManager,
+            placesClient = Places.createClient(this),
+            geoCoder = Geocoder(this)
+        )
+    }
 
     private val imageResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -49,7 +60,6 @@ class PharmacyMapActivity : PharmacistActivity() {
             }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,10 +72,6 @@ class PharmacyMapActivity : PharmacistActivity() {
         viewModel.loadPharmacyList()
 
         setContent {
-            Places.initialize(this@PharmacyMapActivity, stringResource(R.string.google_maps_key))
-            viewModel.placesClient = Places.createClient(this@PharmacyMapActivity)
-            viewModel.geoCoder = Geocoder(this@PharmacyMapActivity)
-
             PharmacyMapScreen(
                 followMyLocation = viewModel.followMyLocation,
                 hasLocationPermission = viewModel.hasLocationPermission,
@@ -96,7 +102,8 @@ class PharmacyMapActivity : PharmacistActivity() {
                 setPosition = { location -> viewModel.setPosition(location) },
                 locationAutofill = viewModel.locationAutofill,
                 onSearchPlaces = { query -> viewModel.searchPlaces(query) },
-                onPlaceClick = { placeId -> viewModel.onPlaceClick(placeId) }
+                onPlaceClick = { placeId -> viewModel.onPlaceClick(placeId) },
+                searchQuery = viewModel.searchQuery
             )
         }
     }

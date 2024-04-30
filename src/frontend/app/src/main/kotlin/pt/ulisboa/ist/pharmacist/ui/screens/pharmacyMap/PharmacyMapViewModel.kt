@@ -3,7 +3,9 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -36,12 +38,16 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
  *
  * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
+ * @property placesClient the client used to interact with the Places API
+ * @property geoCoder the geocoder used to get the location of an address
  *
  * @property state the current state of the view model
  */
 class PharmacyMapViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager,
+    val placesClient: PlacesClient,
+    val geoCoder: Geocoder
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
 
     var pharmacyPhotoUrl by mutableStateOf<String?>(null)
@@ -61,11 +67,20 @@ class PharmacyMapViewModel(
     var followMyLocation by mutableStateOf(false)
 
     val mapProperties by mutableStateOf(
-        MapProperties(
-            isMyLocationEnabled = true,
-        )
+        MapProperties(isMyLocationEnabled = true)
     )
 
+    private var searchQueryJob: Job? = null
+    val locationAutofill = mutableListOf<AutocompleteResult>()
+    var searchQuery by mutableStateOf("")
+        private set
+
+    /**
+     * Uploads the box photo to the server.
+     *
+     * @param boxPhotoData the data of the box photo
+     * @param mediaType the media type of the box photo
+     */
     fun uploadBoxPhoto(boxPhotoData: ByteArray, mediaType: MediaType) = viewModelScope.launch {
         ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, pharmacistService)
             ?.let {
@@ -120,6 +135,11 @@ class PharmacyMapViewModel(
             }
     }
 
+    /**
+     * Sets the position of the camera and the search query.
+     *
+     * @param latLng the latitude and longitude of the position
+     */
     fun setPosition(latLng: LatLng) = viewModelScope.launch {
         followMyLocation = false
         cameraPositionState.animate(
@@ -127,8 +147,23 @@ class PharmacyMapViewModel(
                 CameraPosition.fromLatLngZoom(latLng, cameraPositionState.position.zoom)
             )
         )
+
+        val addresses = geoCoder.getFromLocation(
+            latLng.latitude,
+            latLng.longitude,
+            1
+        )
+
+        if (addresses?.isNotEmpty() == true)
+            searchQuery = addresses[0].getAddressLine(0)
     }
 
+    /**
+     * Adds a pharmacy to the server.
+     *
+     * @param name the name of the pharmacy
+     * @param location the location of the pharmacy
+     */
     fun addPharmacy(name: String, location: Location) {
         if (pharmacyPhotoUrl == null) {
             Log.e("AddPharmacy", "Box photo URL is null")
@@ -153,14 +188,16 @@ class PharmacyMapViewModel(
         }
     }
 
-    private var job: Job? = null
-    lateinit var placesClient: PlacesClient
-    lateinit var geoCoder: Geocoder
-    val locationAutofill = mutableListOf<AutocompleteResult>()
 
+    /**
+     * Searches for places based on a query and updates the list of autofill results.
+     *
+     * @param query the query to search for
+     */
     fun searchPlaces(query: String) {
-        job?.cancel()
-        job = viewModelScope.launch {
+        searchQuery = query
+        searchQueryJob?.cancel()
+        searchQueryJob = viewModelScope.launch {
             val request = FindAutocompletePredictionsRequest
                 .builder()
                 .setQuery(query)
@@ -186,9 +223,15 @@ class PharmacyMapViewModel(
     }
 
 
-    fun onPlaceClick(placeId: String) {
+    /**
+     * Handles the click on a place in the autofill list.
+     *
+     * @param place the place that was clicked
+     */
+    fun onPlaceClick(place: AutocompleteResult) {
+        searchQuery = place.address
         val placeFields = listOf(Place.Field.LAT_LNG)
-        val request = FetchPlaceRequest.newInstance(placeId, placeFields)
+        val request = FetchPlaceRequest.newInstance(place.placeId, placeFields)
         placesClient.fetchPlace(request)
             .addOnSuccessListener {
                 if (it != null) {
@@ -204,13 +247,19 @@ class PharmacyMapViewModel(
             }
     }
 
-
     enum class PharmacyMapState {
         UNLOADED,
         LOADING,
         LOADED
     }
 
+    /**
+     * An autocomplete result.
+     *
+     * @property address the address of the result
+     * @property placeId the ID of the place
+
+     */
     data class AutocompleteResult(
         val address: String,
         val placeId: String

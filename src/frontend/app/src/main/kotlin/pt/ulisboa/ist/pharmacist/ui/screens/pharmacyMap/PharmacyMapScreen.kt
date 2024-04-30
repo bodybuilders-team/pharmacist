@@ -25,14 +25,22 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScr
 /**
  * Pharmacy screen.
  *
- * @param hasLocationPermission true if the app has the necessary permissions, false otherwise
- * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
- * @param pharmacies list of pharmacies to display
- * @param mapProperties properties of the map
- * @param cameraPositionState of the camera position
- * @param onPharmacyDetailsClick callback to be invoked when the user clicks on the pharmacy details button
- * @param setFollowMyLocation callback to be invoked when the user clicks on the follow my location button
- * @param setPosition callback to be invoked when the position is to be changed
+ * @param followMyLocation if the map should follow the user's location.
+ * @param hasLocationPermission if the user has location permission.
+ * @param hasCameraPermission if the user has camera permission.
+ * @param mapProperties the map properties.
+ * @param cameraPositionState the camera position state.
+ * @param pharmacies the pharmacies.
+ * @param onPharmacyDetailsClick the callback to be called when a pharmacy is clicked.
+ * @param onAddPictureButtonClick the callback to be called when the add picture button is clicked.
+ * @param onAddPharmacyFinishClick the callback to be called when the add pharmacy finish button is clicked.
+ * @param onAddPharmacyCancelClick the callback to be called when the add pharmacy cancel button is clicked.
+ * @param newPharmacyPhoto the new pharmacy photo.
+ * @param setFollowMyLocation the callback to be called when the follow my location button is clicked.
+ * @param setPosition the callback to be called when the position is set.
+ * @param locationAutofill the location autofill.
+ * @param onSearchPlaces the callback to be called when the search places button is clicked.
+ * @param onPlaceClick the callback to be called when a place is clicked.
  */
 @Composable
 fun PharmacyMapScreen(
@@ -51,7 +59,8 @@ fun PharmacyMapScreen(
     setPosition: (LatLng) -> Unit,
     locationAutofill: MutableList<PharmacyMapViewModel.AutocompleteResult>,
     onSearchPlaces: (String) -> Unit,
-    onPlaceClick: (String) -> Unit
+    onPlaceClick: (PharmacyMapViewModel.AutocompleteResult) -> Unit,
+    searchQuery: String
 ) {
     PharmacistScreen {
         Column(
@@ -76,7 +85,8 @@ fun PharmacyMapScreen(
                     setPosition = setPosition,
                     locationAutofill = locationAutofill,
                     onSearchPlaces = onSearchPlaces,
-                    onPlaceClick = onPlaceClick
+                    onPlaceClick = onPlaceClick,
+                    searchQuery = searchQuery
                 )
             else
                 PermissionScreen(

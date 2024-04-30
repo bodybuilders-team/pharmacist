@@ -4,8 +4,8 @@ import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.MemDataSource
-import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineWithClosestPharmacyDto
 import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineDto
+import pt.ulisboa.ist.pharmacist.service.medicines.dtos.MedicineWithClosestPharmacyDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
 import pt.ulisboa.ist.pharmacist.service.utils.paginate
 
