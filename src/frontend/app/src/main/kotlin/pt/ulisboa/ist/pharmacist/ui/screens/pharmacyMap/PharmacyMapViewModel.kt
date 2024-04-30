@@ -2,6 +2,7 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Geocoder
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,16 +12,21 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -147,12 +153,68 @@ class PharmacyMapViewModel(
         }
     }
 
+    private var job: Job? = null
+    lateinit var placesClient: PlacesClient
+    lateinit var geoCoder: Geocoder
+    val locationAutofill = mutableListOf<AutocompleteResult>()
+
+    fun searchPlaces(query: String) {
+        job?.cancel()
+        job = viewModelScope.launch {
+            val request = FindAutocompletePredictionsRequest
+                .builder()
+                .setQuery(query)
+                .build()
+
+            placesClient
+                .findAutocompletePredictions(request)
+                .addOnSuccessListener { response ->
+                    locationAutofill.clear()
+                    locationAutofill.addAll(response.autocompletePredictions.map {
+                        AutocompleteResult(
+                            it.getFullText(null).toString(),
+                            it.placeId
+                        )
+                    })
+                }
+                .addOnFailureListener {
+                    it.printStackTrace()
+                    println(it.cause)
+                    println(it.message)
+                }
+        }
+    }
+
+
+    fun onPlaceClick(placeId: String) {
+        val placeFields = listOf(Place.Field.LAT_LNG)
+        val request = FetchPlaceRequest.newInstance(placeId, placeFields)
+        placesClient.fetchPlace(request)
+            .addOnSuccessListener {
+                if (it != null) {
+                    val latLng = it.place.latLng
+                    if (latLng != null) {
+                        setPosition(latLng)
+                        locationAutofill.clear()
+                    }
+                }
+            }
+            .addOnFailureListener {
+                it.printStackTrace()
+            }
+    }
+
 
     enum class PharmacyMapState {
         UNLOADED,
         LOADING,
         LOADED
     }
+
+    data class AutocompleteResult(
+        val address: String,
+        val placeId: String
+    )
 
     companion object {
         private const val DEFAULT_ZOOM = 15f

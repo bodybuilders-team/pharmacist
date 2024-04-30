@@ -48,7 +48,10 @@ fun PharmacyMapScreen(
     onAddPharmacyCancelClick: () -> Unit,
     newPharmacyPhoto: ImageBitmap?,
     setFollowMyLocation: (Boolean) -> Unit,
-    setPosition: (LatLng) -> Unit
+    setPosition: (LatLng) -> Unit,
+    locationAutofill: MutableList<PharmacyMapViewModel.AutocompleteResult>,
+    onSearchPlaces: (String) -> Unit,
+    onPlaceClick: (String) -> Unit
 ) {
     PharmacistScreen {
         Column(
@@ -70,7 +73,10 @@ fun PharmacyMapScreen(
                     onAddPharmacyCancelClick = onAddPharmacyCancelClick,
                     newPharmacyPhoto = newPharmacyPhoto,
                     setFollowMyLocation = setFollowMyLocation,
-                    setPosition = setPosition
+                    setPosition = setPosition,
+                    locationAutofill = locationAutofill,
+                    onSearchPlaces = onSearchPlaces,
+                    onPlaceClick = onPlaceClick
                 )
             else
                 PermissionScreen(

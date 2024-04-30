@@ -1,12 +1,16 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
 import android.graphics.Bitmap
+import android.location.Geocoder
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
+import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.launch
+import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -58,6 +62,10 @@ class PharmacyMapActivity : PharmacistActivity() {
         viewModel.loadPharmacyList()
 
         setContent {
+            Places.initialize(this@PharmacyMapActivity, stringResource(R.string.google_maps_key))
+            viewModel.placesClient = Places.createClient(this@PharmacyMapActivity)
+            viewModel.geoCoder = Geocoder(this@PharmacyMapActivity)
+
             PharmacyMapScreen(
                 followMyLocation = viewModel.followMyLocation,
                 hasLocationPermission = viewModel.hasLocationPermission,
@@ -85,7 +93,10 @@ class PharmacyMapActivity : PharmacistActivity() {
                 setFollowMyLocation = { followMyLocation ->
                     viewModel.followMyLocation = followMyLocation
                 },
-                setPosition = { location -> viewModel.setPosition(location) }
+                setPosition = { location -> viewModel.setPosition(location) },
+                locationAutofill = viewModel.locationAutofill,
+                onSearchPlaces = { query -> viewModel.searchPlaces(query) },
+                onPlaceClick = { placeId -> viewModel.onPlaceClick(placeId) }
             )
         }
     }

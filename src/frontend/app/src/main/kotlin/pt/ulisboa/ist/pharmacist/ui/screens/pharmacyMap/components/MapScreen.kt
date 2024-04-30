@@ -3,14 +3,20 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components
 import android.Manifest
 import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -22,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -34,6 +41,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
@@ -53,6 +63,7 @@ import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
 /**
@@ -76,8 +87,12 @@ fun MapScreen(
     onAddPharmacyCancelClick: () -> Unit,
     newPharmacyPhoto: ImageBitmap?,
     setFollowMyLocation: (Boolean) -> Unit,
-    setPosition: (LatLng) -> Unit
+    setPosition: (LatLng) -> Unit,
+    locationAutofill: List<PharmacyMapViewModel.AutocompleteResult>,
+    onSearchPlaces: (String) -> Unit,
+    onPlaceClick: (String) -> Unit
 ) {
+    Log.d("MapScreen", "Rendering MapScreen with locationAutofill size ${locationAutofill.size}")
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     var clickedPharmacyMarker by rememberSaveable { mutableStateOf<Long?>(null) }
@@ -172,8 +187,7 @@ fun MapScreen(
                 )
             } else {
                 GoogleMap(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
                     uiSettings = MapUiSettings(zoomControlsEnabled = false),
                     properties = mapProperties,
@@ -226,71 +240,114 @@ fun MapScreen(
                     }
                 }
 
-                if (addingPharmacy) {
-                    if (newPharmacyMarkerState == null)
-                        Box(
-                            modifier = Modifier
-                                .background(Color.White, shape = RoundedCornerShape(8.dp))
-                                .align(if (isLandscape) Alignment.TopStart else Alignment.Center)
+                var searchQuery by remember { mutableStateOf("") }
+                Column(modifier = Modifier.fillMaxWidth(0.85f)) {
+                    TextField(
+                        value = searchQuery,
+                        label = { Text(stringResource(R.string.pharmacyMap_searchPlaces_text)) },
+                        onValueChange = {
+                            searchQuery = it
+                            onSearchPlaces(it)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    )
+                    AnimatedVisibility(
+                        visible = locationAutofill.isNotEmpty(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(0.dp, 600.dp)
+                            .background(
+                                color = Color.White.copy(alpha = 0.8f),
+                                shape = RoundedCornerShape(8.dp),
+                            )
+                    ) {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(
-                                text = stringResource(R.string.pharmacyMap_tapOnMap_text),
-                                modifier = Modifier.align(Alignment.TopCenter),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                            items(locationAutofill.size) {
+                                val autofillEntry = locationAutofill[it]
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                                    .clickable {
+                                        searchQuery = autofillEntry.address
+                                        onPlaceClick(autofillEntry.placeId)
+                                    }
+                                ) {
+                                    Text(autofillEntry.address)
+                                }
+                            }
                         }
-                    else
-                        newPharmacyMarkerLocation?.let { markerLocation ->
-                            AddPharmacyWindow(
-                                modifier = Modifier.align(if (isLandscape) Alignment.TopStart else Alignment.TopCenter),
-                                onGoToLocationButtonClick = { setPosition(markerLocation) },
-                                onAddPictureButtonClick = { onAddPictureButtonClick() },
-                                onAddPharmacyFinishClick = { newPharmacyName ->
-                                    onAddPharmacyFinishClick(
-                                        newPharmacyName,
-                                        Location(markerLocation.latitude, markerLocation.longitude)
-                                    )
-                                    addingPharmacy = false
-                                    newPharmacyMarkerState = null
-                                },
-                                newPharmacyPhoto = newPharmacyPhoto
-                            )
-                        }
+                    }
                 }
+            }
 
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        if (addingPharmacy) {
-                            addingPharmacy = false
-                            newPharmacyMarkerState = null
-                            onAddPharmacyCancelClick()
-                        } else {
-                            addingPharmacy = true
-                        }
-                    },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(24.dp),
-                    icon = {
-                        Icon(
-                            if (!addingPharmacy) Icons.Rounded.Add else Icons.Rounded.Cancel,
-                            if (!addingPharmacy)
-                                stringResource(R.string.pharmacyMap_addPharmacy_button_text)
-                            else
-                                stringResource(R.string.pharmacyMap_cancel_button_text),
-                        )
-                    },
-                    text = {
+            if (addingPharmacy) {
+                if (newPharmacyMarkerState == null)
+                    Box(
+                        modifier = Modifier
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .align(if (isLandscape) Alignment.TopStart else Alignment.Center)
+                    ) {
                         Text(
-                            if (!addingPharmacy)
-                                stringResource(R.string.pharmacyMap_addPharmacy_button_description)
-                            else
-                                stringResource(R.string.pharmacyMap_cancel_button_description)
+                            text = stringResource(R.string.pharmacyMap_tapOnMap_text),
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                )
+                else
+                    newPharmacyMarkerLocation?.let { markerLocation ->
+                        AddPharmacyWindow(
+                            modifier = Modifier.align(if (isLandscape) Alignment.TopStart else Alignment.TopCenter),
+                            onGoToLocationButtonClick = { setPosition(markerLocation) },
+                            onAddPictureButtonClick = { onAddPictureButtonClick() },
+                            onAddPharmacyFinishClick = { newPharmacyName ->
+                                onAddPharmacyFinishClick(
+                                    newPharmacyName,
+                                    Location(markerLocation.latitude, markerLocation.longitude)
+                                )
+                                addingPharmacy = false
+                                newPharmacyMarkerState = null
+                            },
+                            newPharmacyPhoto = newPharmacyPhoto
+                        )
+                    }
             }
+
+            ExtendedFloatingActionButton(
+                onClick = {
+                    if (addingPharmacy) {
+                        addingPharmacy = false
+                        newPharmacyMarkerState = null
+                        onAddPharmacyCancelClick()
+                    } else {
+                        addingPharmacy = true
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(24.dp),
+                icon = {
+                    Icon(
+                        if (!addingPharmacy) Icons.Rounded.Add else Icons.Rounded.Cancel,
+                        if (!addingPharmacy)
+                            stringResource(R.string.pharmacyMap_addPharmacy_button_text)
+                        else
+                            stringResource(R.string.pharmacyMap_cancel_button_text),
+                    )
+                },
+                text = {
+                    Text(
+                        if (!addingPharmacy)
+                            stringResource(R.string.pharmacyMap_addPharmacy_button_description)
+                        else
+                            stringResource(R.string.pharmacyMap_cancel_button_description)
+                    )
+                }
+            )
         }
     }
 }
