@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.service.notifications
+package pt.ulisboa.ist.pharmacist.service.real_time_updates
 
 import android.content.BroadcastReceiver
 import android.content.Context

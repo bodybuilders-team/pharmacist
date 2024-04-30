@@ -11,10 +11,10 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdate
 import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
-import pt.ulisboa.ist.pharmacist.service.notifications.RealTimeUpdatesBackgroundService.Companion.TAG
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesBackgroundService.Companion.TAG
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import java.net.HttpURLConnection
 
@@ -89,21 +89,6 @@ object RealTimeUpdateTypes {
     const val PHARMACY_MEDICINE_STOCK = "pharmacy-medicine-stock"
     const val MEDICINE_NOTIFICATION = "medicine-notification"
 }
-
-data class RealTimeUpdate(
-    val type: String,
-    val data: String
-)
-
-data class MedicineNotification(
-    val medicineStock: MedicineStock,
-    val pharmacyId: Long,
-)
-
-data class MedicineStock(
-    val medicine: Medicine,
-    val stock: Long
-)
 
 class JsonWebSocket(private val webSocket: WebSocket) {
     fun send(message: Any) {

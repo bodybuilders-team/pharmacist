@@ -1,9 +1,11 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies
 
 import org.springframework.stereotype.Service
+import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.http.controllers.RealTimeUpdateMedicineNotificationPublishingData
 import pt.ulisboa.ist.pharmacist.http.controllers.RealTimeUpdatePublishing
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
@@ -74,9 +76,9 @@ class PharmaciesServiceImpl(
     }
 
     override fun addNewMedicine(pharmacyId: Long, medicineId: Long, quantity: Long): AddNewMedicineOutputDto {
-        pharmaciesRepository.findById(pharmacyId)
+        val pharmacy = pharmaciesRepository.findById(pharmacyId)
             ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
-        medicinesRepository.findById(medicineId)
+        val medicine = medicinesRepository.findById(medicineId)
             ?: throw NotFoundException("Medicine with id $medicineId does not exist")
         if (quantity < 0L) throw InvalidArgumentException("Quantity must be a non-negative number")
 
@@ -87,7 +89,12 @@ class PharmaciesServiceImpl(
         )
 
         if (medicineStock.stock > 0L)
-            notifyMedicineStockChange(pharmacyId, medicineId, medicineStock)
+            notifyMedicineStockChange(
+                pharmacyId = pharmacyId,
+                pharmacyName = pharmacy.name,
+                medicine = medicine,
+                medicineStock = medicineStock
+            )
 
         return AddNewMedicineOutputDto(medicineStock)
     }
@@ -125,17 +132,29 @@ class PharmaciesServiceImpl(
         )
 
         if (prevMedicineStock == 0L && medicineStock.stock > 0L)
-            notifyMedicineStockChange(pharmacyId, medicineId, medicineStock)
+            notifyMedicineStockChange(
+                pharmacyId = pharmacyId,
+                pharmacyName = pharmacy.name,
+                medicine = medicinesRepository.findById(medicineId)!!,
+                medicineStock = medicineStock
+            )
 
         return ChangeMedicineStockOutputDto(medicineStock)
     }
 
-    private fun notifyMedicineStockChange(pharmacyId: Long, medicineId: Long, medicineStock: MedicineStock) =
+    private fun notifyMedicineStockChange(
+        pharmacyId: Long, pharmacyName: String, medicine: Medicine, medicineStock: MedicineStock
+    ) =
         realTimeUpdatesService.publishUpdate(
             RealTimeUpdatePublishing.medicineNotification(
-                pharmacyId = pharmacyId,
-                medicineId = medicineId,
-                stock = medicineStock.stock
+                pharmacy = RealTimeUpdateMedicineNotificationPublishingData.Pharmacy(
+                    pharmacyId = pharmacyId,
+                    pharmacyName = pharmacyName,
+                ),
+                medicineStock = RealTimeUpdateMedicineNotificationPublishingData.MedicineStock(
+                    medicine = medicine,
+                    stock = medicineStock.stock
+                )
             )
         )
 

@@ -68,13 +68,13 @@
     <string name="about_repoGithub_text">"The code for this app is available at: "</string>
     <string name="about_githubLogo_contentDescription">Github Logo</string>
     <string name="about_emailIcon_contentDescription">Email Icon</string>
-    <string name="google_maps_key">AIzaSyAGLB3LgU6a1M8WhPLP_UyddHXx64075zw</string>
+    <string name="google_maps_key" translatable="false">AIzaSyAGLB3LgU6a1M8WhPLP_UyddHXx64075zw</string>
 
     <!-- Medicine Notification -->
     <string name="medicines_notification_channel_name" translatable="false">Pharmacist</string>
     <string name="medicines_notification_channel_description" translatable="false">Nothing\n</string>
     <string name="medicine_notification_title">Medicines Notification Title</string>
-    <string name="medicine_notification_text">New Medicine %1$s with %2$d quantity added to %3$d</string>
+    <string name="medicine_notification_text">New Medicine %1$s with %2$d quantity available in %3$s</string>
     <string name="pharmacy_map_camera_permission_title">Camera Permission Required</string>
     <string name="pharmacyMap_location_permission_note">App needs both approximate &amp; precise location for full features. Since you previously denied these settings, you must go to the permission settings and allow them.</string>
     <string name="pharmacyMap_camera_permission_note">To take or upload a photo, you need to grant the camera permission and storage permission.</string>

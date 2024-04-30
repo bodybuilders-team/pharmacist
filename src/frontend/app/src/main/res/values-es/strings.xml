@@ -67,7 +67,7 @@
     <string name="about_emailIcon_contentDescription">Ícono de email</string>
 
     <string name="medicine_notification_title">Título de Notificación de Medicamentos</string>
-    <string name="medicine_notification_text">Nuevo Medicamento %1$s con %2$d cantidad añadido a %3$d</string>
+    <string name="medicine_notification_text">Nuevo Medicamento %1$s con %2$d de cantidad disponible en %3$s</string>
     <string name="pharmacy_map_camera_permission_title">Se Requiere Permiso de Cámara</string>
     <string name="pharmacyMap_location_permission_note">La aplicación necesita tanto la ubicación aproximada como precisa para todas las funciones. Como anteriormente negaste estos ajustes, debes ir a los ajustes de permisos y permitirlos.</string>
     <string name="pharmacyMap_camera_permission_note">Para tomar o subir una foto, necesitas otorgar el permiso de cámara y el permiso de almacenamiento.</string>

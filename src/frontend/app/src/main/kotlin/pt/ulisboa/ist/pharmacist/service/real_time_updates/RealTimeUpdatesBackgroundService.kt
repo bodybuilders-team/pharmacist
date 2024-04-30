@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.service.notifications
+package pt.ulisboa.ist.pharmacist.service.real_time_updates
 
 import android.Manifest
 import android.app.PendingIntent
@@ -17,7 +17,6 @@ import pt.ulisboa.ist.pharmacist.DependenciesContainer
 import pt.ulisboa.ist.pharmacist.PharmacistApplication
 import pt.ulisboa.ist.pharmacist.PharmacistApplication.Companion.API_ENDPOINT
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.service.http.services.medicines.MedicineNotification
 import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdateTypes.MEDICINE_NOTIFICATION
 import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdateTypes.PHARMACY
 import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdateTypes.PHARMACY_MEDICINE_STOCK
@@ -73,9 +72,9 @@ class RealTimeUpdatesBackgroundService : Service() {
                 PHARMACY, PHARMACY_MEDICINE_STOCK -> {}
                 MEDICINE_NOTIFICATION -> {
                     if (checkNotificationPermission()) {
-                        val medicineNotification =
-                            Gson().fromJson<MedicineNotification>(realTimeUpdate.data)
-                        showMedicineNotification(medicineNotification)
+                        val medicineNotificationData =
+                            Gson().fromJson<MedicineNotificationData>(realTimeUpdate.data)
+                        showMedicineNotification(medicineNotificationData)
                     }
                 }
             }
@@ -83,7 +82,7 @@ class RealTimeUpdatesBackgroundService : Service() {
         Log.d(TAG, "Real time updates flow ended")
     }
 
-    private fun showMedicineNotification(notification: MedicineNotification) {
+    private fun showMedicineNotification(notification: MedicineNotificationData) {
         val notificationIntent = MedicineActivity.getNavigationIntent(
             this@RealTimeUpdatesBackgroundService,
             notification.medicineStock.medicine.medicineId
@@ -112,7 +111,7 @@ class RealTimeUpdatesBackgroundService : Service() {
                     R.string.medicine_notification_text,
                     notification.medicineStock.medicine.name,
                     notification.medicineStock.stock,
-                    notification.pharmacyId
+                    notification.pharmacy.pharmacyName
                 )
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

@@ -1,9 +1,9 @@
-package pt.ulisboa.ist.pharmacist.http.controllers
+package pt.ulisboa.ist.pharmacist.service.real_time_updates
 
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.http.controllers.RealTimeUpdateTypes.MEDICINE_NOTIFICATION
-import pt.ulisboa.ist.pharmacist.http.controllers.RealTimeUpdateTypes.PHARMACY
-import pt.ulisboa.ist.pharmacist.http.controllers.RealTimeUpdateTypes.PHARMACY_MEDICINE_STOCK
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateTypes.MEDICINE_NOTIFICATION
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateTypes.PHARMACY
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateTypes.PHARMACY_MEDICINE_STOCK
 
 /*
  * Types
