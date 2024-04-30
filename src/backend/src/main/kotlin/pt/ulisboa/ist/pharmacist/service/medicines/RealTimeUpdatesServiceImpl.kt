@@ -112,8 +112,8 @@ class RealTimeUpdatesServiceImpl(val usersRepository: UsersRepository) : RealTim
                 val medicineNotificationUpdate =
                     realTimeUpdatePublishing.data as RealTimeUpdateMedicineNotificationPublishingData
                 usersRepository.findAll().forEach { user ->
-                    if (user.favoritePharmacies.any { it.pharmacyId == medicineNotificationUpdate.pharmacyId }
-                        && user.medicinesToNotify.any { it.medicineId == medicineNotificationUpdate.medicineId }) {
+                    if (user.favoritePharmacies.any { it.pharmacyId == medicineNotificationUpdate.pharmacy.pharmacyId }
+                        && user.medicinesToNotify.any { it.medicineId == medicineNotificationUpdate.medicineStock.medicine.medicineId }) {
                         userFlows[user.userId]?.tryEmit(realTimeUpdatePublishing)
                     }
                 }
