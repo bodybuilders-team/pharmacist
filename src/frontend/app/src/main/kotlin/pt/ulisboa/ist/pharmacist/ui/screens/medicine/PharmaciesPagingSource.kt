@@ -2,6 +2,7 @@ package pt.ulisboa.ist.pharmacist.ui.screens.medicine
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.PharmaciesService
@@ -10,7 +11,8 @@ import kotlin.math.max
 
 class PharmaciesPagingSource(
     private val pharmaciesService: PharmaciesService,
-    private val mid: Long? = null
+    private val mid: Long? = null,
+    private val location: Location? = null
 ) : PagingSource<Int, PharmacyWithUserDataModel>() {
 
     override fun getRefreshKey(state: PagingState<Int, PharmacyWithUserDataModel>): Int? {
@@ -27,6 +29,7 @@ class PharmaciesPagingSource(
 
         val result = pharmaciesService.getPharmacies(
             medicineId = mid,
+            location = location,
             limit = params.loadSize.toLong(),
             offset = currentOffset.toLong()
         )

@@ -31,8 +31,8 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
 
         return pharmacies.values.toList()
             .let { pharmacies ->
-                if (location != null && range != null)
-                    pharmacies.filter { pharmacy -> pharmacy.location.distanceTo(location) <= range }
+                if (location != null)
+                    pharmacies.filter { pharmacy -> pharmacy.location.distanceTo(location) <= (range ?: 10000) }
                 else
                     pharmacies
             }.let { pharmacies ->

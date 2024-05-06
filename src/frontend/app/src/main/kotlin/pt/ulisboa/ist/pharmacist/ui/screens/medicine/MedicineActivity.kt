@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
@@ -56,8 +58,16 @@ class MedicineActivity : PharmacistActivity() {
         if (viewModel.loadingState == NOT_LOADED)
             viewModel.loadMedicine(medicineId)
 
+
+        viewModel.checkForLocationAccessPermission(this)
+
+        lifecycleScope.launch {
+            viewModel.startObtainingLocation(this@MedicineActivity)
+        }
+
         setContent {
             MedicineScreen(
+                hasLocationPermission = viewModel.hasLocationPermission,
                 medicineModel = viewModel.medicine,
                 loadingState = viewModel.loadingState,
                 pharmaciesState = viewModel.pharmaciesState,

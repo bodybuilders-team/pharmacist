@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +30,9 @@ import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.StarRatingBar
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 
 /**
  * A pharmacy entry in the medicine pharmacy list.
@@ -80,20 +85,28 @@ fun MedicinePharmacyEntry(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
             )
-            Text(
-                text = "📍 ${pharmacy.pharmacy.location}",
-                style = MaterialTheme.typography.bodyMedium
-            )
             if (pharmacy.pharmacy.globalRating != null)
-                Text(
-                    text = stringResource(R.string.pharmacy_rating_text) + "${
-                        String.format(
-                            "%.1f",
-                            pharmacy.pharmacy.globalRating
-                        )
-                    } ⭐",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Row {
+                    Text(
+                        text = String.format("%.1f", pharmacy.pharmacy.globalRating),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    StarRatingBar(rating = pharmacy.pharmacy.globalRating.toInt(), densityFactor = 6f)
+                }
+            if (pharmacy.userMarkedAsFavorite)
+                Row {
+                    Icon(
+                        imageVector = Icons.Rounded.Favorite,
+                        contentDescription = null,
+                        tint = Favorite,
+                    )
+                    Text(
+                        text = "Favorite Pharmacy",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
         }
     }
 }

@@ -30,6 +30,7 @@ class PharmaciesService(
      * Gets the pharmacies.
      *
      * @param medicineId the medicine id
+     * @param location the location
      * @param limit the maximum number of pharmacies to return
      * @param offset the number of pharmacies to skip
      *
@@ -39,12 +40,14 @@ class PharmaciesService(
      */
     suspend fun getPharmacies(
         medicineId: Long? = null,
+        location: Location? = null,
         limit: Long? = null,
         offset: Long? = null
     ): APIResult<GetPharmaciesOutputModel> {
         return get<GetPharmaciesOutputModel>(
             link = Uris.pharmacies(
                 medicineId = medicineId,
+                location = location,
                 limit = limit,
                 offset = offset
             ),

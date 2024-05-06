@@ -49,6 +49,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicine
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyRating
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 
 /**
  * Screen that displays the pharmacy information.
@@ -132,7 +133,7 @@ fun PharmacyScreen(
                         Icon(
                             if (pharmacy.userMarkedAsFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                             contentDescription = stringResource(R.string.medicine_addToNotifications_button_description),
-                            tint = if (pharmacy.userMarkedAsFavorite) Color(0xFFE91E63) else MaterialTheme.colorScheme.primary
+                            tint = if (pharmacy.userMarkedAsFavorite) Favorite else MaterialTheme.colorScheme.primary
                         )
                     }
                     IconButton(onClick = onReportClick) {
