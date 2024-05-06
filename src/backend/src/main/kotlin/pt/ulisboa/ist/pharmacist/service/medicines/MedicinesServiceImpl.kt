@@ -47,7 +47,7 @@ class MedicinesServiceImpl(
         val medicine = medicinesRepository.findById(medicineId)
             ?: throw InvalidArgumentException("Medicine with id $medicineId does not exist")
 
-        val medicineNotificationActive = user.medicinesToNotify.contains(medicine)
+        val medicineNotificationActive = user.medicinesToNotify.contains(medicineId)
 
         return GetMedicineOutputDto(medicine, medicineNotificationActive)
     }

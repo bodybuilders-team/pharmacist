@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.PharmacyWithUserData
 import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
@@ -15,16 +16,18 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
     private val pharmacies = dataSource.pharmacies
 
     override fun getPharmacies(
-        userId: Long?,
+        userId: Long,
         location: Location?,
         range: Int?,
         medicine: Long?,
         orderBy: String?,
         offset: Int,
         limit: Int
-    ): List<Pharmacy> {
+    ): List<PharmacyWithUserData> {
         if (offset < 0) throw InvalidArgumentException("Offset must be a positive integer")
         if (limit < 0) throw InvalidArgumentException("Limit must be a positive integer")
+
+        val user = dataSource.users[userId] ?: throw NotFoundException("User with id $userId does not exist")
 
         return pharmacies.values.toList()
             .let { pharmacies ->
@@ -35,11 +38,6 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
             }.let { pharmacies ->
                 if (medicine != null)
                     pharmacies.filter { pharmacy -> pharmacy.medicines.any { it.medicine.medicineId == medicine } }
-                else
-                    pharmacies
-            }.let { pharmacies ->
-                if (userId != null)
-                    pharmacies.filter { pharmacy -> dataSource.users[userId]?.flaggedPharmacies?.contains(pharmacy) == false }
                 else
                     pharmacies
             }.let { pharmacies ->
@@ -55,8 +53,17 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
                 else
                     pharmacies
             }
+            .filter { pharmacy -> !user.flaggedPharmacies.contains(pharmacy.pharmacyId) }
             .filter { pharmacy -> pharmacy.totalFlags < BANNED_PHARMACY_FLAG_THRESHOLD }
             .paginate(limit, offset)
+            .map { pharmacy ->
+                PharmacyWithUserData(
+                    pharmacy,
+                    userRating = user.ratings[pharmacy.pharmacyId],
+                    userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy.pharmacyId),
+                    userFlagged = user.flaggedPharmacies.contains(pharmacy.pharmacyId)
+                )
+            }
     }
 
     override fun listAvailableMedicines(pharmacyId: Long, offset: Int, limit: Int): List<MedicineStock> {

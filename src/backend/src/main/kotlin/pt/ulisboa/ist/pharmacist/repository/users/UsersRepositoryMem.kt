@@ -30,14 +30,14 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
 
     override fun addFavoritePharmacy(userId: Long, pharmacyId: Long) {
         val user = users[userId] ?: throw NotFoundException("User not found")
-        user.favoritePharmacies.add(dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found"))
+        dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
+        user.favoritePharmacies.add(pharmacyId)
     }
 
     override fun removeFavoritePharmacy(userId: Long, pharmacyId: Long) {
         val user = users[userId] ?: throw NotFoundException("User not found")
-        user.favoritePharmacies.remove(
-            dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
-        )
+        dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
+        user.favoritePharmacies.remove(pharmacyId)
     }
 
     override fun findByUsername(username: String): User? {
@@ -81,7 +81,7 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
         val pharmacy = dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
         val pharmacyCreator = users[pharmacy.creatorId] ?: throw NotFoundException("Pharmacy creator not found")
 
-        user.flaggedPharmacies.add(pharmacy)
+        user.flaggedPharmacies.add(pharmacyId)
         pharmacy.totalFlags++
         if (dataSource.pharmacies
                 .filter { it.value.creatorId == pharmacyCreator.userId }
@@ -95,7 +95,7 @@ class UsersRepositoryMem(private val dataSource: MemDataSource) : UsersRepositor
         val pharmacy = dataSource.pharmacies[pharmacyId] ?: throw NotFoundException("Pharmacy not found")
         val pharmacyCreator = users[pharmacy.creatorId] ?: throw NotFoundException("Pharmacy creator not found")
 
-        user.flaggedPharmacies.remove(pharmacy)
+        user.flaggedPharmacies.remove(pharmacyId)
         pharmacy.totalFlags--
         if (dataSource.pharmacies
                 .filter { it.value.creatorId == pharmacyCreator.userId }

@@ -78,3 +78,10 @@ data class Pharmacy(
         private const val URL_REGEX = "^(http|https)://.*$"
     }
 }
+
+data class PharmacyWithUserData(
+    val pharmacy: Pharmacy,
+    val userRating: Int?,
+    val userMarkedAsFavorite: Boolean,
+    val userFlagged: Boolean
+)

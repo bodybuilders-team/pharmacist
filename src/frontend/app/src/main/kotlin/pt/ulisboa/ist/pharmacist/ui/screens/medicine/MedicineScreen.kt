@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.components.MedicinePharmacyEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
@@ -42,7 +43,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 fun MedicineScreen(
     medicineModel: GetMedicineOutputModel?,
     loadingState: MedicineViewModel.MedicineLoadingState,
-    pharmaciesState: Flow<PagingData<Pharmacy>>,
+    pharmaciesState: Flow<PagingData<PharmacyWithUserDataModel>>,
     onPharmacyClick: (Pharmacy) -> Unit,
     toggleMedicineNotification: () -> Unit
 ) {

@@ -137,14 +137,14 @@ class UsersServiceImpl(
         val medicine = medicinesRepository.findById(medicineId)
             ?: throw NotFoundException("Medicine with id $medicineId not found")
 
-        user.medicinesToNotify.add(medicine)
+        user.medicinesToNotify.add(medicine.medicineId)
     }
 
     override fun removeMedicineNotification(user: User, medicineId: Long) {
         val medicine = medicinesRepository.findById(medicineId)
             ?: throw NotFoundException("Medicine with id $medicineId not found")
 
-        user.medicinesToNotify.remove(medicine)
+        user.medicinesToNotify.remove(medicine.medicineId)
     }
 
     companion object {

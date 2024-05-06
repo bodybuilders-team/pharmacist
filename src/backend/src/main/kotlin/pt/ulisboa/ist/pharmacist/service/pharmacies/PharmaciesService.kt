@@ -27,7 +27,7 @@ interface PharmaciesService {
      * @param limit the limit to be used in the pagination
      */
     fun getPharmacies(
-        userId: Long?,
+        userId: Long,
         location: Location?,
         range: Int?,
         medicine: Long?,

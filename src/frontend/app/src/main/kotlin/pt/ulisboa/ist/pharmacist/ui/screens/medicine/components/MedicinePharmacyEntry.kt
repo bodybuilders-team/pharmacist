@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
 /**
@@ -37,7 +38,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MedicinePharmacyEntry(
-    pharmacy: Pharmacy,
+    pharmacy: PharmacyWithUserDataModel,
     onPharmacyClick: (Pharmacy) -> Unit
 ) {
     var isHovered by remember { mutableStateOf(false) }
@@ -58,10 +59,10 @@ fun MedicinePharmacyEntry(
             shape = MaterialTheme.shapes.medium
         )
         .clickable {
-            onPharmacyClick(pharmacy)
+            onPharmacyClick(pharmacy.pharmacy)
         }) {
         MeteredAsyncImage(
-            url = pharmacy.pictureUrl,
+            url = pharmacy.pharmacy.pictureUrl,
             contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
             modifier = Modifier
                 .width(100.dp)
@@ -75,20 +76,20 @@ fun MedicinePharmacyEntry(
                 .align(Alignment.Top)
         ) {
             Text(
-                text = pharmacy.name,
+                text = pharmacy.pharmacy.name,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
             )
             Text(
-                text = "📍 ${pharmacy.location}",
+                text = "📍 ${pharmacy.pharmacy.location}",
                 style = MaterialTheme.typography.bodyMedium
             )
-            if (pharmacy.globalRating != null)
+            if (pharmacy.pharmacy.globalRating != null)
                 Text(
                     text = stringResource(R.string.pharmacy_rating_text) + "${
                         String.format(
                             "%.1f",
-                            pharmacy.globalRating
+                            pharmacy.pharmacy.globalRating
                         )
                     } ⭐",
                     style = MaterialTheme.typography.bodyMedium

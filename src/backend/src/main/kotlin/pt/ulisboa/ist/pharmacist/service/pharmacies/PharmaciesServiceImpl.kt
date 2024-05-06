@@ -33,7 +33,7 @@ class PharmaciesServiceImpl(
 ) : PharmaciesService {
 
     override fun getPharmacies(
-        userId: Long?,
+        userId: Long,
         location: Location?,
         range: Int?,
         medicine: Long?,
@@ -160,15 +160,14 @@ class PharmaciesServiceImpl(
 
 
     override fun getPharmacyById(user: User, pharmacyId: Long): PharmacyWithUserDataDto {
-        val pharmacy =
-            pharmaciesRepository.findById(pharmacyId)
-                ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
+        val pharmacy = pharmaciesRepository.findById(pharmacyId)
+            ?: throw NotFoundException("Pharmacy with id $pharmacyId does not exist")
 
         return PharmacyWithUserDataDto(
             pharmacy,
             userRating = user.ratings[pharmacyId],
-            userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy),
-            userFlagged = user.flaggedPharmacies.contains(pharmacy)
+            userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacyId),
+            userFlagged = user.flaggedPharmacies.contains(pharmacyId)
         )
     }
 

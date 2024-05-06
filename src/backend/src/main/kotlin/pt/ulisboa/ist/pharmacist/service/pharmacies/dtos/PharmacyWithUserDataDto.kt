@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service.pharmacies.dtos
 
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.PharmacyWithUserData
 
 data class PharmacyWithUserDataDto(
     val pharmacy: PharmacyDto,
@@ -13,5 +14,12 @@ data class PharmacyWithUserDataDto(
         userRating = userRating,
         userMarkedAsFavorite = userMarkedAsFavorite,
         userFlagged = userFlagged
+    )
+
+    constructor(pharmacyWithUserData: PharmacyWithUserData) : this(
+        pharmacy = PharmacyDto(pharmacyWithUserData.pharmacy),
+        userRating = pharmacyWithUserData.userRating,
+        userMarkedAsFavorite = pharmacyWithUserData.userMarkedAsFavorite,
+        userFlagged = pharmacyWithUserData.userFlagged
     )
 }

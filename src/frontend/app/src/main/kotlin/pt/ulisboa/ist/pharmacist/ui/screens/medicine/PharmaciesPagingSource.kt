@@ -5,23 +5,24 @@ import androidx.paging.PagingState
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.PharmaciesService
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import kotlin.math.max
 
 class PharmaciesPagingSource(
     private val pharmaciesService: PharmaciesService,
     private val mid: Long? = null
-) : PagingSource<Int, Pharmacy>() {
+) : PagingSource<Int, PharmacyWithUserDataModel>() {
 
-    override fun getRefreshKey(state: PagingState<Int, Pharmacy>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, PharmacyWithUserDataModel>): Int? {
         val anchorPosition = state.anchorPosition ?: return null
         val pharmacy = state.closestItemToPosition(anchorPosition) ?: return null
         return max(
             STARTING_KEY,
-            (pharmacy.pharmacyId - (state.config.pageSize / 2)).toInt()
+            (pharmacy.pharmacy.pharmacyId - (state.config.pageSize / 2)).toInt()
         )
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pharmacy> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PharmacyWithUserDataModel> {
         val currentOffset = params.key ?: 0
 
         val result = pharmaciesService.getPharmacies(

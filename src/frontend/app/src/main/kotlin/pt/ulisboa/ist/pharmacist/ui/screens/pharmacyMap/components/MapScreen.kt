@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -36,7 +37,7 @@ import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapViewModel
 
 /**
@@ -66,7 +67,7 @@ fun MapScreen(
     followMyLocation: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
-    pharmacies: List<Pharmacy>,
+    pharmacies: List<PharmacyWithUserDataModel>,
     onPharmacyDetailsClick: (Long) -> Unit,
     onAddPictureButtonClick: () -> Unit,
     onAddPharmacyFinishClick: (newPharmacyName: String, location: Location) -> Unit,
@@ -121,8 +122,8 @@ fun MapScreen(
         sheetContent = {
             if (clickedPharmacyMarker != null) {
                 clickedPharmacyMarker?.let { pharmacyId ->
-                    pharmacies.find { p -> p.pharmacyId == pharmacyId }?.let { pharmacy ->
-                        PharmacyDetails(onPharmacyDetailsClick, pharmacy)
+                    pharmacies.find { p -> p.pharmacy.pharmacyId == pharmacyId }?.let { pharmacy ->
+                        PharmacyDetails(onPharmacyDetailsClick, pharmacy.pharmacy)
                     }
                 }
             }
@@ -161,26 +162,26 @@ fun MapScreen(
                         clickedPharmacyMarker = null
                     }
                 ) {
-                    pharmacies.forEach { pharmacy ->
+                    pharmacies.forEach { p ->
                         Marker(
-                            state = MarkerState(position = pharmacy.location.toLatLng()),
-                            icon = when {
-                                clickedPharmacyMarker == pharmacy.pharmacyId -> BitmapDescriptorFactory.defaultMarker()
-                                // TODO: Different icon for favorite pharmacies
-                                else -> BitmapDescriptorFactory.defaultMarker(
-                                    BitmapDescriptorFactory.HUE_GREEN
-                                )
-                            },
+                            state = MarkerState(position = p.pharmacy.location.toLatLng()),
                             onClick = { _ ->
                                 if (!addingPharmacy) {
-                                    clickedPharmacyMarker = pharmacy.pharmacyId
+                                    clickedPharmacyMarker = p.pharmacy.pharmacyId
                                     scaffoldSheetScope.launch {
                                         scaffoldSheetState.bottomSheetState.expand()
                                     }
                                 }
                                 false
                             },
-                            onInfoWindowClick = { onPharmacyDetailsClick(pharmacy.pharmacyId) }
+                            onInfoWindowClick = { onPharmacyDetailsClick(p.pharmacy.pharmacyId) },
+                            icon = BitmapDescriptorFactory.defaultMarker(
+                                when {
+                                    clickedPharmacyMarker == p.pharmacy.pharmacyId -> BitmapDescriptorFactory.HUE_RED
+                                    p.userMarkedAsFavorite -> BitmapDescriptorFactory.HUE_YELLOW
+                                    else -> BitmapDescriptorFactory.HUE_GREEN
+                                }
+                            )
                         )
                     }
 

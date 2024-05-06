@@ -1,8 +1,6 @@
 package pt.ulisboa.ist.pharmacist.domain.users
 
 import pt.ulisboa.ist.pharmacist.domain.exceptions.InvalidUserException
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 
 /**
  * The User entity.
@@ -20,10 +18,10 @@ data class User(
     val userId: Long,
     var username: String,
     var passwordHash: String,
-    val flaggedPharmacies: MutableSet<Pharmacy> = mutableSetOf(),
-    val favoritePharmacies: MutableSet<Pharmacy> = mutableSetOf(),
+    val flaggedPharmacies: MutableSet<Long> = mutableSetOf(),
+    val favoritePharmacies: MutableSet<Long> = mutableSetOf(),
     var suspended: Boolean = false,
-    val medicinesToNotify: MutableSet<Medicine> = mutableSetOf(),
+    val medicinesToNotify: MutableSet<Long> = mutableSetOf(),
     val accessTokens: MutableSet<AccessToken> = mutableSetOf(),
     val ratings: MutableMap<Long, Int> = mutableMapOf()
 ) {

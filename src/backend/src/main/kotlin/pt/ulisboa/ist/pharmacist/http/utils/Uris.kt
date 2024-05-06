@@ -18,7 +18,6 @@ object Uris {
     const val USER_FLAGGED_PHARMACIES_GET_BY_ID = "/users/{uid}/flagged-pharmacies/{pid}"
     const val USER_MEDICINE_NOTIFICATIONS = "/users/{uid}/medicine-notifications/{mid}"
 
-
     const val PHARMACIES = "/pharmacies"
     const val PHARMACIES_GET_BY_ID = "/pharmacies/{pid}"
     const val PHARMACY_MEDICINES = "/pharmacies/{pid}/medicines"
@@ -34,5 +33,4 @@ object Uris {
     const val CREATE_SIGNED_URL = "/create-signed-url"
 
     fun pharmacyById(pid: Long): URI = UriTemplate(PHARMACIES_GET_BY_ID).expand(pid)
-
 }

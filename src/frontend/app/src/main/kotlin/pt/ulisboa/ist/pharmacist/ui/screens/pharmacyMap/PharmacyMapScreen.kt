@@ -18,6 +18,7 @@ import com.google.maps.android.compose.MapProperties
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.MapScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScreen
@@ -49,7 +50,7 @@ fun PharmacyMapScreen(
     hasCameraPermission: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
-    pharmacies: List<Pharmacy>,
+    pharmacies: List<PharmacyWithUserDataModel>,
     onPharmacyDetailsClick: (Long) -> Unit,
     onAddPictureButtonClick: () -> Unit,
     onAddPharmacyFinishClick: (newPharmacyName: String, location: Location) -> Unit,

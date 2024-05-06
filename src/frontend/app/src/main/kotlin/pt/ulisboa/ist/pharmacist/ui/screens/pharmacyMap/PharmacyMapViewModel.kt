@@ -28,6 +28,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -57,13 +58,13 @@ class PharmacyMapViewModel(
     var hasLocationPermission by mutableStateOf(false)
     var hasCameraPermission by mutableStateOf(false)
 
-    var pharmacies by mutableStateOf<List<Pharmacy>>(emptyList())
+    var pharmacies by mutableStateOf<List<PharmacyWithUserDataModel>>(emptyList())
         private set
 
     var cameraPositionState by mutableStateOf(CameraPositionState())
         private set
 
-    var followMyLocation by mutableStateOf(false)
+    var followMyLocation by mutableStateOf(true)
 
     val mapProperties by mutableStateOf(
         MapProperties(
@@ -268,6 +269,6 @@ class PharmacyMapViewModel(
     )
 
     companion object {
-        private const val DEFAULT_ZOOM = 15f
+        private const val DEFAULT_ZOOM = 14f
     }
 }
