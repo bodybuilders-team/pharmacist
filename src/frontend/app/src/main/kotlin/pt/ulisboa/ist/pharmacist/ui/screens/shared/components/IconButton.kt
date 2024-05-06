@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -76,12 +77,13 @@ fun IconTextButton(
         Icon(
             imageVector = imageVector,
             contentDescription = contentDescription,
-            modifier = iconModifier
+            modifier = iconModifier,
+            tint = Color.White
         )
 
         if (text != null) {
             Spacer(modifier = Modifier.width(BUTTON_PADDING.dp))
-            Text(text = text)
+            Text(text = text, color = Color.White)
         }
     }
 }

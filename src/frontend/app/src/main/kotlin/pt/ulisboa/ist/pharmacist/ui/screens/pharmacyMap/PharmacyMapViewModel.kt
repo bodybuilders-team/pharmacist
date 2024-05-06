@@ -24,7 +24,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
@@ -65,6 +64,7 @@ class PharmacyMapViewModel(
         private set
 
     var followMyLocation by mutableStateOf(true)
+    private var zoomedInMyLocation by mutableStateOf(false)
 
     val mapProperties by mutableStateOf(
         MapProperties(
@@ -120,19 +120,25 @@ class PharmacyMapViewModel(
         locationService.requestLocationUpdates()
             .collect { location ->
                 val latLng = LatLng(location.latitude, location.longitude)
-                Log.d("PharmacyMapViewModel_CurrentLocation", "Location: $latLng")
-                if (followMyLocation) {
-                    try {
-                        cameraPositionState.animate(
-                            CameraUpdateFactory.newCameraPosition(
-                                CameraPosition.fromLatLngZoom(latLng, DEFAULT_ZOOM)
+                Log.d(TAG, "Location: $latLng, followMyLocation: $followMyLocation")
+                if (followMyLocation || !zoomedInMyLocation) {
+                    while (true) {
+                        try {
+                            Log.d(TAG, "Animating camera")
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newCameraPosition(
+                                    CameraPosition.fromLatLngZoom(latLng, DEFAULT_ZOOM)
+                                )
                             )
-                        )
-                    } catch (e: CancellationException) {
-                        Log.d("PharmacyMapViewModel_CurrentLocation", "Camera animation cancelled")
-                        throw e
-                    } catch (e: Exception) {
-                        Log.d("PharmacyMapViewModel_CurrentLocation", "Camera animation failed")
+                            if (!zoomedInMyLocation)
+                                zoomedInMyLocation = true
+                            break
+                        } catch (e: CancellationException) {
+                            Log.d(TAG, "Camera animation cancelled")
+                            throw e
+                        } catch (e: Exception) {
+                            Log.d(TAG, "Camera animation failed")
+                        }
                     }
                 }
             }
@@ -144,6 +150,7 @@ class PharmacyMapViewModel(
      * @param latLng the latitude and longitude of the position
      */
     fun setPosition(latLng: LatLng) = viewModelScope.launch {
+        Log.d(TAG, "Setting position to $latLng")
         followMyLocation = false
         cameraPositionState.animate(
             CameraUpdateFactory.newCameraPosition(
@@ -169,11 +176,11 @@ class PharmacyMapViewModel(
      */
     fun addPharmacy(name: String, location: Location) {
         if (pharmacyPhotoUrl == null) {
-            Log.e("AddPharmacy", "Box photo URL is null")
+            Log.e(TAG, "Box photo URL is null")
             return
         }
         if (name == "") {
-            Log.e("AddPharmacy", "Name and description must not be empty")
+            Log.e(TAG, "Name and description must not be empty")
             return
         }
         viewModelScope.launch {
@@ -269,6 +276,7 @@ class PharmacyMapViewModel(
     )
 
     companion object {
-        private const val DEFAULT_ZOOM = 14f
+        private const val DEFAULT_ZOOM = 13f
+        private const val TAG = "PharmacyMapViewModel"
     }
 }

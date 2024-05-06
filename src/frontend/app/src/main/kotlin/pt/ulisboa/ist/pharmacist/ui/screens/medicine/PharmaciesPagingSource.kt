@@ -3,7 +3,6 @@ package pt.ulisboa.ist.pharmacist.ui.screens.medicine
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.PharmaciesService
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel

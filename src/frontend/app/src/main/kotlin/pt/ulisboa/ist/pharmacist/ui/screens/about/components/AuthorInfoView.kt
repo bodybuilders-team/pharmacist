@@ -73,15 +73,10 @@ fun AuthorInfoView(
                 .background(Color.LightGray)
         ) {
             Text(
-                text = author.number,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
-
-            Text(
                 text = author.name,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = Color.Black
             )
 
             Row {

@@ -40,8 +40,8 @@ object Uris {
         "$PHARMACIES?" +
                 if (medicineId != null) "medicineId=$medicineId" else "" +
                         if (location != null) "&location=$location" else "" +
-                        if (limit != null) "&limit=$limit" else "" +
-                                if (offset != null) "&offset=$offset" else ""
+                                if (limit != null) "&limit=$limit" else "" +
+                                        if (offset != null) "&offset=$offset" else ""
 
     fun pharmacyById(pharmacyId: Long) =
         PHARMACIES_GET_BY_ID.replace("{pid}", pharmacyId.toString())

@@ -4,9 +4,9 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,33 +45,36 @@ fun AboutScreen(
     onBackButtonClicked: () -> Unit
 ) {
     PharmacistScreen {
-        Column(
+        LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            ScreenTitle(title = stringResource(R.string.about_title))
+            item {
 
-            authors.forEach { author ->
-                AuthorInfoView(
-                    author = author,
-                    onSendEmail = onSendEmail,
-                    onOpenUrl = onOpenUrl
+                ScreenTitle(title = stringResource(R.string.about_title))
+
+                authors.forEach { author ->
+                    AuthorInfoView(
+                        author = author,
+                        onSendEmail = onSendEmail,
+                        onOpenUrl = onOpenUrl
+                    )
+                }
+
+                Text(text = stringResource(R.string.about_repoGithub_text))
+                Image(
+                    painter = painterResource(
+                        if (isSystemInDarkTheme())
+                            R.drawable.ic_github_light
+                        else
+                            R.drawable.ic_github_dark
+                    ),
+                    contentDescription = stringResource(R.string.about_githubLogo_contentDescription),
+                    modifier = Modifier
+                        .clickable { onOpenUrl(githubRepoUrl) }
+                        .padding(IMAGE_PADDING.dp)
                 )
             }
-
-            Text(text = stringResource(R.string.about_repoGithub_text))
-            Image(
-                painter = painterResource(
-                    if (isSystemInDarkTheme())
-                        R.drawable.ic_github_light
-                    else
-                        R.drawable.ic_github_dark
-                ),
-                contentDescription = stringResource(R.string.about_githubLogo_contentDescription),
-                modifier = Modifier
-                    .clickable { onOpenUrl(githubRepoUrl) }
-                    .padding(IMAGE_PADDING.dp)
-            )
         }
     }
 }

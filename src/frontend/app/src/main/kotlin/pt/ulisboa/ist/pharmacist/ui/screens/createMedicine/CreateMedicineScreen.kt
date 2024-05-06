@@ -101,6 +101,7 @@ fun CreateMedicineScreen(
             }
 
             pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton(
+                enabled = name.isNotBlank() && description.isNotBlank() && boxPhoto != null,
                 onClick = { onCreateMedicine(name, description) },
                 imageVector = Icons.Rounded.Add,
                 text = stringResource(R.string.create_medicine),

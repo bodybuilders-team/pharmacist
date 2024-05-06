@@ -1,40 +1,26 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.home
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Login
-import androidx.compose.material.icons.automirrored.rounded.Logout
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Map
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.PersonAdd
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Upgrade
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
+import pt.ulisboa.ist.pharmacist.ui.screens.home.components.HomeButtons
+import pt.ulisboa.ist.pharmacist.ui.screens.home.components.HomeHeader
 
-private const val LOGO_MAX_WIDTH_FACTOR = 0.6f
-private const val LOGO_MAX_HEIGHT_FACTOR = 0.5f
-private const val BUTTON_MAX_WIDTH_FACTOR = 0.6f
+const val LOGO_MAX_WIDTH_FACTOR = 0.6f
+const val LOGO_MAX_HEIGHT_FACTOR = 0.5f
+const val BUTTON_MAX_WIDTH_FACTOR = 0.6f
 
-private const val WELCOME_TEXT_PADDING = 14
-private const val WELCOME_TEXT_WIDTH_FACTOR = 0.9f
+const val WELCOME_TEXT_PADDING = 14
+const val WELCOME_TEXT_WIDTH_FACTOR = 0.9f
 
 /**
  * Home screen.
@@ -65,107 +51,51 @@ fun HomeScreen(
     onPharmacyMapClick: () -> Unit,
     onSearchMedicineClick: () -> Unit,
 ) {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     PharmacistScreen {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-
-            Box {
-                Image(
-                    painter = painterResource(R.drawable.pharmacy_logo),
-                    contentDescription = stringResource(R.string.logo_content_description),
-                    modifier = Modifier
-                        .fillMaxWidth(LOGO_MAX_WIDTH_FACTOR)
-                        .fillMaxHeight(LOGO_MAX_HEIGHT_FACTOR)
-                )
-            }
-
-            Text(
-                text = if (loggedIn)
-                    stringResource(R.string.home_welcome_text, username!!)
-                else
-                    stringResource(R.string.home_welcome_guest_text),
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
+        if (isLandscape)
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .fillMaxWidth(WELCOME_TEXT_WIDTH_FACTOR)
-                    .padding(bottom = WELCOME_TEXT_PADDING.dp)
-            )
-
-
-            if (!loggedIn) {
-                IconTextButton(
-                    onClick = onLoginClick,
-                    imageVector = Icons.AutoMirrored.Rounded.Login,
-                    contentDescription = stringResource(R.string.home_login_button_description),
-                    text = stringResource(R.string.home_login_button_text),
-                    modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
-                )
-
-                IconTextButton(
-                    onClick = onRegisterClick,
-                    imageVector = Icons.Rounded.PersonAdd,
-                    contentDescription = stringResource(R.string.home_register_button_description),
-                    text = stringResource(R.string.home_register_button_text),
-                    modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
-                )
-
-                IconTextButton(
-                    onClick = { onContinueAsGuestClick() },
-                    imageVector = Icons.Rounded.Person,
-                    contentDescription = stringResource(R.string.continue_as_guest),
-                    text = stringResource(R.string.continue_as_guest),
-                    modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
-                )
-            } else {
-                IconTextButton(
-                    onClick = onPharmacyMapClick,
-                    imageVector = Icons.Rounded.Map,
-                    contentDescription = stringResource(R.string.home_pharmacy_map_button_description),
-                    text = stringResource(R.string.home_pharmacy_map_button_text),
-                    modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
-                )
-
-                IconTextButton(
-                    onClick = onSearchMedicineClick,
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = stringResource(R.string.home_search_medicine_button_description),
-                    text = stringResource(R.string.home_search_medicine_button_text),
-                    modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
-                )
-
-                if (isGuest)
-                    IconTextButton(
-                        onClick = onUpgradeAccountClick,
-                        imageVector = Icons.Rounded.Upgrade,
-                        contentDescription = stringResource(R.string.upgrade_account),
-                        text = stringResource(R.string.upgrade_account),
-                        modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
-                    )
-
-                IconTextButton(
-                    onClick = onLogoutClick,
-                    imageVector = Icons.AutoMirrored.Rounded.Logout,
-                    contentDescription = stringResource(R.string.home_logout_button_description),
-                    text = stringResource(R.string.home_logout_button_text),
-                    modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                HomeHeader(loggedIn, username, Modifier.weight(1f))
+                HomeButtons(
+                    loggedIn,
+                    onLoginClick,
+                    onRegisterClick,
+                    onContinueAsGuestClick,
+                    onPharmacyMapClick,
+                    onSearchMedicineClick,
+                    isGuest,
+                    onUpgradeAccountClick,
+                    onLogoutClick,
+                    onAboutClick
                 )
             }
-
-            IconTextButton(
-                onClick = onAboutClick,
-                imageVector = Icons.Rounded.Info,
-                contentDescription = stringResource(R.string.home_about_button_description),
-                text = stringResource(R.string.home_about_button_text),
-                modifier = Modifier.fillMaxWidth(BUTTON_MAX_WIDTH_FACTOR)
-            )
-        }
+        else
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                HomeHeader(loggedIn, username)
+                HomeButtons(
+                    loggedIn,
+                    onLoginClick,
+                    onRegisterClick,
+                    onContinueAsGuestClick,
+                    onPharmacyMapClick,
+                    onSearchMedicineClick,
+                    isGuest,
+                    onUpgradeAccountClick,
+                    onLogoutClick,
+                    onAboutClick
+                )
+            }
     }
 }

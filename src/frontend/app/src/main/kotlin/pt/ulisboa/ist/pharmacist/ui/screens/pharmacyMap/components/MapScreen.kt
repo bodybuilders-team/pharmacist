@@ -98,13 +98,9 @@ fun MapScreen(
     LaunchedEffect(cameraPositionState.cameraMoveStartedReason) {
         if (cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE ||
             cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.API_ANIMATION
-        )
+        ) {
             setFollowMyLocation(false) // Stop following location when user moves the map
-    }
-
-    LaunchedEffect(cameraPositionState.isMoving) {
-        if (!cameraPositionState.isMoving)
-            setPosition(cameraPositionState.position.target)
+        }
     }
 
     val scaffoldSheetScope = rememberCoroutineScope()

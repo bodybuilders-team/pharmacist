@@ -92,7 +92,10 @@ fun MedicinePharmacyEntry(
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
-                    StarRatingBar(rating = pharmacy.pharmacy.globalRating.toInt(), densityFactor = 6f)
+                    StarRatingBar(
+                        rating = pharmacy.pharmacy.globalRating.toInt(),
+                        densityFactor = 6f
+                    )
                 }
             if (pharmacy.userMarkedAsFavorite)
                 Row {
