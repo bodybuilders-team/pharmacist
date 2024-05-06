@@ -1,7 +1,7 @@
 package pt.ulisboa.ist.pharmacist.service.http.media
 
-import java.net.URI
 import okhttp3.MediaType.Companion.toMediaType
+import java.net.URI
 
 /**
  * A problem that occurred during the processing of a request.

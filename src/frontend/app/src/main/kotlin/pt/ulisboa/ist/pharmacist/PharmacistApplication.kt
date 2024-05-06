@@ -10,8 +10,8 @@ import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesBackgroundService
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesBackgroundService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.session.SessionManagerSharedPrefs
 

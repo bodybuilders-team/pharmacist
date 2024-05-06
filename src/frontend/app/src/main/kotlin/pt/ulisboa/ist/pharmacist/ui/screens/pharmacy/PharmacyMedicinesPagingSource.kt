@@ -2,10 +2,10 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import kotlin.math.max
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.PharmaciesService
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
+import kotlin.math.max
 
 class PharmacyMedicinesPagingSource(
     private val pharmaciesService: PharmaciesService,

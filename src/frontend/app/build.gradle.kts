@@ -82,4 +82,7 @@ dependencies {
     implementation(libs.paging)
     implementation(libs.pagingCompose)
     implementation(libs.coil)
+
+    implementation(libs.google.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 }

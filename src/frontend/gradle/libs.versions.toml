@@ -1,5 +1,6 @@
 [versions]
-agp = "8.3.2"
+accompanistPagerVersion = "0.28.0"
+agp = "8.4.0"
 gson = "2.9.1"
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
@@ -22,8 +23,10 @@ pagingComposeVersion = "3.3.0-beta01"
 
 
 [libraries]
+accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+google-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPagerVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

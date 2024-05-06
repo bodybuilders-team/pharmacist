@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
-import java.io.IOException
-import java.net.HttpURLConnection
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,6 +20,8 @@ import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.home.HomeActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
+import java.io.IOException
+import java.net.HttpURLConnection
 
 /**
  * A service that communicates with a HTTP server.

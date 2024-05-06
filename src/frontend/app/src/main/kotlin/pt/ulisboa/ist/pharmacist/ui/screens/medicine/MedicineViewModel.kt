@@ -70,7 +70,8 @@ class MedicineViewModel(
                 if (result.isSuccess())
                     medicine = medicine?.copy(notificationsActive = true)
             } else {
-                val result = pharmacistService.medicinesService.removeMedicineNotification(medicineId)
+                val result =
+                    pharmacistService.medicinesService.removeMedicineNotification(medicineId)
                 if (result.isSuccess())
                     medicine = medicine?.copy(notificationsActive = false)
             }

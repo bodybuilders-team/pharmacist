@@ -118,7 +118,10 @@ fun MedicineSearch(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { onSearch(query) }
             ) {
-                Icon(Icons.Rounded.Search, contentDescription = stringResource(R.string.search_button))
+                Icon(
+                    Icons.Rounded.Search,
+                    contentDescription = stringResource(R.string.search_button)
+                )
             }
         }
 

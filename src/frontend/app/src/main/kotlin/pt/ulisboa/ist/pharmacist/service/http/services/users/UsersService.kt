@@ -1,7 +1,6 @@
 package pt.ulisboa.ist.pharmacist.service.http.services.users
 
 import android.content.Context
-import java.io.IOException
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.service.http.HTTPService
 import pt.ulisboa.ist.pharmacist.service.http.connection.APIResult
@@ -11,6 +10,7 @@ import pt.ulisboa.ist.pharmacist.service.http.services.users.models.register.Reg
 import pt.ulisboa.ist.pharmacist.service.http.services.users.models.register.RegisterOutput
 import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.session.SessionManager
+import java.io.IOException
 
 /**
  * The service that handles the users requests.

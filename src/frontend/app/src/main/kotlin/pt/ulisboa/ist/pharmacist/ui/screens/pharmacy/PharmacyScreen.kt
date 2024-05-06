@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -13,7 +14,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Flag
-import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.OutlinedFlag
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
@@ -29,6 +29,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
@@ -46,6 +56,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
  * @param pharmacy The pharmacy to display.
  * @param loadingState The loading state of the pharmacy.
  */
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PharmacyScreen(
     pharmacy: PharmacyWithUserDataModel?,
@@ -63,31 +74,60 @@ fun PharmacyScreen(
 ) {
     val medicinesStock = medicinesState.collectAsLazyPagingItems()
 
+    val pagerState = rememberPagerState(initialPage = 0)
+
     PharmacistScreen {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
             if (loadingState == PharmacyViewModel.PharmacyLoadingState.LOADED && pharmacy != null) {
-                MeteredAsyncImage(
-                    url = pharmacy.pharmacy.pictureUrl,
-                    contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
+                HorizontalPager(
+                    count = 2,
+                    state = pagerState,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .padding(top = 16.dp, bottom = 8.dp)
-                )
+                        .height(200.dp),
+                ) { page ->
+                    if (page == 0)
+                        MeteredAsyncImage(
+                            url = pharmacy.pharmacy.pictureUrl,
+                            contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    else
+                        GoogleMap(
+                            modifier = Modifier.fillMaxSize(),
+                            //onMapClick = { onNavigateToPharmacyClick(pharmacy.pharmacy.location) },
+                            cameraPositionState = CameraPositionState(
+                                position = CameraPosition(
+                                    pharmacy.pharmacy.location.toLatLng(),
+                                    15f,
+                                    0f,
+                                    0f
+                                )
+                            ),
+                            uiSettings = MapUiSettings(
+                                myLocationButtonEnabled = false,
+                                rotationGesturesEnabled = false,
+                                scrollGesturesEnabled = false,
+                                tiltGesturesEnabled = false
+                            )
+                        ) {
+                            Marker(
+                                state = MarkerState(position = pharmacy.pharmacy.location.toLatLng()),
+                                title = pharmacy.pharmacy.name
+                            )
+                        }
+                }
+                HorizontalPagerIndicator(pagerState = pagerState)
+
                 Text(
                     text = pharmacy.pharmacy.name,
                     style = MaterialTheme.typography.titleLarge
                 )
                 Row {
-                    IconButton(onClick = { onNavigateToPharmacyClick(pharmacy.pharmacy.location) }) {
-                        Icon(
-                            Icons.Rounded.LocationOn,
-                            contentDescription = stringResource(R.string.open_in_maps),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
                     IconButton(onClick = onFavoriteClick) {
                         Icon(
                             if (pharmacy.userMarkedAsFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,

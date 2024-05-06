@@ -11,9 +11,9 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdate
 import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdate
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesBackgroundService.Companion.TAG
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import java.net.HttpURLConnection

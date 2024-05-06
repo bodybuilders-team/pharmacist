@@ -2,12 +2,10 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
 import android.graphics.Bitmap
 import android.location.Geocoder
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.launch
