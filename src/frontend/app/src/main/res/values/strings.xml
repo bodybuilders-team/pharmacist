@@ -117,4 +117,6 @@
     <string name="open_in_maps">Open in Maps</string>
     <string name="report_pharmacy">Report Pharmacy</string>
     <string name="pharmacyMap_searchPlaces_text">Search for places</string>
+    <string name="choose_this_location">Choose this location</string>
+    <string name="pick_location">Pick Location</string>
 </resources>

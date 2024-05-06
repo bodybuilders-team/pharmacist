@@ -110,4 +110,6 @@
     <string name="open_in_maps">Abrir no Mapas</string>
     <string name="report_pharmacy">Denunciar Farmácia</string>
     <string name="pharmacyMap_searchPlaces_text">Procurar lugares</string>
+    <string name="choose_this_location">Escolher esta localização</string>
+    <string name="pick_location">Escolher Localização</string>
 </resources>

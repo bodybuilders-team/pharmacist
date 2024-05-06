@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -34,16 +35,19 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 @Composable
 fun AddPharmacyWindow(
     modifier: Modifier,
-    onGoToLocationButtonClick: () -> Unit,
+    onPickOnMap: () -> Unit,
     onAddPictureButtonClick: () -> Unit,
     onAddPharmacyFinishClick: (newPharmacyName: String) -> Unit,
-    newPharmacyPhoto: ImageBitmap?
+    newPharmacyPhoto: ImageBitmap?,
+    addPharmacyButtonEnabled: Boolean,
+    searchQuery: String
 ) {
     var newPharmacyName by rememberSaveable { mutableStateOf("") }
 
     Box(
         modifier = Modifier
             .background(Color.White, shape = RoundedCornerShape(8.dp))
+            .widthIn(0.dp, 300.dp)
             .then(modifier)
     ) {
         Column(modifier = Modifier.width(IntrinsicSize.Max)) {
@@ -63,11 +67,18 @@ fun AddPharmacyWindow(
                     .width(250.dp)
                     .padding(8.dp)
             )
+            Text(
+                text = searchQuery,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .width(250.dp)
+                    .padding(8.dp)
+            )
             IconTextButton(
-                onClick = { onGoToLocationButtonClick() },
+                onClick = { onPickOnMap() },
                 imageVector = Icons.Rounded.LocationOn,
-                text = stringResource(R.string.go_to_location),
-                contentDescription = stringResource(R.string.go_to_location),
+                text = stringResource(R.string.pick_location),
+                contentDescription = stringResource(R.string.pick_location),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             if (newPharmacyPhoto != null)
@@ -95,6 +106,7 @@ fun AddPharmacyWindow(
                     onAddPharmacyFinishClick(newPharmacyName)
                     newPharmacyName = ""
                 },
+                enabled = addPharmacyButtonEnabled && newPharmacyName.isNotBlank(),
                 imageVector = Icons.Rounded.Add,
                 text = stringResource(R.string.create_pharmacy),
                 contentDescription = stringResource(R.string.create_pharmacy),

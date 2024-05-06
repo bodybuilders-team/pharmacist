@@ -24,21 +24,24 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapViewModel
 /**
  * Component to display the search bar for places and the autofill
  *
+ * @param label the label to display in the search bar
  * @param locationAutofill the list of locations to display in the autofill
  * @param onSearchPlaces callback to be invoked when the user types in the search bar
  * @param onPlaceClick callback to be invoked when the user clicks on a place in the autofill
  */
 @Composable
 fun SearchPlacesBar(
+    label: String = stringResource(R.string.pharmacyMap_searchPlaces_text),
     searchQuery: String,
     locationAutofill: List<PharmacyMapViewModel.AutocompleteResult>,
     onSearchPlaces: (String) -> Unit,
-    onPlaceClick: (PharmacyMapViewModel.AutocompleteResult) -> Unit
+    onPlaceClick: (PharmacyMapViewModel.AutocompleteResult) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.fillMaxWidth(0.85f)) {
+    Column(modifier = Modifier.then(modifier)) {
         TextField(
             value = searchQuery,
-            label = { Text(stringResource(R.string.pharmacyMap_searchPlaces_text)) },
+            label = { Text(label) },
             onValueChange = onSearchPlaces,
             modifier = Modifier
                 .fillMaxWidth()

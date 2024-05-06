@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -20,11 +21,13 @@ import pt.ulisboa.ist.pharmacist.R
  * Button to add a pharmacy to the map.
  *
  * @param addingPharmacy whether the user is currently adding a pharmacy
+ * @param pickingOnMap whether the user is currently picking a location on the map
  * @param onClick callback to be invoked when the user clicks on the button
  */
 @Composable
 fun BoxScope.AddPharmacyButton(
     addingPharmacy: Boolean,
+    pickingOnMap: Boolean,
     onClick: () -> Unit
 ) {
     ExtendedFloatingActionButton(
@@ -35,19 +38,25 @@ fun BoxScope.AddPharmacyButton(
             .padding(24.dp),
         icon = {
             Icon(
-                if (!addingPharmacy) Icons.Rounded.Add else Icons.Rounded.Cancel,
-                if (!addingPharmacy)
-                    stringResource(R.string.pharmacyMap_addPharmacy_button_text)
-                else
-                    stringResource(R.string.pharmacyMap_cancel_button_text),
+                imageVector = when {
+                    pickingOnMap -> Icons.Rounded.CheckCircle
+                    addingPharmacy -> Icons.Rounded.Cancel
+                    else -> Icons.Rounded.Add
+                },
+                contentDescription = when {
+                    pickingOnMap -> stringResource(R.string.choose_this_location)
+                    addingPharmacy -> stringResource(R.string.pharmacyMap_cancel_button_description)
+                    else -> stringResource(R.string.pharmacyMap_addPharmacy_button_description)
+                }
             )
         },
         text = {
             Text(
-                if (!addingPharmacy)
-                    stringResource(R.string.pharmacyMap_addPharmacy_button_description)
-                else
-                    stringResource(R.string.pharmacyMap_cancel_button_description)
+                when {
+                    pickingOnMap -> stringResource(R.string.choose_this_location)
+                    addingPharmacy -> stringResource(R.string.pharmacyMap_cancel_button_description)
+                    else -> stringResource(R.string.pharmacyMap_addPharmacy_button_description)
+                }
             )
         }
     )

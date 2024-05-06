@@ -18,6 +18,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -65,7 +66,10 @@ class PharmacyMapViewModel(
     var followMyLocation by mutableStateOf(false)
 
     val mapProperties by mutableStateOf(
-        MapProperties(isMyLocationEnabled = true)
+        MapProperties(
+            isMyLocationEnabled = true,
+            mapType = MapType.NORMAL
+        )
     )
 
     private var searchQueryJob: Job? = null
