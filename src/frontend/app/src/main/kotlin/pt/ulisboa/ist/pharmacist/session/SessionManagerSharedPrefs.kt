@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.session
 
 import android.content.Context
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Session manager that uses shared preferences to store the session.
@@ -28,6 +29,8 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
     override val isGuest: Boolean
         get() = prefs.getBoolean(IS_GUEST, false)
 
+    override val logInFlow: MutableSharedFlow<Boolean> = MutableSharedFlow()
+
     override fun setSession(
         userId: Long,
         accessToken: String,
@@ -40,6 +43,8 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
             .putLong(USER_ID, userId)
             .putBoolean(IS_GUEST, isGuest)
             .apply()
+
+        logInFlow.tryEmit(true)
     }
 
     override fun clearSession() {
@@ -49,6 +54,8 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
             .remove(USER_ID)
             .remove(IS_GUEST)
             .apply()
+
+        logInFlow.tryEmit(false)
     }
 
     companion object {

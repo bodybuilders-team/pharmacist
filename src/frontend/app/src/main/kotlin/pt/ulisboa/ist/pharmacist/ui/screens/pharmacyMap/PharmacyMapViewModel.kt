@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Geocoder
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
@@ -24,9 +25,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
@@ -45,6 +48,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 class PharmacyMapViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager,
+    private val realTimeUpdatesService: RealTimeUpdatesService,
     val placesClient: PlacesClient,
     val geoCoder: Geocoder
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
@@ -57,8 +61,7 @@ class PharmacyMapViewModel(
     var hasLocationPermission by mutableStateOf(false)
     var hasCameraPermission by mutableStateOf(false)
 
-    var pharmacies by mutableStateOf<List<PharmacyWithUserDataModel>>(emptyList())
-        private set
+    val pharmacies = mutableStateMapOf<Long, PharmacyWithUserDataModel>()
 
     var cameraPositionState by mutableStateOf(CameraPositionState())
         private set
@@ -77,6 +80,52 @@ class PharmacyMapViewModel(
     val locationAutofill = mutableListOf<AutocompleteResult>()
     var searchQuery by mutableStateOf("")
         private set
+
+    suspend fun listenForRealTimeUpdates() {
+        realTimeUpdatesService.listenForRealTimeUpdates(
+            onNewPharmacy = { newPharmacy ->
+                pharmacies[newPharmacy.pharmacyId] =
+                    PharmacyWithUserDataModel(
+                        Pharmacy(
+                            pharmacyId = newPharmacy.pharmacyId,
+                            name = newPharmacy.name,
+                            location = newPharmacy.location,
+                            pictureUrl = newPharmacy.pictureUrl,
+                            globalRating = newPharmacy.globalRating,
+                            numberOfRatings = newPharmacy.numberOfRatings.toTypedArray()
+                        ),
+                        userRating = null,
+                        userMarkedAsFavorite = false,
+                        userFlagged = false
+                    )
+            },
+            onPharmacyUserRating = { pharmacyUserRatingData ->
+                pharmacies.compute(pharmacyUserRatingData.pharmacyId) { _, pharmacy ->
+                    pharmacy?.copy(userRating = pharmacyUserRatingData.userRating)
+                }
+            },
+            onPharmacyGlobalRating = { pharmacyGlobalRatingData ->
+                pharmacies.compute(pharmacyGlobalRatingData.pharmacyId) { _, pharmacyWithUserData ->
+                    pharmacyWithUserData?.copy(
+                        pharmacy = pharmacyWithUserData.pharmacy.copy(
+                            globalRating = pharmacyGlobalRatingData.globalRatingSum,
+                            numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
+                        )
+                    )
+                }
+            },
+            onPharmacyUserFlagged = { pharmacyUserFlaggedData ->
+                pharmacies.compute(pharmacyUserFlaggedData.pharmacyId) { _, pharmacyWithUserData ->
+                    pharmacyWithUserData?.copy(userFlagged = pharmacyUserFlaggedData.flagged)
+                }
+            },
+            onPharmacyUserFavorited = { pharmacyUserFavoritedData ->
+                pharmacies.compute(pharmacyUserFavoritedData.pharmacyId) { _, pharmacyWithUserData ->
+                    pharmacyWithUserData?.copy(userMarkedAsFavorite = pharmacyUserFavoritedData.favorited)
+                }
+            }
+        )
+    }
 
     /**
      * Uploads the box photo to the server.

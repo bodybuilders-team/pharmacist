@@ -29,7 +29,7 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
             MedicineWithClosestPharmacyDto(
                 medicine = MedicineDto(medicine),
                 closestPharmacy = dataSource.pharmacies.values.filter { pharmacy ->
-                    pharmacy.medicines.map { it.medicine.medicineId }.contains(medicine.medicineId)
+                    pharmacy.medicines.any { it.medicine.medicineId == medicine.medicineId }
                 }.minByOrNull { pharmacy ->
                     if (location == null) return@minByOrNull 0.0
 

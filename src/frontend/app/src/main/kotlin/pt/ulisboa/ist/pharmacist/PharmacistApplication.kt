@@ -11,6 +11,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesBackgroundService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.session.SessionManagerSharedPrefs
@@ -41,6 +42,11 @@ class PharmacistApplication : DependenciesContainer, Application() {
         sessionManager = sessionManager
     )
 
+    override val realTimeUpdatesService = RealTimeUpdatesService(
+        apiEndpoint = API_ENDPOINT,
+        sessionManager = sessionManager,
+        httpClient = httpClient
+    )
 
     override fun onCreate() {
         super.onCreate()

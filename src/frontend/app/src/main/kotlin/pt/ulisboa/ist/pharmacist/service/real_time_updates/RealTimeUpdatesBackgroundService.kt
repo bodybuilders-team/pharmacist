@@ -11,17 +11,9 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.google.gson.Gson
-import kotlinx.coroutines.delay
 import pt.ulisboa.ist.pharmacist.DependenciesContainer
 import pt.ulisboa.ist.pharmacist.PharmacistApplication
-import pt.ulisboa.ist.pharmacist.PharmacistApplication.Companion.API_ENDPOINT
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdateTypes.MEDICINE_NOTIFICATION
-import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdateTypes.PHARMACY
-import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdateTypes.PHARMACY_MEDICINE_STOCK
-import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdatesService
-import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
 import pt.ulisboa.ist.pharmacist.service.utils.runNewBlocking
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
 
@@ -30,29 +22,13 @@ class RealTimeUpdatesBackgroundService : Service() {
         (application as DependenciesContainer)
     }
 
-    //TODO: Check null pointer exception
-    private val realTimeUpdatesService by lazy {
-        RealTimeUpdatesService(
-            apiEndpoint = API_ENDPOINT,
-            sessionManager = dependenciesContainer.sessionManager,
-            httpClient = dependenciesContainer.httpClient,
-        )
-    }
-
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         runNewBlocking {
-            while (true) {
-                if (dependenciesContainer.sessionManager.isLoggedIn()) {
-                    getUpdates()
-                }
-
-                delay(5000) //TODO: Remove delay
-                Log.d(TAG, "Checking if user is logged in after delay")
-            }
+            getUpdates()
         }
 
         return START_STICKY
@@ -62,23 +38,14 @@ class RealTimeUpdatesBackgroundService : Service() {
      * Get the real time updates from the server.
      */
     private suspend fun getUpdates() {
-        Log.d(TAG, "Getting real time updates")
-        val flow = realTimeUpdatesService
-            .getUpdateFlow()
-
         Log.d(TAG, "Real time updates flow started")
-        flow.collect { realTimeUpdate ->
-            when (realTimeUpdate.type) {
-                PHARMACY, PHARMACY_MEDICINE_STOCK -> {}
-                MEDICINE_NOTIFICATION -> {
-                    if (checkNotificationPermission()) {
-                        val medicineNotificationData =
-                            Gson().fromJson<MedicineNotificationData>(realTimeUpdate.data)
-                        showMedicineNotification(medicineNotificationData)
-                    }
+        dependenciesContainer.realTimeUpdatesService.listenForRealTimeUpdates(
+            onMedicineNotification = { medicineNotificationData ->
+                if (checkNotificationPermission()) {
+                    showMedicineNotification(medicineNotificationData)
                 }
             }
-        }
+        )
         Log.d(TAG, "Real time updates flow ended")
     }
 

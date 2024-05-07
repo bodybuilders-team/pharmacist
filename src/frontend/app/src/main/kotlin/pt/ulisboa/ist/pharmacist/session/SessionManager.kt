@@ -1,5 +1,7 @@
 package pt.ulisboa.ist.pharmacist.session
 
+import kotlinx.coroutines.flow.SharedFlow
+
 /**
  * Responsible for holding a user's session.
  *
@@ -13,6 +15,7 @@ interface SessionManager {
     val accessToken: String?
     val username: String?
     val isGuest: Boolean
+    val logInFlow: SharedFlow<Boolean>
 
     /**
      * Checks if the user is logged in.

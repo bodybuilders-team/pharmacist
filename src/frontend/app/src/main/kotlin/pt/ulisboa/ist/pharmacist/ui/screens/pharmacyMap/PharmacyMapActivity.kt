@@ -28,6 +28,7 @@ class PharmacyMapActivity : PharmacistActivity() {
         PharmacyMapViewModel(
             dependenciesContainer.pharmacistService,
             dependenciesContainer.sessionManager,
+            dependenciesContainer.realTimeUpdatesService,
             placesClient = Places.createClient(this),
             geoCoder = Geocoder(this)
         )
@@ -68,6 +69,9 @@ class PharmacyMapActivity : PharmacistActivity() {
         viewModel.hasLocationPermission = hasLocationPermission()
         viewModel.hasCameraPermission = hasCameraPermission()
         viewModel.loadPharmacyList()
+        lifecycleScope.launch {
+            viewModel.listenForRealTimeUpdates()
+        }
 
         setContent {
             PharmacyMapScreen(
