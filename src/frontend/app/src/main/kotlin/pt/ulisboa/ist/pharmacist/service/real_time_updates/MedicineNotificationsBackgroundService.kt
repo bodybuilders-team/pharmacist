@@ -17,7 +17,7 @@ import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.service.utils.runNewBlocking
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
 
-class RealTimeUpdatesBackgroundService : Service() {
+class MedicineNotificationsBackgroundService : Service() {
     private val dependenciesContainer by lazy {
         (application as DependenciesContainer)
     }
@@ -38,7 +38,7 @@ class RealTimeUpdatesBackgroundService : Service() {
      * Get the real time updates from the server.
      */
     private suspend fun getUpdates() {
-        Log.d(TAG, "Real time updates flow started")
+        Log.d(TAG, "Started listening for medicine notifications from the server")
         dependenciesContainer.realTimeUpdatesService.listenForRealTimeUpdates(
             onMedicineNotification = { medicineNotificationData ->
                 if (checkNotificationPermission()) {
@@ -46,12 +46,12 @@ class RealTimeUpdatesBackgroundService : Service() {
                 }
             }
         )
-        Log.d(TAG, "Real time updates flow ended")
+        Log.d(TAG, "Finished listening for medicine notifications from the server")
     }
 
     private fun showMedicineNotification(notification: MedicineNotificationData) {
         val notificationIntent = MedicineActivity.getNavigationIntent(
-            this@RealTimeUpdatesBackgroundService,
+            this@MedicineNotificationsBackgroundService,
             notification.medicineStock.medicine.medicineId
         )
 
@@ -59,7 +59,7 @@ class RealTimeUpdatesBackgroundService : Service() {
         notificationIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
         val pendingNotiIntent: PendingIntent = PendingIntent.getActivity(
-            this@RealTimeUpdatesBackgroundService,
+            this@MedicineNotificationsBackgroundService,
             0,
             notificationIntent,
             PendingIntent.FLAG_IMMUTABLE
@@ -68,7 +68,7 @@ class RealTimeUpdatesBackgroundService : Service() {
 
         // Show notification to the user
         val notificationCompat = NotificationCompat.Builder(
-            this@RealTimeUpdatesBackgroundService,
+            this@MedicineNotificationsBackgroundService,
             PharmacistApplication.MEDICINE_NOTIFICATION_CHANNEL
         )
             .setSmallIcon(R.drawable.pharmacy_logo)
@@ -86,7 +86,7 @@ class RealTimeUpdatesBackgroundService : Service() {
             .setAutoCancel(true)
             .build()
 
-        with(NotificationManagerCompat.from(this@RealTimeUpdatesBackgroundService)) {
+        with(NotificationManagerCompat.from(this@MedicineNotificationsBackgroundService)) {
             if (!checkNotificationPermission()) {
                 return@with
             }
@@ -97,7 +97,7 @@ class RealTimeUpdatesBackgroundService : Service() {
     private fun checkNotificationPermission(): Boolean =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.checkSelfPermission(
-                this@RealTimeUpdatesBackgroundService,
+                this@MedicineNotificationsBackgroundService,
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         } else {
@@ -107,6 +107,6 @@ class RealTimeUpdatesBackgroundService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        const val TAG = "RealTimeUpdatesBackgroundService"
+        const val TAG = "MedicineNotificationsBackgroundService"
     }
 }

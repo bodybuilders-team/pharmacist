@@ -3,6 +3,7 @@ package pt.ulisboa.ist.pharmacist.session
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Responsible for holding a user's session, in memory.
@@ -25,6 +26,8 @@ class SessionManagerInMemory : SessionManager {
 
     override val isGuest: Boolean
         get() = _isGuest
+
+    override val logInFlow: MutableSharedFlow<Boolean> = MutableSharedFlow(extraBufferCapacity = 2)
 
     override fun setSession(userId: Long, accessToken: String, username: String, isGuest: Boolean) {
         this._userId = userId

@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -66,7 +67,7 @@ fun MapScreen(
     followMyLocation: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
-    pharmacies: List<PharmacyWithUserDataModel>,
+    pharmacies: SnapshotStateMap<Long, PharmacyWithUserDataModel>,
     onPharmacyDetailsClick: (Long) -> Unit,
     onAddPictureButtonClick: () -> Unit,
     onAddPharmacyFinishClick: (newPharmacyName: String, location: Location) -> Unit,
@@ -117,7 +118,7 @@ fun MapScreen(
         sheetContent = {
             if (clickedPharmacyMarker != null) {
                 clickedPharmacyMarker?.let { pharmacyId ->
-                    pharmacies.find { p -> p.pharmacy.pharmacyId == pharmacyId }?.let { pharmacy ->
+                    pharmacies[pharmacyId]?.let { pharmacy ->
                         PharmacyDetails(onPharmacyDetailsClick, pharmacy.pharmacy)
                     }
                 }
@@ -157,23 +158,23 @@ fun MapScreen(
                         clickedPharmacyMarker = null
                     }
                 ) {
-                    pharmacies.forEach { p ->
+                    pharmacies.forEach { (_, pharmacyWithUserData) ->
                         Marker(
-                            state = MarkerState(position = p.pharmacy.location.toLatLng()),
+                            state = MarkerState(position = pharmacyWithUserData.pharmacy.location.toLatLng()),
                             onClick = { _ ->
                                 if (!addingPharmacy) {
-                                    clickedPharmacyMarker = p.pharmacy.pharmacyId
+                                    clickedPharmacyMarker = pharmacyWithUserData.pharmacy.pharmacyId
                                     scaffoldSheetScope.launch {
                                         scaffoldSheetState.bottomSheetState.expand()
                                     }
                                 }
                                 false
                             },
-                            onInfoWindowClick = { onPharmacyDetailsClick(p.pharmacy.pharmacyId) },
+                            onInfoWindowClick = { onPharmacyDetailsClick(pharmacyWithUserData.pharmacy.pharmacyId) },
                             icon = BitmapDescriptorFactory.defaultMarker(
                                 when {
-                                    clickedPharmacyMarker == p.pharmacy.pharmacyId -> BitmapDescriptorFactory.HUE_RED
-                                    p.userMarkedAsFavorite -> BitmapDescriptorFactory.HUE_YELLOW
+                                    clickedPharmacyMarker == pharmacyWithUserData.pharmacy.pharmacyId -> BitmapDescriptorFactory.HUE_RED
+                                    pharmacyWithUserData.userMarkedAsFavorite -> BitmapDescriptorFactory.HUE_YELLOW
                                     else -> BitmapDescriptorFactory.HUE_GREEN
                                 }
                             )

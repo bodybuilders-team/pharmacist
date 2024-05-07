@@ -9,10 +9,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdatesService
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesBackgroundService
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.MedicineNotificationsBackgroundService
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.session.SessionManagerSharedPrefs
 
@@ -48,15 +51,21 @@ class PharmacistApplication : DependenciesContainer, Application() {
         httpClient = httpClient
     )
 
+    private val serviceScope = CoroutineScope(Dispatchers.Default)
+
     override fun onCreate() {
         super.onCreate()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             createNotificationsChannel()
 
-        val serviceIntent = Intent(this, RealTimeUpdatesBackgroundService::class.java)
+        val serviceIntent = Intent(this, MedicineNotificationsBackgroundService::class.java)
 
         startService(serviceIntent)
+
+        serviceScope.launch {
+            realTimeUpdatesService.startService()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.service.http.services.medicines
+package pt.ulisboa.ist.pharmacist.service.real_time_updates
 
 import android.util.Log
 import com.google.gson.Gson
@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -16,16 +15,6 @@ import okhttp3.WebSocketListener
 import okio.ByteString
 import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RTU
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateMedicineNotificationPublishingData
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateNewPharmacyPublishingData
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatePharmacyGlobalRatingPublishingData
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatePharmacyMedicineStockPublishingData
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatePharmacyUserFavoritedPublishingData
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatePharmacyUserFlaggedPublishingData
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatePharmacyUserRatingPublishingData
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatePublishingDto
-import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesBackgroundService.Companion.TAG
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import java.net.HttpURLConnection
 
@@ -38,17 +27,22 @@ class RealTimeUpdatesService(
 
     private val updateFlow = MutableSharedFlow<RealTimeUpdatePublishingDto>()
 
-    init {
-        runBlocking {
-            while (true) {
-                if (sessionManager.isLoggedIn()) {
-                    getWebSocketListenerFlow()
-                }
-                // TODO Synchronization issue?
-                sessionManager.logInFlow.collect { loggedIn ->
-                    if (loggedIn && sessionManager.isLoggedIn()) {
-                        getWebSocketListenerFlow()
-                    }
+    /**
+     * Starts the real time updates service, opening the web socket and listening for
+     * log in and log out events to determine if a new web socket should open.
+     */
+    suspend fun startService() {
+        while (true) {
+            Log.d(TAG, "Real time updates service started")
+            if (sessionManager.isLoggedIn()) {
+                Log.d(TAG, "Already logged in. Starting WebSocket listener flow")
+                getWebSocketListenerFlow().collect(updateFlow::emit)
+            }
+            Log.d(TAG, "Listening to logInFlow")
+            sessionManager.logInFlow.collect { loggedIn ->
+                if (loggedIn && sessionManager.isLoggedIn()) {
+                    Log.d(TAG, "Became logged in (logInFlow). Starting WebSocket listener flow")
+                    getWebSocketListenerFlow().collect(updateFlow::emit)
                 }
             }
         }
@@ -62,11 +56,6 @@ class RealTimeUpdatesService(
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                if (!sessionManager.isLoggedIn()) {
-                    Log.d(TAG, "User is not logged in. Closing update flow channel")
-                    close()
-                    return
-                }
                 val message = Gson().fromJson<RealTimeUpdatePublishingDto>(text)
                 trySend(message)
                 Log.d(TAG, "WebSocket message received")
@@ -108,6 +97,7 @@ class RealTimeUpdatesService(
         launch {
             sessionManager.logInFlow.collect { loggedIn ->
                 if (!loggedIn) {
+                    Log.d(TAG, "Became logged out (logInFlow). Closing WebSocket listener flow")
                     close()
                 }
             }
@@ -115,7 +105,7 @@ class RealTimeUpdatesService(
 
         awaitClose {
             webSocket?.close(1000, null)
-            Log.d(TAG, "WebSocket closed")
+            Log.d(TAG, "WebSocket channel closed")
         }
     }
 
@@ -174,6 +164,10 @@ class RealTimeUpdatesService(
                 )
             }
         }
+    }
+
+    companion object {
+        const val TAG = "RealTimeUpdatesService"
     }
 }
 

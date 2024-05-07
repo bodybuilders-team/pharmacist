@@ -29,7 +29,7 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
     override val isGuest: Boolean
         get() = prefs.getBoolean(IS_GUEST, false)
 
-    override val logInFlow: MutableSharedFlow<Boolean> = MutableSharedFlow()
+    override val logInFlow: MutableSharedFlow<Boolean> = MutableSharedFlow(extraBufferCapacity = 2)
 
     override fun setSession(
         userId: Long,

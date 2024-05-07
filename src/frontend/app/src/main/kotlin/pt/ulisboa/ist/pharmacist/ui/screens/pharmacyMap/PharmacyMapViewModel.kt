@@ -29,8 +29,8 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.http.services.medicines.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -81,7 +81,7 @@ class PharmacyMapViewModel(
     var searchQuery by mutableStateOf("")
         private set
 
-    suspend fun listenForRealTimeUpdates() {
+    fun listenForRealTimeUpdates() = viewModelScope.launch {
         realTimeUpdatesService.listenForRealTimeUpdates(
             onNewPharmacy = { newPharmacy ->
                 pharmacies[newPharmacy.pharmacyId] =
@@ -151,8 +151,11 @@ class PharmacyMapViewModel(
 
         val result = pharmacistService.pharmaciesService.getPharmacies(limit = 1000)
 
-        if (result.isSuccess())
-            pharmacies = result.data.pharmacies
+        if (result.isSuccess()) {
+            result.data.pharmacies.forEach {
+                pharmacies[it.pharmacy.pharmacyId] = it
+            }
+        }
 
         state = PharmacyMapState.LOADED
     }
