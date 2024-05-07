@@ -7,6 +7,8 @@ import java.net.URI
  * The URIs of the API.
  */
 object Uris {
+    const val PING = "/ping"
+
     const val USERS = "/users"
     const val USERS_LOGIN = "/users/login"
     const val USERS_LOGOUT = "/users/logout"

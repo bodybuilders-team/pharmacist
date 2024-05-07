@@ -31,6 +31,11 @@ import pt.ulisboa.ist.pharmacist.service.users.UsersService
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 class UsersController(private val usersService: UsersService) {
 
+    @GetMapping(Uris.PING)
+    fun ping(): String {
+        return "pong"
+    }
+
     /**
      * Handles the request to register a new user.
      *

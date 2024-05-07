@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import pt.ulisboa.ist.pharmacist.http.media.Problem
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.AuthenticationException
@@ -42,6 +43,7 @@ class ExceptionHandler {
             AlreadyExistsException::class,
             InvalidPasswordException::class,
             InvalidPaginationParamsException::class,
+            NoResourceFoundException::class,
             NotFoundException::class,
             InvalidLoginException::class,
             InvalidArgumentException::class,
