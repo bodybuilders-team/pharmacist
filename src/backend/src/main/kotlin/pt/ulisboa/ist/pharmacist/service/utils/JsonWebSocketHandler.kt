@@ -12,6 +12,7 @@ abstract class JsonWebSocketHandler<I>(private val inputType: Class<I>) : TextWe
 
 
     public override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
+        println("Received websocket message: ${message.payload}")
         handleObject(session, mapper.readValue(message.payload, inputType))
     }
 

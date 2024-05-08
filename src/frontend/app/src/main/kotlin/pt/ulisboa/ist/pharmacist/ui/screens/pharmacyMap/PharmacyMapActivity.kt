@@ -68,8 +68,8 @@ class PharmacyMapActivity : PharmacistActivity() {
 
         viewModel.hasLocationPermission = hasLocationPermission()
         viewModel.hasCameraPermission = hasCameraPermission()
-        viewModel.loadPharmacyList()
         viewModel.listenForRealTimeUpdates()
+        viewModel.loadPharmacyList()
 
         setContent {
             PharmacyMapScreen(

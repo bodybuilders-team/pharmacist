@@ -58,6 +58,16 @@ class PharmaciesServiceImpl(
 
     override fun addPharmacy(name: String, location: Location, pictureUrl: String, creatorId: Long): PharmacyDto {
         val pharmacy = pharmaciesRepository.create(name = name, location = location, pictureUrl = pictureUrl, creatorId)
+
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.newPharmacy(
+                pharmacyId = pharmacy.pharmacyId,
+                name = pharmacy.name,
+                location = pharmacy.location,
+                pictureUrl = pharmacy.pictureUrl
+            )
+        )
+
         return PharmacyDto(pharmacy)
     }
 
@@ -196,7 +206,14 @@ class PharmaciesServiceImpl(
             newNumberOfRatings = pharmacy.numberOfRatings.toList()
         }
         realTimeUpdatesService.publishUpdate(
-            RealTimeUpdatePublishing.pharmacy(
+            RealTimeUpdatePublishing.pharmacyUserRating(
+                pharmacyId = pharmacyId,
+                userId = user.userId,
+                userRating = rating
+            )
+        )
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.pharmacyGlobalRating(
                 pharmacyId = pharmacyId,
                 globalRatingSum = newGlobalRatingSum,
                 numberOfRatings = newNumberOfRatings

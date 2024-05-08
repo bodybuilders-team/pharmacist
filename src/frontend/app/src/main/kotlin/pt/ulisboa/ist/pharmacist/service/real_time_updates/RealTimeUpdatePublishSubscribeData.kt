@@ -1,46 +1,52 @@
 package pt.ulisboa.ist.pharmacist.service.real_time_updates
 
 import com.google.gson.Gson
-import org.jetbrains.annotations.Contract
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.service.http.connection.APIResult
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 /*
  * Types
  */
 
-enum class RTU(val type: String, val dataClass: Class<out RealTimeUpdatePublishingData>) {
+enum class RTU(
+    val type: String,
+    val publishDataClass: Class<out RealTimeUpdatePublishingData>,
+    val subscribeDataClass: Class<out RealTimeUpdateSubscriptionData>
+) {
     NEW_PHARMACY(
         "new-pharmacy",
-        RealTimeUpdateNewPharmacyPublishingData::class.java
+        RealTimeUpdateNewPharmacyPublishingData::class.java,
+        RealTimeUpdateNewPharmaciesSubscriptionData::class.java
     ),
     PHARMACY_USER_RATING(
         "pharmacy-user-rating",
-        RealTimeUpdatePharmacyUserRatingPublishingData::class.java
+        RealTimeUpdatePharmacyUserRatingPublishingData::class.java,
+        RealTimeUpdatePharmacyUserRatingSubscriptionData::class.java
     ),
     PHARMACY_GLOBAL_RATING(
         "pharmacy-global-rating",
-        RealTimeUpdatePharmacyGlobalRatingPublishingData::class.java
+        RealTimeUpdatePharmacyGlobalRatingPublishingData::class.java,
+        RealTimeUpdatePharmacyGlobalRatingSubscriptionData::class.java
     ),
     PHARMACY_USER_FLAGGED(
         "pharmacy-user-flagged",
-        RealTimeUpdatePharmacyUserFlaggedPublishingData::class.java
+        RealTimeUpdatePharmacyUserFlaggedPublishingData::class.java,
+        RealTimeUpdatePharmacyUserFlaggedSubscriptionData::class.java
     ),
     PHARMACY_USER_FAVORITED(
         "pharmacy-user-favorited",
-        RealTimeUpdatePharmacyUserFavoritedPublishingData::class.java
+        RealTimeUpdatePharmacyUserFavoritedPublishingData::class.java,
+        RealTimeUpdatePharmacyUserFavoritedSubscriptionData::class.java
     ),
     PHARMACY_MEDICINE_STOCK(
         "pharmacy-medicine-stock",
-        RealTimeUpdatePharmacyMedicineStockPublishingData::class.java
+        RealTimeUpdatePharmacyMedicineStockPublishingData::class.java,
+        RealTimeUpdatePharmacyMedicineStockSubscriptionData::class.java
     ),
     MEDICINE_NOTIFICATION(
         "medicine-notification",
-        RealTimeUpdateMedicineNotificationPublishingData::class.java
+        RealTimeUpdateMedicineNotificationPublishingData::class.java,
+        Nothing::class.java //RealTimeUpdateMedicineNotificationSubscriptionData::class.java
     );
 
     companion object {
@@ -49,10 +55,17 @@ enum class RTU(val type: String, val dataClass: Class<out RealTimeUpdatePublishi
         }
     }
 
-    inline fun <reified T: RealTimeUpdatePublishingData> parseJson(data: String): T {
+    inline fun <reified T : RealTimeUpdatePublishingData> parsePublishJson(data: String): T {
         return Gson().fromJson(
             data,
-            dataClass
+            publishDataClass
+        ) as T
+    }
+
+    inline fun <reified T : RealTimeUpdateSubscriptionData> parseSubscribeJson(data: String): T {
+        return Gson().fromJson(
+            data,
+            subscribeDataClass
         ) as T
     }
 }
@@ -67,10 +80,9 @@ data class RealTimeUpdatePublishingDto(
 )
 
 data class RealTimeUpdatePublishing(
-    val type: String,
+    val type: RTU,
     val data: RealTimeUpdatePublishingData
 ) {
-    constructor(rtu: RTU, data: RealTimeUpdatePublishingData) : this(rtu.type, data)
 
     companion object {
 
@@ -78,25 +90,22 @@ data class RealTimeUpdatePublishing(
             pharmacyId: Long,
             name: String,
             location: Location,
-            pictureUrl: String,
-            globalRating: Double?,
-            numberOfRatings: List<Int>
+            pictureUrl: String
         ) =
             RealTimeUpdatePublishing(
                 RTU.NEW_PHARMACY, RealTimeUpdateNewPharmacyPublishingData(
                     pharmacyId = pharmacyId,
                     name = name,
                     location = location,
-                    pictureUrl = pictureUrl,
-                    globalRating = globalRating,
-                    numberOfRatings = numberOfRatings
+                    pictureUrl = pictureUrl
                 )
             )
 
-        fun pharmacyUserRating(pharmacyId: Long, userRating: Int) =
+        fun pharmacyUserRating(pharmacyId: Long, userId: Long, userRating: Int) =
             RealTimeUpdatePublishing(
                 RTU.PHARMACY_USER_RATING, RealTimeUpdatePharmacyUserRatingPublishingData(
                     pharmacyId = pharmacyId,
+                    userId = userId,
                     userRating = userRating
                 )
             )
@@ -114,18 +123,20 @@ data class RealTimeUpdatePublishing(
                 )
             )
 
-        fun pharmacyUserFlagged(pharmacyId: Long, flagged: Boolean) =
+        fun pharmacyUserFlagged(pharmacyId: Long, userId: Long, flagged: Boolean) =
             RealTimeUpdatePublishing(
                 RTU.PHARMACY_USER_FLAGGED, RealTimeUpdatePharmacyUserFlaggedPublishingData(
                     pharmacyId = pharmacyId,
+                    userId = userId,
                     flagged = flagged
                 )
             )
 
-        fun pharmacyUserFavorited(pharmacyId: Long, favorited: Boolean) =
+        fun pharmacyUserFavorited(pharmacyId: Long, userId: Long, favorited: Boolean) =
             RealTimeUpdatePublishing(
                 RTU.PHARMACY_USER_FAVORITED, RealTimeUpdatePharmacyUserFavoritedPublishingData(
                     pharmacyId = pharmacyId,
+                    userId = userId,
                     favorited = favorited
                 )
             )
@@ -158,13 +169,12 @@ data class RealTimeUpdateNewPharmacyPublishingData(
     var pharmacyId: Long,
     val name: String,
     val location: Location,
-    val pictureUrl: String,
-    val globalRating: Double?,
-    val numberOfRatings: List<Int>
+    val pictureUrl: String
 ) : RealTimeUpdatePublishingData
 
 data class RealTimeUpdatePharmacyUserRatingPublishingData(
     val pharmacyId: Long,
+    val userId: Long,
     val userRating: Int
 ) : RealTimeUpdatePublishingData
 
@@ -176,11 +186,13 @@ data class RealTimeUpdatePharmacyGlobalRatingPublishingData(
 
 data class RealTimeUpdatePharmacyUserFlaggedPublishingData(
     var pharmacyId: Long,
+    val userId: Long,
     val flagged: Boolean
 ) : RealTimeUpdatePublishingData
 
 data class RealTimeUpdatePharmacyUserFavoritedPublishingData(
     var pharmacyId: Long,
+    val userId: Long,
     val favorited: Boolean
 ) : RealTimeUpdatePublishingData
 
@@ -216,15 +228,94 @@ data class RealTimeUpdateSubscriptionDto(
     val data: String
 )
 
+data class RealTimeUpdateSubscription(
+    val type: RTU,
+    val data: RealTimeUpdateSubscriptionData
+) {
+    fun toDto(): RealTimeUpdateSubscriptionDto {
+        return RealTimeUpdateSubscriptionDto(
+            type.type,
+            Gson().toJson(data)
+        )
+    }
+
+    companion object {
+
+        fun newPharmacies() =
+            RealTimeUpdateSubscription(
+                RTU.NEW_PHARMACY, RealTimeUpdateNewPharmaciesSubscriptionData()
+            )
+
+        fun pharmacyUserRating(pharmacyId: Long) =
+            RealTimeUpdateSubscription(
+                RTU.PHARMACY_USER_RATING, RealTimeUpdatePharmacyUserRatingSubscriptionData(
+                    pharmacyId = pharmacyId
+                )
+            )
+
+        fun pharmacyGlobalRating(pharmacyId: Long) =
+            RealTimeUpdateSubscription(
+                RTU.PHARMACY_GLOBAL_RATING, RealTimeUpdatePharmacyGlobalRatingSubscriptionData(
+                    pharmacyId = pharmacyId
+                )
+            )
+
+        fun pharmacyUserFlagged(pharmacyId: Long) =
+            RealTimeUpdateSubscription(
+                RTU.PHARMACY_USER_FLAGGED, RealTimeUpdatePharmacyUserFlaggedSubscriptionData(
+                    pharmacyId = pharmacyId
+                )
+            )
+
+        fun pharmacyUserFavorited(pharmacyId: Long) =
+            RealTimeUpdateSubscription(
+                RTU.PHARMACY_USER_FAVORITED, RealTimeUpdatePharmacyUserFavoritedSubscriptionData(
+                    pharmacyId = pharmacyId
+                )
+            )
+
+        fun pharmacyMedicineStock(pharmacyId: Long, medicineId: Long) =
+            RealTimeUpdateSubscription(
+                RTU.PHARMACY_MEDICINE_STOCK, RealTimeUpdatePharmacyMedicineStockSubscriptionData(
+                    pharmacyId = pharmacyId,
+                    medicineId = medicineId
+                )
+            )
+
+        /*fun medicineNotification(userId: Long, pharmacyId: Long, medicineId: Long) =
+            RealTimeUpdateSubscription(
+                RTU.MEDICINE_NOTIFICATION, RealTimeUpdateMedicineNotificationSubscriptionData(
+                    userId = userId,
+                    pharmacyId = pharmacyId,
+                    medicineId = medicineId
+                )
+            )*/
+    }
+}
+
 interface RealTimeUpdateSubscriptionData
+
+class RealTimeUpdateNewPharmaciesSubscriptionData : RealTimeUpdateSubscriptionData
+
+data class RealTimeUpdatePharmacyUserRatingSubscriptionData(
+    val pharmacyId: Long
+) : RealTimeUpdateSubscriptionData
+
+data class RealTimeUpdatePharmacyGlobalRatingSubscriptionData(
+    val pharmacyId: Long
+) : RealTimeUpdateSubscriptionData
+
+data class RealTimeUpdatePharmacyUserFlaggedSubscriptionData(
+    val pharmacyId: Long
+) : RealTimeUpdateSubscriptionData
+
+data class RealTimeUpdatePharmacyUserFavoritedSubscriptionData(
+    val pharmacyId: Long
+) : RealTimeUpdateSubscriptionData
 
 data class RealTimeUpdatePharmacyMedicineStockSubscriptionData(
     val pharmacyId: Long,
     val medicineId: Long
-) : RealTimeUpdateSubscriptionData
-
-data class RealTimeUpdatePharmacySubscriptionData(
-    val pharmacyId: Long
 ) : RealTimeUpdateSubscriptionData
 
 /*

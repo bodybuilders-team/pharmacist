@@ -1,7 +1,12 @@
 package pt.ulisboa.ist.pharmacist.http.controllers
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.springframework.stereotype.Component
+import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.WebSocketSession
 import pt.ulisboa.ist.pharmacist.domain.users.User
 import pt.ulisboa.ist.pharmacist.http.pipeline.authentication.AuthenticationInterceptor.Companion.AUTHORIZATION_HEADER
@@ -23,16 +28,27 @@ class RealTimeUpdatesWebSocketHandler(
     private val realTimeUpdatesService: RealTimeUpdatesService,
     private val usersRepository: UsersRepository,
     private val hashingUtils: HashingUtils
-) : JsonWebSocketHandler<RealTimeUpdateSubscriptionDto>(RealTimeUpdateSubscriptionDto::class.java) {
+) : JsonWebSocketHandler<Array<RealTimeUpdateSubscriptionDto>>(Array<RealTimeUpdateSubscriptionDto>::class.java) {
+
+    val coroutineScope = CoroutineScope(Dispatchers.Default)
+
+    lateinit var sendUpdatesJob: Job
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val user = authenticate(session)
 
-        runBlocking {
+        println("Websocket - User authenticated. Connection established.")
+
+        sendUpdatesJob = coroutineScope.launch {
             realTimeUpdatesService.sendToSession(user, session) { realTimeUpdate ->
+                if (!session.isOpen) {
+                    this.cancel()
+                    return@sendToSession
+                }
+
                 sendObject(session, realTimeUpdate)
             }
-            //            while (true) {
+//            while (true) {
 //                sendObject(
 //                    session, MedicineNotification(
 //                        MedicineStock( Medicine(
@@ -49,10 +65,16 @@ class RealTimeUpdatesWebSocketHandler(
         }
     }
 
-    override fun handleObject(session: WebSocketSession, obj: RealTimeUpdateSubscriptionDto) {
+    override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
+        sendUpdatesJob.cancel()
+    }
+
+    override fun handleObject(session: WebSocketSession, obj: Array<RealTimeUpdateSubscriptionDto>) {
         val user = authenticate(session)
 
-        realTimeUpdatesService.addSubscription(user, session, obj)
+        obj.forEach { objElem ->
+            realTimeUpdatesService.addSubscription(user, session, objElem)
+        }
     }
 
     private fun authenticate(session: WebSocketSession): User {

@@ -25,7 +25,8 @@ class RealTimeUpdatesService(
 ) {
     private var webSocket: WebSocket? = null
 
-    private val updateFlow = MutableSharedFlow<RealTimeUpdatePublishingDto>()
+    private val updateSubscribeFlow = MutableSharedFlow<Array<RealTimeUpdateSubscription>>()
+    private val updatePublishFlow = MutableSharedFlow<RealTimeUpdatePublishingDto>()
 
     /**
      * Starts the real time updates service, opening the web socket and listening for
@@ -36,13 +37,13 @@ class RealTimeUpdatesService(
             Log.d(TAG, "Real time updates service started")
             if (sessionManager.isLoggedIn()) {
                 Log.d(TAG, "Already logged in. Starting WebSocket listener flow")
-                getWebSocketListenerFlow().collect(updateFlow::emit)
+                getWebSocketListenerFlow().collect(updatePublishFlow::emit)
             }
             Log.d(TAG, "Listening to logInFlow")
             sessionManager.logInFlow.collect { loggedIn ->
                 if (loggedIn && sessionManager.isLoggedIn()) {
                     Log.d(TAG, "Became logged in (logInFlow). Starting WebSocket listener flow")
-                    getWebSocketListenerFlow().collect(updateFlow::emit)
+                    getWebSocketListenerFlow().collect(updatePublishFlow::emit)
                 }
             }
         }
@@ -103,10 +104,27 @@ class RealTimeUpdatesService(
             }
         }
 
+        launch {
+            updateSubscribeFlow.collect { subscriptions ->
+                Log.d(TAG, "Sending subscriptions to WebSocket")
+                val json = Gson().toJson(subscriptions.map { it.toDto() })
+                val sent = webSocket?.send(json)
+                Log.d(TAG, "Successfully sent subscriptions to WebSocket: $sent")
+            }
+        }
+
         awaitClose {
             webSocket?.close(1000, null)
             Log.d(TAG, "WebSocket channel closed")
         }
+    }
+
+    suspend fun subscribeToUpdates(subscriptions: List<RealTimeUpdateSubscription>) {
+        subscribeToUpdates(subscriptions.toTypedArray())
+    }
+
+    suspend fun subscribeToUpdates(subscriptions: Array<RealTimeUpdateSubscription>) {
+        updateSubscribeFlow.emit(subscriptions)
     }
 
 
@@ -119,41 +137,43 @@ class RealTimeUpdatesService(
         onMedicineStock: (RealTimeUpdatePharmacyMedicineStockPublishingData) -> Unit = {},
         onMedicineNotification: (RealTimeUpdateMedicineNotificationPublishingData) -> Unit = {}
     ) {
-        updateFlow.collect { realTimeUpdateDto ->
+        updatePublishFlow.collect { realTimeUpdateDto ->
+            // Log.d(TAG, "Received real time update: ${realTimeUpdateDto.type}")
+
             when (val realTimeUpdateClass = RTU.getType(realTimeUpdateDto.type)) {
-                RTU.NEW_PHARMACY -> onNewPharmacy(realTimeUpdateClass.parseJson(realTimeUpdateDto.data))
+                RTU.NEW_PHARMACY -> onNewPharmacy(realTimeUpdateClass.parsePublishJson(realTimeUpdateDto.data))
                 RTU.PHARMACY_USER_RATING -> onPharmacyUserRating(
-                    realTimeUpdateClass.parseJson(
+                    realTimeUpdateClass.parsePublishJson(
                         realTimeUpdateDto.data
                     )
                 )
 
                 RTU.PHARMACY_GLOBAL_RATING -> onPharmacyGlobalRating(
-                    realTimeUpdateClass.parseJson(
+                    realTimeUpdateClass.parsePublishJson(
                         realTimeUpdateDto.data
                     )
                 )
 
                 RTU.PHARMACY_USER_FLAGGED -> onPharmacyUserFlagged(
-                    realTimeUpdateClass.parseJson(
+                    realTimeUpdateClass.parsePublishJson(
                         realTimeUpdateDto.data
                     )
                 )
 
                 RTU.PHARMACY_USER_FAVORITED -> onPharmacyUserFavorited(
-                    realTimeUpdateClass.parseJson(
+                    realTimeUpdateClass.parsePublishJson(
                         realTimeUpdateDto.data
                     )
                 )
 
                 RTU.PHARMACY_MEDICINE_STOCK -> onMedicineStock(
-                    realTimeUpdateClass.parseJson(
+                    realTimeUpdateClass.parsePublishJson(
                         realTimeUpdateDto.data
                     )
                 )
 
                 RTU.MEDICINE_NOTIFICATION -> onMedicineNotification(
-                    realTimeUpdateClass.parseJson(
+                    realTimeUpdateClass.parsePublishJson(
                         realTimeUpdateDto.data
                     )
                 )

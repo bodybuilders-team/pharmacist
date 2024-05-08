@@ -30,6 +30,7 @@ import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
@@ -91,8 +92,8 @@ class PharmacyMapViewModel(
                             name = newPharmacy.name,
                             location = newPharmacy.location,
                             pictureUrl = newPharmacy.pictureUrl,
-                            globalRating = newPharmacy.globalRating,
-                            numberOfRatings = newPharmacy.numberOfRatings.toTypedArray()
+                            globalRating = null,
+                            numberOfRatings = emptyArray()
                         ),
                         userRating = null,
                         userMarkedAsFavorite = false,
@@ -155,6 +156,17 @@ class PharmacyMapViewModel(
             result.data.pharmacies.forEach {
                 pharmacies[it.pharmacy.pharmacyId] = it
             }
+            realTimeUpdatesService.subscribeToUpdates(
+                listOf(RealTimeUpdateSubscription.newPharmacies()) +
+                        result.data.pharmacies.flatMap {
+                            listOf(
+                                RealTimeUpdateSubscription.pharmacyUserRating(it.pharmacy.pharmacyId),
+                                RealTimeUpdateSubscription.pharmacyGlobalRating(it.pharmacy.pharmacyId),
+                                RealTimeUpdateSubscription.pharmacyUserFlagged(it.pharmacy.pharmacyId),
+                                RealTimeUpdateSubscription.pharmacyUserFavorited(it.pharmacy.pharmacyId)
+                            )
+                        }
+            )
         }
 
         state = PharmacyMapState.LOADED

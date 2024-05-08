@@ -27,7 +27,7 @@ class MedicineNotificationsBackgroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        runNewBlocking {
+        runNewBlocking { // TODO should we make non blocking?
             getUpdates()
         }
 
