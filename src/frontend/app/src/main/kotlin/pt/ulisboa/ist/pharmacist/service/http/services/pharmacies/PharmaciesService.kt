@@ -41,6 +41,7 @@ class PharmaciesService(
     suspend fun getPharmacies(
         medicineId: Long? = null,
         location: Location? = null,
+        orderBy: String? = null,
         limit: Long? = null,
         offset: Long? = null
     ): APIResult<GetPharmaciesOutputModel> {
@@ -48,6 +49,7 @@ class PharmaciesService(
             link = Uris.pharmacies(
                 medicineId = medicineId,
                 location = location,
+                orderBy = orderBy,
                 limit = limit,
                 offset = offset
             ),

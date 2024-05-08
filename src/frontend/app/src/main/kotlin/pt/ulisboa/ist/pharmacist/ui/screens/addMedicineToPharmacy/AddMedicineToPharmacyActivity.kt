@@ -67,6 +67,7 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
                         if (added) {
                             val intent = Intent()
                             intent.putExtra(MEDICINE_ID, medicineId)
+                            intent.putExtra("quantity", stock)
                             setResult(RESULT_OK, intent)
                             finish()
                         }
@@ -90,14 +91,15 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
             }
         }
 
-        fun registerForResult(activity: ComponentActivity, callback: (Long?) -> Unit) =
+        fun registerForResult(activity: ComponentActivity, callback: (Long?, Long?) -> Unit) =
             activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode != RESULT_OK) callback(null)
+                if (result.resultCode != RESULT_OK) callback(null, null)
 
                 val resultIntent = result.data ?: return@registerForActivityResult
                 val medicineId = resultIntent.getLongExtra(MEDICINE_ID, -1)
+                val quantity = resultIntent.getLongExtra("quantity", 1)
 
-                callback(medicineId)
+                callback(medicineId, quantity)
             }
     }
 

@@ -198,7 +198,7 @@ fun MapScreen(
                     )
             }
 
-            if (addingPharmacy && !pickingOnMap)
+            if (addingPharmacy && !pickingOnMap && hasCameraPermission_)
                 AddPharmacyWindow(
                     modifier = Modifier.align(if (isLandscape) Alignment.TopStart else Alignment.TopCenter),
                     onPickOnMap = {

@@ -36,12 +36,19 @@ object Uris {
                 if (location != null) "&location=$location" else "" +
                         "&limit=$limit&offset=$offset"
 
-    fun pharmacies(medicineId: Long?, location: Location?, limit: Long?, offset: Long?): String =
+    fun pharmacies(
+        medicineId: Long?,
+        location: Location?,
+        orderBy: String?,
+        limit: Long?,
+        offset: Long?
+    ): String =
         "$PHARMACIES?" +
                 if (medicineId != null) "medicineId=$medicineId" else "" +
                         if (location != null) "&location=$location" else "" +
-                                if (limit != null) "&limit=$limit" else "" +
-                                        if (offset != null) "&offset=$offset" else ""
+                                if (orderBy != null) "&orderBy=$orderBy" else "" +
+                                        if (limit != null) "&limit=$limit" else "" +
+                                                if (offset != null) "&offset=$offset" else ""
 
     fun pharmacyById(pharmacyId: Long) =
         PHARMACIES_GET_BY_ID.replace("{pid}", pharmacyId.toString())

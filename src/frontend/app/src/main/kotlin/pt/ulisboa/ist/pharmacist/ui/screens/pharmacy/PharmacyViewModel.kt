@@ -215,8 +215,15 @@ class PharmacyViewModel(
         }
     }
 
-    fun addMedicine(medicineId: Long) {
-        // TODO: Implement
+    fun onMedicineAdded(medicineId: Long, quantity: Long) {
+        // TODO: This does not work. This paging is sus
+        pharmacy?.let {
+            modificationEvents.value += StockModificationEvent(
+                medicineId,
+                MedicineStockOperation.ADD,
+                quantity
+            )
+        }
     }
 
 

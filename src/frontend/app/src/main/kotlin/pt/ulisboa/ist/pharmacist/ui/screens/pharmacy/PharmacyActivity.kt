@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
@@ -31,9 +32,11 @@ class PharmacyActivity : PharmacistActivity() {
     }
 
     private val addPharmacyResultLauncher = AddMedicineToPharmacyActivity
-        .registerForResult(this) { medicineId ->
-            if (medicineId != null)
-                viewModel.addMedicine(medicineId)
+        .registerForResult(this) { medicineId, quantity ->
+            if (medicineId != null && quantity != null) {
+                Log.d("PharmacyActivity", "Medicine added: $medicineId, $quantity")
+                viewModel.onMedicineAdded(medicineId, quantity)
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,12 +50,6 @@ class PharmacyActivity : PharmacistActivity() {
             PharmacyScreen(
                 pharmacy = viewModel.pharmacy,
                 loadingState = viewModel.loadingState,
-                onNavigateToPharmacyClick = { location ->
-                    val gmmIntentUri =
-                        Uri.parse("geo:0,0?q=${location.lat},${location.lon}(${viewModel.pharmacy?.pharmacy?.name})")
-                    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                    startActivity(mapIntent)
-                },
                 medicinesState = viewModel.medicinesState,
                 onMedicineClick = { medicineId ->
                     MedicineActivity.navigate(this, medicineId)

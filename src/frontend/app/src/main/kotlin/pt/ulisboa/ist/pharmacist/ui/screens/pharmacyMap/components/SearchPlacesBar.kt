@@ -3,6 +3,7 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,7 +54,8 @@ fun SearchPlacesBar(
                 .fillMaxWidth()
                 .heightIn(0.dp, 600.dp)
                 .background(
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = if (isSystemInDarkTheme()) Color.Black.copy(alpha = 0.8f)
+                    else Color.White.copy(alpha = 0.8f),
                     shape = RoundedCornerShape(8.dp),
                 )
         ) {

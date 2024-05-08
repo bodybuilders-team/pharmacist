@@ -141,7 +141,12 @@ class RealTimeUpdatesService(
             // Log.d(TAG, "Received real time update: ${realTimeUpdateDto.type}")
 
             when (val realTimeUpdateClass = RTU.getType(realTimeUpdateDto.type)) {
-                RTU.NEW_PHARMACY -> onNewPharmacy(realTimeUpdateClass.parsePublishJson(realTimeUpdateDto.data))
+                RTU.NEW_PHARMACY -> onNewPharmacy(
+                    realTimeUpdateClass.parsePublishJson(
+                        realTimeUpdateDto.data
+                    )
+                )
+
                 RTU.PHARMACY_USER_RATING -> onPharmacyUserRating(
                     realTimeUpdateClass.parsePublishJson(
                         realTimeUpdateDto.data

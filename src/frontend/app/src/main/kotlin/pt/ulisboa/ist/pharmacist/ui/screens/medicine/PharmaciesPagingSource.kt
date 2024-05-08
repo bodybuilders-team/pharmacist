@@ -29,6 +29,7 @@ class PharmaciesPagingSource(
         val result = pharmaciesService.getPharmacies(
             medicineId = mid,
             location = location,
+            orderBy = "distance", // TODO: Check if the results are sorted by distance
             limit = params.loadSize.toLong(),
             offset = currentOffset.toLong()
         )

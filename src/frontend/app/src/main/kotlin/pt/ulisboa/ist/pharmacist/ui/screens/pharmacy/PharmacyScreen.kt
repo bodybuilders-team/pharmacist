@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,7 +42,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
@@ -62,7 +62,6 @@ import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 fun PharmacyScreen(
     pharmacy: PharmacyWithUserDataModel?,
     loadingState: PharmacyViewModel.PharmacyLoadingState,
-    onNavigateToPharmacyClick: (Location) -> Unit,
     medicinesState: Flow<PagingData<MedicineStockModel>>,
     onMedicineClick: (Long) -> Unit,
     onAddMedicineClick: () -> Unit,
@@ -100,7 +99,6 @@ fun PharmacyScreen(
                     else
                         GoogleMap(
                             modifier = Modifier.fillMaxSize(),
-                            //onMapClick = { onNavigateToPharmacyClick(pharmacy.pharmacy.location) },
                             cameraPositionState = CameraPositionState(
                                 position = CameraPosition(
                                     pharmacy.pharmacy.location.toLatLng(),
@@ -122,7 +120,10 @@ fun PharmacyScreen(
                             )
                         }
                 }
-                HorizontalPagerIndicator(pagerState = pagerState)
+                HorizontalPagerIndicator(
+                    pagerState = pagerState,
+                    activeColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                )
 
                 Text(
                     text = pharmacy.pharmacy.name,
@@ -136,7 +137,7 @@ fun PharmacyScreen(
                             tint = if (pharmacy.userMarkedAsFavorite) Favorite else MaterialTheme.colorScheme.primary
                         )
                     }
-                    IconButton(onClick = onReportClick) {
+                    IconButton(onClick = onReportClick) { // TODO: After report, show a dialog to confirm the report and then return to the pharmacy map
                         Icon(
                             if (pharmacy.userFlagged) Icons.Rounded.Flag else Icons.Rounded.OutlinedFlag,
                             contentDescription = stringResource(R.string.report_pharmacy),
