@@ -65,6 +65,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapViewModel
 fun MapScreen(
     hasCameraPermission: Boolean,
     followMyLocation: Boolean,
+    zoomedInMyLocation: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
     pharmacies: SnapshotStateMap<Long, PharmacyWithUserDataModel>,
@@ -139,12 +140,16 @@ fun MapScreen(
                 )
             } else {
                 GoogleMap(
+                    mergeDescendants = zoomedInMyLocation,
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
                     uiSettings = MapUiSettings(
                         zoomControlsEnabled = false,
-                        scrollGesturesEnabled = !addingPharmacy || pickingOnMap,
-                        myLocationButtonEnabled = !addingPharmacy || pickingOnMap
+                        scrollGesturesEnabled = zoomedInMyLocation && (!addingPharmacy || pickingOnMap),
+                        myLocationButtonEnabled = zoomedInMyLocation && (!addingPharmacy || pickingOnMap),
+                        rotationGesturesEnabled = zoomedInMyLocation,
+                        tiltGesturesEnabled = zoomedInMyLocation,
+                        zoomGesturesEnabled = zoomedInMyLocation
                     ),
                     properties = mapProperties,
                     onMyLocationButtonClick = {

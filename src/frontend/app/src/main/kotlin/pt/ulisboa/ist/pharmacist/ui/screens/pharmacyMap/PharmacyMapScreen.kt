@@ -46,6 +46,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScr
 @Composable
 fun PharmacyMapScreen(
     followMyLocation: Boolean,
+    zoomedInMyLocation: Boolean,
     hasLocationPermission: Boolean,
     hasCameraPermission: Boolean,
     mapProperties: MapProperties,
@@ -74,6 +75,7 @@ fun PharmacyMapScreen(
                 MapScreen(
                     hasCameraPermission = hasCameraPermission,
                     followMyLocation = followMyLocation,
+                    zoomedInMyLocation = zoomedInMyLocation,
                     mapProperties = mapProperties,
                     cameraPositionState = cameraPositionState,
                     pharmacies = pharmacies,

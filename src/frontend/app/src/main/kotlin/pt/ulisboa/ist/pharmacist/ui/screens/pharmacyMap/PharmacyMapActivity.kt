@@ -74,6 +74,7 @@ class PharmacyMapActivity : PharmacistActivity() {
         setContent {
             PharmacyMapScreen(
                 followMyLocation = viewModel.followMyLocation,
+                zoomedInMyLocation = viewModel.zoomedInMyLocation,
                 hasLocationPermission = viewModel.hasLocationPermission,
                 hasCameraPermission = viewModel.hasCameraPermission,
                 mapProperties = viewModel.mapProperties,
@@ -115,6 +116,4 @@ class PharmacyMapActivity : PharmacistActivity() {
         viewModel.hasCameraPermission = hasCameraPermission()
         viewModel.loadPharmacyList()
     }
-
-
 }

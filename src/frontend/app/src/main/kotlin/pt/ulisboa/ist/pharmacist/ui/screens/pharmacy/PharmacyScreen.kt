@@ -9,15 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.Medication
 import androidx.compose.material.icons.rounded.OutlinedFlag
 import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +45,7 @@ import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAva
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyRating
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
@@ -170,20 +169,12 @@ fun PharmacyScreen(
                         .padding(8.dp)
                 )
 
-                Button(
-                    onClick = onAddMedicineClick,
-                    modifier = Modifier,
-                    shape = CircleShape,
-                ) {
-                    Icon(
-                        Icons.Rounded.Add,
-                        contentDescription = stringResource(R.string.add_medicine)
-                    )
-                    Text(
-                        text = stringResource(R.string.add_medicine),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
+                IconTextButton(
+                    imageVector = Icons.Rounded.Medication,
+                    text = stringResource(R.string.add_medicine),
+                    contentDescription = stringResource(R.string.add_medicine),
+                    onClick = onAddMedicineClick
+                )
 
                 LazyColumn(
                     modifier = Modifier
@@ -197,7 +188,8 @@ fun PharmacyScreen(
                             stock,
                             onMedicineClick = onMedicineClick,
                             onAddStockClick = onAddStockClick,
-                            onRemoveStockClick = onRemoveStockClick
+                            onRemoveStockClick = onRemoveStockClick,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }

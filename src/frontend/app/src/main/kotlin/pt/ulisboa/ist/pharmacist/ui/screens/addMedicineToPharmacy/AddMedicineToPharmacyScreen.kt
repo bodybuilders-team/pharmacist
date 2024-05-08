@@ -5,7 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddCircleOutline
+import androidx.compose.material.icons.rounded.Medication
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -65,7 +66,9 @@ fun AddMedicineToPharmacyScreen(
 
             if (selectedMedicine != null) {
                 PharmacyMedicineEntry(
-                    modifier = Modifier.fillMaxWidth(0.8f),
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .align(Alignment.CenterHorizontally),
                     medicine = selectedMedicine,
                     stock = stock,
                     onAddStockClick = {
@@ -78,25 +81,26 @@ fun AddMedicineToPharmacyScreen(
             }
 
             IconTextButton(
-                onClick = createMedicine,
-                imageVector = Icons.Rounded.Add,
-                text = stringResource(R.string.create_medicine),
-                contentDescription = stringResource(R.string.create_medicine),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
-
-            IconTextButton(
                 onClick = {
                     if (selectedMedicine != null)
                         addMedicineToPharmacy(selectedMedicine.medicineId, stock)
                 },
                 enabled = selectedMedicine != null,
-                imageVector = Icons.Rounded.Add,
+                imageVector = Icons.Rounded.AddCircleOutline,
                 text = stringResource(R.string.add_medicine_to_pharmacy),
                 contentDescription = stringResource(R.string.add_medicine_to_pharmacy),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
+            )
+
+            IconTextButton(
+                onClick = createMedicine,
+                imageVector = Icons.Rounded.Medication,
+                text = stringResource(R.string.create_medicine),
+                contentDescription = stringResource(R.string.create_medicine),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 8.dp)
             )
         }
     }

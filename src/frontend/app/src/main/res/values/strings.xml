@@ -95,7 +95,7 @@
     <string name="pharmacy_rating_text">Rating:</string>
     <string name="continue_as_guest">Continue as guest</string>
     <string name="available_medicines">Available Medicines</string>
-    <string name="create_medicine">Create Medicine</string>
+    <string name="create_medicine">Create New Medicine</string>
     <string name="add_medicine_to_pharmacy">Add Medicine To Pharmacy</string>
     <string name="medicines_available">medicines available</string>
     <string name="share">Share</string>

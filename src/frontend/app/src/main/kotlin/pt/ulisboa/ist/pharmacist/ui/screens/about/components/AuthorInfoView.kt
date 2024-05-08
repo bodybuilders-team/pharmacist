@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,52 +50,55 @@ fun AuthorInfoView(
     onSendEmail: (String) -> Unit,
     onOpenUrl: (Uri) -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(DEV_INFO_MAX_WIDTH_FACTOR),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(author.imageId),
-            contentDescription = stringResource(R.string.about_authorImage_contentDescription),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .clip(CircleShape)
-                .size(IMAGE_SIZE.dp)
-        )
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .padding(DEV_INFO_PADDING.dp)
-                .fillMaxWidth()
-                .height(DEV_INFO_HEIGHT.dp)
-                .clip(RoundedCornerShape(DEV_INFO_CORNER_RADIUS.dp))
-                .background(Color.LightGray)
+    OutlinedCard(modifier = Modifier.padding(bottom = 8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(DEV_INFO_MAX_WIDTH_FACTOR),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = author.name,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                color = Color.Black
+            Image(
+                painter = painterResource(author.imageId),
+                contentDescription = stringResource(R.string.about_authorImage_contentDescription),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(start = DEV_INFO_PADDING.dp)
+                    .clip(CircleShape)
+                    .size(IMAGE_SIZE.dp)
             )
 
-            Row {
-                Image(
-                    painter = painterResource(R.drawable.ic_github_dark),
-                    contentDescription = stringResource(R.string.about_githubLogo_contentDescription),
-                    modifier = Modifier
-                        .clickable { onOpenUrl(author.githubLink) }
-                        .padding(IMAGE_PADDING.dp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(DEV_INFO_PADDING.dp)
+                    .fillMaxWidth()
+                    .height(DEV_INFO_HEIGHT.dp)
+                    .clip(RoundedCornerShape(DEV_INFO_CORNER_RADIUS.dp))
+                    .background(Color.LightGray)
+            ) {
+                Text(
+                    text = author.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
                 )
 
-                Image(
-                    painter = painterResource(R.drawable.ic_email),
-                    contentDescription = stringResource(R.string.about_emailIcon_contentDescription),
-                    modifier = Modifier
-                        .clickable { onSendEmail(author.email) }
-                        .padding(IMAGE_PADDING.dp)
-                )
+                Row {
+                    Image(
+                        painter = painterResource(R.drawable.ic_github_dark),
+                        contentDescription = stringResource(R.string.about_githubLogo_contentDescription),
+                        modifier = Modifier
+                            .clickable { onOpenUrl(author.githubLink) }
+                            .padding(IMAGE_PADDING.dp)
+                    )
+
+                    Image(
+                        painter = painterResource(R.drawable.ic_email),
+                        contentDescription = stringResource(R.string.about_emailIcon_contentDescription),
+                        modifier = Modifier
+                            .clickable { onSendEmail(author.email) }
+                            .padding(IMAGE_PADDING.dp)
+                    )
+                }
             }
         }
     }

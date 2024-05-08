@@ -68,7 +68,7 @@ class PharmacyMapViewModel(
         private set
 
     var followMyLocation by mutableStateOf(true)
-    private var zoomedInMyLocation by mutableStateOf(false)
+    var zoomedInMyLocation by mutableStateOf(false)
 
     val mapProperties by mutableStateOf(
         MapProperties(
@@ -194,14 +194,21 @@ class PharmacyMapViewModel(
                                     CameraPosition.fromLatLngZoom(latLng, DEFAULT_ZOOM)
                                 )
                             )
+                            Log.d(TAG, "Camera animation done")
                             if (!zoomedInMyLocation)
                                 zoomedInMyLocation = true
                             break
                         } catch (e: CancellationException) {
-                            Log.d(TAG, "Camera animation cancelled")
+                            Log.d(
+                                TAG,
+                                "Camera animation cancelled: followMyLocation: $followMyLocation, zoomedInMyLocation: $zoomedInMyLocation"
+                            )
                             throw e
                         } catch (e: Exception) {
-                            Log.d(TAG, "Camera animation failed")
+                            Log.d(
+                                TAG,
+                                "Camera animation failed: followMyLocation: $followMyLocation, zoomedInMyLocation: $zoomedInMyLocation"
+                            )
                         }
                     }
                 }
