@@ -17,6 +17,8 @@ import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.ModificationEvent.StockModificationEvent
@@ -35,6 +37,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyL
 class PharmacyViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager,
+    private val realTimeUpdatesService: RealTimeUpdatesService,
     pharmacyId: Long
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
     var loadingState by mutableStateOf(NOT_LOADED)
@@ -85,6 +88,31 @@ class PharmacyViewModel(
 
     val medicinesState get() = _medicinesState
 
+    fun listenForRealTimeUpdates() = viewModelScope.launch {
+        realTimeUpdatesService.listenForRealTimeUpdates(
+            onPharmacyUserRating = { pharmacyUserRatingData ->
+                pharmacy = pharmacy?.copy(userRating = pharmacyUserRatingData.userRating)
+            },
+            onPharmacyGlobalRating = { pharmacyGlobalRatingData ->
+                pharmacy = pharmacy?.let {
+                    it.copy(
+                        pharmacy = it.pharmacy.copy(
+                            globalRating = pharmacyGlobalRatingData.globalRating,
+                            numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
+                        )
+                    )
+                }
+            },
+            onPharmacyUserFlagged = { pharmacyUserFlaggedData ->
+                pharmacy = pharmacy?.copy(userFlagged = pharmacyUserFlaggedData.flagged)
+            },
+            onPharmacyUserFavorited = { pharmacyUserFavoritedData ->
+                pharmacy =
+                    pharmacy?.copy(userMarkedAsFavorite = pharmacyUserFavoritedData.favorited)
+            },
+        )
+    }
+
     /**
      * Loads the pharmacy with the given [pharmacyId].
      *
@@ -94,8 +122,17 @@ class PharmacyViewModel(
         loadingState = LOADING
 
         val result = pharmacistService.pharmaciesService.getPharmacyById(pharmacyId)
-        if (result.isSuccess())
+        if (result.isSuccess()) {
             pharmacy = result.data
+            realTimeUpdatesService.subscribeToUpdates(
+                listOf(
+                    RealTimeUpdateSubscription.pharmacyUserRating(pharmacyId),
+                    RealTimeUpdateSubscription.pharmacyGlobalRating(pharmacyId),
+                    RealTimeUpdateSubscription.pharmacyUserFlagged(pharmacyId),
+                    RealTimeUpdateSubscription.pharmacyUserFavorited(pharmacyId)
+                )
+            )
+        }
 
         loadingState = LOADED
     }

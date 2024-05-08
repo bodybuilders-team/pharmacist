@@ -109,7 +109,7 @@ class PharmacyMapViewModel(
                 pharmacies.compute(pharmacyGlobalRatingData.pharmacyId) { _, pharmacyWithUserData ->
                     pharmacyWithUserData?.copy(
                         pharmacy = pharmacyWithUserData.pharmacy.copy(
-                            globalRating = pharmacyGlobalRatingData.globalRatingSum,
+                            globalRating = pharmacyGlobalRatingData.globalRating,
                             numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
                         )
                     )

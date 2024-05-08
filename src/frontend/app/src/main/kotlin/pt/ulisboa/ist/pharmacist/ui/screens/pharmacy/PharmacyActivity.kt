@@ -25,6 +25,7 @@ class PharmacyActivity : PharmacistActivity() {
         PharmacyViewModel(
             dependenciesContainer.pharmacistService,
             dependenciesContainer.sessionManager,
+            dependenciesContainer.realTimeUpdatesService,
             pharmacyId
         )
     }
@@ -38,6 +39,7 @@ class PharmacyActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewModel.listenForRealTimeUpdates()
         if (viewModel.loadingState == PharmacyViewModel.PharmacyLoadingState.NOT_LOADED)
             viewModel.loadPharmacy(pharmacyId)
 

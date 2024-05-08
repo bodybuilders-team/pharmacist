@@ -3,6 +3,7 @@ package pt.ulisboa.ist.pharmacist.service.users
 import org.springframework.stereotype.Service
 import pt.ulisboa.ist.pharmacist.domain.users.AccessToken
 import pt.ulisboa.ist.pharmacist.domain.users.User
+import pt.ulisboa.ist.pharmacist.http.controllers.RealTimeUpdatePublishing
 import pt.ulisboa.ist.pharmacist.repository.medicines.MedicinesRepository
 import pt.ulisboa.ist.pharmacist.repository.pharmacies.PharmaciesRepository
 import pt.ulisboa.ist.pharmacist.repository.users.UsersRepository
@@ -10,6 +11,7 @@ import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidLoginException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidPasswordException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
+import pt.ulisboa.ist.pharmacist.service.medicines.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.service.users.dtos.UserDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.login.LoginOutputDto
 import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
@@ -28,6 +30,7 @@ class UsersServiceImpl(
     private val usersRepository: UsersRepository,
     private val pharmaciesRepository: PharmaciesRepository,
     private val medicinesRepository: MedicinesRepository,
+    private val realTimeUpdatesService: RealTimeUpdatesService,
     private val hashingUtils: HashingUtils,
 ) : UsersService {
 
@@ -113,24 +116,56 @@ class UsersServiceImpl(
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
         usersRepository.addFavoritePharmacy(userId = user.userId, pharmacyId = pharmacyId)
+
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.pharmacyUserFavorited(
+                pharmacyId = pharmacyId,
+                userId = user.userId,
+                favorited = true
+            )
+        )
     }
 
     override fun removeFavoritePharmacy(user: User, pharmacyId: Long) {
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
         usersRepository.removeFavoritePharmacy(userId = user.userId, pharmacyId = pharmacyId)
+
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.pharmacyUserFavorited(
+                pharmacyId = pharmacyId,
+                userId = user.userId,
+                favorited = false
+            )
+        )
     }
 
     override fun flagPharmacy(user: User, pharmacyId: Long) {
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
         usersRepository.flagPharmacy(userId = user.userId, pharmacyId = pharmacyId)
+
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.pharmacyUserFlagged(
+                pharmacyId = pharmacyId,
+                userId = user.userId,
+                flagged = true
+            )
+        )
     }
 
     override fun unflagPharmacy(user: User, pharmacyId: Long) {
         pharmaciesRepository.findById(pharmacyId) ?: throw NotFoundException("Pharmacy with id $pharmacyId not found")
 
         usersRepository.unflagPharmacy(userId = user.userId, pharmacyId = pharmacyId)
+
+        realTimeUpdatesService.publishUpdate(
+            RealTimeUpdatePublishing.pharmacyUserFlagged(
+                pharmacyId = pharmacyId,
+                userId = user.userId,
+                flagged = false
+            )
+        )
     }
 
     override fun addMedicineNotification(user: User, medicineId: Long) {

@@ -197,12 +197,12 @@ class PharmaciesServiceImpl(
 
         user.ratings[pharmacyId] = rating
 
-        val newGlobalRatingSum: Double
+        val newGlobalRating: Double
         val newNumberOfRatings: List<Int>
         synchronized(pharmacy) {
             pharmacy.globalRatingSum += rating
             pharmacy.numberOfRatings[rating - 1]++
-            newGlobalRatingSum = pharmacy.globalRatingSum
+            newGlobalRating = pharmacy.globalRating!!
             newNumberOfRatings = pharmacy.numberOfRatings.toList()
         }
         realTimeUpdatesService.publishUpdate(
@@ -215,7 +215,7 @@ class PharmaciesServiceImpl(
         realTimeUpdatesService.publishUpdate(
             RealTimeUpdatePublishing.pharmacyGlobalRating(
                 pharmacyId = pharmacyId,
-                globalRatingSum = newGlobalRatingSum,
+                globalRating = newGlobalRating,
                 numberOfRatings = newNumberOfRatings
             )
         )

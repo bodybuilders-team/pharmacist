@@ -112,13 +112,13 @@ data class RealTimeUpdatePublishing(
 
         fun pharmacyGlobalRating(
             pharmacyId: Long,
-            globalRatingSum: Double,
+            globalRating: Double,
             numberOfRatings: List<Int>
         ) =
             RealTimeUpdatePublishing(
                 RTU.PHARMACY_GLOBAL_RATING, RealTimeUpdatePharmacyGlobalRatingPublishingData(
                     pharmacyId = pharmacyId,
-                    globalRatingSum = globalRatingSum,
+                    globalRating = globalRating,
                     numberOfRatings = numberOfRatings
                 )
             )
@@ -180,7 +180,7 @@ data class RealTimeUpdatePharmacyUserRatingPublishingData(
 
 data class RealTimeUpdatePharmacyGlobalRatingPublishingData(
     val pharmacyId: Long,
-    val globalRatingSum: Double,
+    val globalRating: Double,
     val numberOfRatings: List<Int>
 ) : RealTimeUpdatePublishingData
 
