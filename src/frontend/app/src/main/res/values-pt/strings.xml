@@ -112,4 +112,6 @@
     <string name="pharmacyMap_searchPlaces_text">Procurar lugares</string>
     <string name="choose_this_location">Escolher esta localização</string>
     <string name="pick_location">Escolher Localização</string>
+    <string name="medicine_available">medicamento disponível</string>
+    <string name="medicine_availableIn1Pharmacy_text">Disponível em 1 farmácia</string>
 </resources>

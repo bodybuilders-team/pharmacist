@@ -115,10 +115,11 @@ fun MedicineScreen(
                 }
 
                 Text(
-                    text = stringResource(
+                    text = if (pharmacies.itemCount != 1) stringResource(
                         R.string.medicine_availableInXPharmacies_text,
                         pharmacies.itemCount
-                    ),
+                    ) else
+                        stringResource(R.string.medicine_availableIn1Pharmacy_text),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(8.dp)
