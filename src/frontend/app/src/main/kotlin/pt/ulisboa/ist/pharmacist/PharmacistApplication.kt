@@ -84,7 +84,7 @@ class PharmacistApplication : DependenciesContainer, Application() {
 
     companion object {
         const val MEDICINE_NOTIFICATION_CHANNEL = "MedicineNotifications"
-        const val API_ENDPOINT = "http://10.0.2.2:8080" // "https://pharmacist-e9t4.onrender.com"
+        const val API_ENDPOINT = "https://pharmacist-e9t4.onrender.com"
         const val TAG = "PharmacistApp"
     }
 }
