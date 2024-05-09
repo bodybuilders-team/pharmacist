@@ -32,16 +32,16 @@ class RealTimeUpdatesWebSocketHandler(
 
     val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    var sendUpdatesJob: Job? = null
+    var sendUpdatesJobs: MutableMap<String, Job> = mutableMapOf()
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val user = authenticate(session)
 
-        println("Websocket - User authenticated. Connection established.")
+        println("Websocket - User ${user.userId} authenticated. Connection established with session ${session.id}")
 
-        sendUpdatesJob?.cancel()
-        sendUpdatesJob = coroutineScope.launch {
+        sendUpdatesJobs[session.id] = coroutineScope.launch {
             realTimeUpdatesService.sendToSession(user, session) { realTimeUpdate ->
+                println("Publishing ${realTimeUpdate.type} update to session ${session.id}")
                 if (!session.isOpen) {
                     this.cancel()
                     return@sendToSession
@@ -67,7 +67,9 @@ class RealTimeUpdatesWebSocketHandler(
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
-        sendUpdatesJob?.cancel()
+        println("Websocket - Connection closed with session ${session.id}")
+        sendUpdatesJobs[session.id]?.cancel()
+        sendUpdatesJobs.remove(session.id)
     }
 
     override fun handleObject(session: WebSocketSession, obj: Array<RealTimeUpdateSubscriptionDto>) {
