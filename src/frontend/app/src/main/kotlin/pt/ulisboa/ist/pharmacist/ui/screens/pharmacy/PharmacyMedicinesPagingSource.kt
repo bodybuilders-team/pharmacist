@@ -1,14 +1,18 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.PharmaciesService
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import kotlin.math.max
 
 class PharmacyMedicinesPagingSource(
     private val pharmaciesService: PharmaciesService,
+    private val realTimeUpdatesService: RealTimeUpdatesService,
     private val pid: Long
 ) : PagingSource<Int, MedicineStockModel>() {
 
@@ -25,6 +29,10 @@ class PharmacyMedicinesPagingSource(
         val offset = params.key ?: STARTING_KEY
         val limit = params.loadSize
 
+        Log.d(
+            "RealTimeUpdatesService",
+            "Loading medicines for pharmacy $pid with offset $offset and limit $limit"
+        )
         val result = pharmaciesService.listAvailableMedicines(
             pharmacyId = pid,
             limit = limit.toLong(),
@@ -32,6 +40,14 @@ class PharmacyMedicinesPagingSource(
         )
 
         return if (result.isSuccess()) {
+            realTimeUpdatesService.subscribeToUpdates(
+                result.data.medicines.map {
+                    RealTimeUpdateSubscription.pharmacyMedicineStock(
+                        pharmacyId = pid,
+                        medicineId = it.medicine.medicineId
+                    )
+                }
+            )
             LoadResult.Page(
                 data = result.data.medicines,
                 prevKey = when (offset) {

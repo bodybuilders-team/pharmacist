@@ -138,7 +138,7 @@ class RealTimeUpdatesService(
         onMedicineNotification: (RealTimeUpdateMedicineNotificationPublishingData) -> Unit = {}
     ) {
         updatePublishFlow.collect { realTimeUpdateDto ->
-            // Log.d(TAG, "Received real time update: ${realTimeUpdateDto.type}")
+            Log.d(TAG, "Received real time update: ${realTimeUpdateDto.type}")
 
             when (val realTimeUpdateClass = RTU.getType(realTimeUpdateDto.type)) {
                 RTU.NEW_PHARMACY -> onNewPharmacy(

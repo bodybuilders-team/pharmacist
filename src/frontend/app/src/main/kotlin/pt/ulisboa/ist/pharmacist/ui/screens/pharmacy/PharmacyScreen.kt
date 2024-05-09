@@ -21,13 +21,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -38,7 +37,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
-import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
@@ -61,7 +59,7 @@ import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 fun PharmacyScreen(
     pharmacy: PharmacyWithUserDataModel?,
     loadingState: PharmacyViewModel.PharmacyLoadingState,
-    medicinesState: Flow<PagingData<MedicineStockModel>>,
+    medicinesList: SnapshotStateMap<Long, MedicineStockModel>,
     onMedicineClick: (Long) -> Unit,
     onAddMedicineClick: () -> Unit,
     onAddStockClick: (Long) -> Unit,
@@ -71,7 +69,7 @@ fun PharmacyScreen(
     onShareClick: () -> Unit,
     onRatingChanged: (Int) -> Unit
 ) {
-    val medicinesStock = medicinesState.collectAsLazyPagingItems()
+    val medicinesStock = medicinesList.values.toList()
 
     val pagerState = rememberPagerState(initialPage = 0)
 
@@ -158,9 +156,9 @@ fun PharmacyScreen(
                 )
 
                 Text(
-                    text = "${medicinesStock.itemCount} " +
+                    text = "${medicinesStock.size} " +
                             stringResource(
-                                if (medicinesStock.itemCount != 1)
+                                if (medicinesStock.size != 1)
                                     R.string.medicines_available
                                 else R.string.medicine_available
                             ),
@@ -180,11 +178,8 @@ fun PharmacyScreen(
                     modifier = Modifier
                         .padding(20.dp)
                 ) {
-                    items(
-                        medicinesStock.itemCount
-                        //,key = medicinesStock.itemKey { it.medicine.medicineId }
-                    ) { index ->
-                        val (medicine, stock) = medicinesStock[index]!!
+                    items(medicinesStock.size) { index ->
+                        val (medicine, stock) = medicinesStock[index]
                         PharmacyMedicineEntry(
                             medicine,
                             stock,

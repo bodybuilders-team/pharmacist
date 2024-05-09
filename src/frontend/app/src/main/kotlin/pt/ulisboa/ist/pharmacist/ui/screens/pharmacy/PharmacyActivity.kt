@@ -50,7 +50,7 @@ class PharmacyActivity : PharmacistActivity() {
             PharmacyScreen(
                 pharmacy = viewModel.pharmacy,
                 loadingState = viewModel.loadingState,
-                medicinesState = viewModel.medicinesState,
+                medicinesList = viewModel.medicinesList,
                 onMedicineClick = { medicineId ->
                     MedicineActivity.navigate(this, medicineId)
                 },

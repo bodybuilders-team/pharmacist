@@ -1,18 +1,12 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
+import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import androidx.paging.map
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
@@ -23,7 +17,6 @@ import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscri
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
-import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.ModificationEvent.StockModificationEvent
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyLoadingState.LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyLoadingState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyLoadingState.NOT_LOADED
@@ -40,7 +33,7 @@ class PharmacyViewModel(
     pharmacistService: PharmacistService,
     sessionManager: SessionManager,
     private val realTimeUpdatesService: RealTimeUpdatesService,
-    pharmacyId: Long
+    val pharmacyId: Long
 ) : PharmacistViewModel(pharmacistService, sessionManager) {
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
@@ -48,37 +41,74 @@ class PharmacyViewModel(
     var pharmacy by mutableStateOf<PharmacyWithUserDataModel?>(null)
         private set
 
-    private val modificationEvents = MutableStateFlow<List<ModificationEvent>>(emptyList())
+    //private val modificationEvents = MutableSharedFlow<ModificationEvent>()
 
-    private val newMedicineFlow = MutableStateFlow<Long?>(null)
+    //private val newMedicineFlow = MutableStateFlow<Long?>(null)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _medicinesState = newMedicineFlow.flatMapLatest {
-        Pager(
-            config = PagingConfig(
-                pageSize = PAGE_SIZE,
-                prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = {
-                PharmacyMedicinesPagingSource(
-                    pharmaciesService = pharmacistService.pharmaciesService,
-                    pid = pharmacyId
-                )
+    val medicinesList = mutableStateMapOf<Long, MedicineStockModel>()
+
+    /*@OptIn(ExperimentalCoroutinesApi::class)
+     private val _medicinesState = newMedicineFlow.flatMapLatest {
+         Pager(
+             config = PagingConfig(
+                 pageSize = PAGE_SIZE,
+                 prefetchDistance = PREFETCH_DISTANCE,
+                 enablePlaceholders = false
+             ),
+             pagingSourceFactory = {
+                 PharmacyMedicinesPagingSource(
+                     pharmaciesService = pharmacistService.pharmaciesService,
+                     realTimeUpdatesService = realTimeUpdatesService,
+                     pid = pharmacyId
+                 )
+             }
+         ).flow.cachedIn(viewModelScope)
+             .combine(modificationEvents) { pagingData, modificationEvents ->
+                 modificationEvents.fold(pagingData) { pagingDataAcc, modificationEvent ->
+                     applyModificationEvent(pagingDataAcc, modificationEvent)
+                 }
+             }
+     }*/
+
+    private fun fetchAllMedicines() = viewModelScope.launch {
+        if (pharmacy == null) return@launch
+
+        var offset = 0L
+        val limit = 50L
+        while (true) {
+            Log.d(
+                "RealTimeUpdatesService",
+                "fetchAllMedicines - Fetching medicines for pharmacy ${pharmacy!!.pharmacy.pharmacyId}" +
+                        " with offset $offset and limit $limit"
+            )
+            val result = pharmacistService.pharmaciesService.listAvailableMedicines(
+                pharmacyId = pharmacyId,
+                limit = limit,
+                offset = offset
+            )
+            if (!result.isSuccess() || result.data.medicines.isEmpty()) break
+
+            for (medicine in result.data.medicines) {
+                medicinesList[medicine.medicine.medicineId] = medicine
             }
-        ).flow.cachedIn(viewModelScope)
-            .combine(modificationEvents) { pagingData, modificationEvents ->
-                modificationEvents.fold(pagingData) { pagingDataAcc, modificationEvent ->
-                    applyModificationEvent(pagingDataAcc, modificationEvent)
+            realTimeUpdatesService.subscribeToUpdates(
+                result.data.medicines.map {
+                    RealTimeUpdateSubscription.pharmacyMedicineStock(
+                        pharmacyId = pharmacyId,
+                        medicineId = it.medicine.medicineId
+                    )
                 }
-            }
+            )
+            offset += limit
+        }
     }
 
-    private fun applyModificationEvent(
+    /*private fun applyModificationEvent(
         pagingData: PagingData<MedicineStockModel>,
         modificationEvent: ModificationEvent
     ): PagingData<MedicineStockModel> = when (modificationEvent) {
         is StockModificationEvent -> {
+            Log.d("RealTimeUpdatesService", "Applying stock modification event: $modificationEvent")
             pagingData.map {
                 if (it.medicine.medicineId != modificationEvent.medicineId)
                     return@map it
@@ -91,9 +121,9 @@ class PharmacyViewModel(
                 )
             }
         }
-    }
+    }*/
 
-    val medicinesState get() = _medicinesState
+    //val medicinesState get() = _medicinesState
 
     fun listenForRealTimeUpdates() = viewModelScope.launch {
         realTimeUpdatesService.listenForRealTimeUpdates(
@@ -117,6 +147,15 @@ class PharmacyViewModel(
                 pharmacy =
                     pharmacy?.copy(userMarkedAsFavorite = pharmacyUserFavoritedData.favorited)
             },
+            onMedicineStock = { medicineStockData ->
+                Log.d(
+                    "RealTimeUpdatesService",
+                    "Received medicine stock update: $medicineStockData"
+                )
+                medicinesList.compute(medicineStockData.medicineId) { _, medicineStock ->
+                    medicineStock?.copy(stock = medicineStockData.stock)
+                }
+            }
         )
     }
 
@@ -139,6 +178,7 @@ class PharmacyViewModel(
                     RealTimeUpdateSubscription.pharmacyUserFavorited(pharmacyId)
                 )
             )
+            fetchAllMedicines()
         }
 
         loadingState = LOADED
@@ -205,25 +245,39 @@ class PharmacyViewModel(
         quantity: Long = 1
     ) = pharmacy?.let {
         viewModelScope.launch {
+            medicinesList.compute(medicineId) { _, medicineStock ->
+                medicineStock?.copy(
+                    stock = medicineStock.stock + when (operation) {
+                        MedicineStockOperation.ADD -> quantity
+                        MedicineStockOperation.REMOVE -> -quantity
+                    }
+                )
+            }
             val result = pharmacistService.pharmaciesService.changeMedicineStock(
                 pharmacyId = it.pharmacy.pharmacyId,
                 medicineId = medicineId,
                 operation = operation,
                 stock = quantity
             )
-
-            if (result.isSuccess()) {
-                modificationEvents.value += StockModificationEvent(
-                    medicineId,
-                    operation,
-                    quantity
-                )
-            }
         }
     }
 
     fun onMedicineAdded(medicineId: Long, quantity: Long) {
-        viewModelScope.launch { newMedicineFlow.emit(medicineId) }
+        viewModelScope.launch {
+            val result = pharmacistService.medicinesService.getMedicineById(medicineId)
+
+            if (result.isSuccess()) {
+                medicinesList[medicineId] = MedicineStockModel(
+                    medicine = result.data.medicine,
+                    stock = quantity
+                )
+                realTimeUpdatesService.subscribeToUpdates(
+                    listOf(
+                        RealTimeUpdateSubscription.pharmacyMedicineStock(pharmacyId, medicineId)
+                    )
+                )
+            }
+        }
     }
 
 
