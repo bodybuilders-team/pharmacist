@@ -56,8 +56,8 @@ fun PharmacyRating(
 
         // Global Rating
         Row {
-            Text(
-                text = "${pharmacy.pharmacy.globalRating ?: 0}",
+            Text(// only with one decimal
+                text = "${pharmacy.pharmacy.globalRating?.let { String.format("%.1f", it) } ?: 0}",
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
                 fontSize = 40.sp,
