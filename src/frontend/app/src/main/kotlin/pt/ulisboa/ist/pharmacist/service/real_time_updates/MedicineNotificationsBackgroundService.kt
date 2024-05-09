@@ -66,21 +66,22 @@ class MedicineNotificationsBackgroundService : Service() {
         )
 
 
+        val message = getString(
+            R.string.medicine_notification_text,
+            notification.medicineStock.medicine.name,
+            notification.medicineStock.stock,
+            notification.pharmacy.pharmacyName
+        )
+
         // Show notification to the user
         val notificationCompat = NotificationCompat.Builder(
             this@MedicineNotificationsBackgroundService,
             PharmacistApplication.MEDICINE_NOTIFICATION_CHANNEL
         )
             .setSmallIcon(R.drawable.pharmacy_logo)
-            .setContentTitle(getString(R.string.medicine_notification_title))
-            .setContentText(
-                getString(
-                    R.string.medicine_notification_text,
-                    notification.medicineStock.medicine.name,
-                    notification.medicineStock.stock,
-                    notification.pharmacy.pharmacyName
-                )
-            )
+            .setContentTitle(getString(R.string.medicine_notification_title, notification.medicineStock.medicine.name))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingNotiIntent)
             .setAutoCancel(true)

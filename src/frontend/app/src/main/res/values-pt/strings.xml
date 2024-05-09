@@ -66,8 +66,8 @@
     <string name="about_githubLogo_contentDescription">Logo do Github</string>
     <string name="about_emailIcon_contentDescription">Ícone de email</string>
 
-    <string name="medicine_notification_title">Título da Notificação de Medicamentos</string>
-    <string name="medicine_notification_text">Novo Medicamento %1$s com %2$d de quantidade disponível em %3$s</string>
+    <string name="medicine_notification_title">Medicamento %1$s em estoque!</string>
+    <string name="medicine_notification_text">Medicamento %1$s com %2$d de quantidade disponível em %3$s</string>
     <string name="pharmacy_map_camera_permission_title">Permissão de Câmera Necessária</string>
     <string name="pharmacyMap_location_permission_note">O aplicativo precisa de localização aproximada e precisa para recursos completos. Como você negou essas configurações anteriormente, é necessário ir às configurações de permissão e permiti-las.</string>
     <string name="pharmacyMap_camera_permission_note">Para tirar ou enviar uma foto, você precisa conceder permissão de câmera e permissão de armazenamento.</string>
