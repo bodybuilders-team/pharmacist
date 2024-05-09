@@ -180,8 +180,10 @@ fun PharmacyScreen(
                     modifier = Modifier
                         .padding(20.dp)
                 ) {
-
-                    items(medicinesStock.itemCount) { index ->
+                    items(
+                        medicinesStock.itemCount
+                        //,key = medicinesStock.itemKey { it.medicine.medicineId }
+                    ) { index ->
                         val (medicine, stock) = medicinesStock[index]!!
                         PharmacyMedicineEntry(
                             medicine,

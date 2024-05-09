@@ -3,7 +3,7 @@ package pt.ulisboa.ist.pharmacist.repository.pharmacies
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.PharmacyWithUserData
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
 
 /**
  * Repository for the [Pharmacy] entity.
@@ -18,7 +18,7 @@ interface PharmaciesRepository {
         orderBy: String?,
         offset: Int,
         limit: Int
-    ): List<PharmacyWithUserData>
+    ): GetPharmaciesOutputDto
 
     fun listAvailableMedicines(pharmacyId: Long, offset: Int, limit: Int): List<MedicineStock>
 

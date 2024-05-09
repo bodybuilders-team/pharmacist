@@ -24,24 +24,29 @@ class PharmaciesPagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PharmacyWithUserDataModel> {
-        val currentOffset = params.key ?: 0
+        val offset = params.key ?: STARTING_KEY
+        val limit = params.loadSize
 
         val result = pharmaciesService.getPharmacies(
             medicineId = mid,
             location = location,
             orderBy = "distance", // TODO: Check if the results are sorted by distance
-            limit = params.loadSize.toLong(),
-            offset = currentOffset.toLong()
+            limit = limit.toLong(),
+            offset = offset.toLong()
         )
 
         return if (result.isSuccess()) {
             LoadResult.Page(
                 data = result.data.pharmacies,
-                prevKey = when (currentOffset) {
+                prevKey = when (offset) {
                     STARTING_KEY -> null
-                    else -> max(STARTING_KEY, currentOffset - params.loadSize)
+                    else -> max(STARTING_KEY, offset - limit)
                 },
-                nextKey = if (result.data.pharmacies.isEmpty()) null else currentOffset + params.loadSize
+                nextKey =
+                if (result.data.pharmacies.isEmpty() || result.data.pharmacies.size < limit)
+                    null
+                else
+                    offset + limit
             )
         } else {
             LoadResult.Error(Exception("Error loading data"))

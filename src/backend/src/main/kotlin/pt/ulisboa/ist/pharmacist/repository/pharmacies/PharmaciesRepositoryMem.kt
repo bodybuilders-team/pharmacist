@@ -9,6 +9,7 @@ import pt.ulisboa.ist.pharmacist.repository.MemDataSource
 import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
 import pt.ulisboa.ist.pharmacist.service.utils.paginate
 
 @Repository
@@ -23,7 +24,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
         orderBy: String?,
         offset: Int,
         limit: Int
-    ): List<PharmacyWithUserData> {
+    ): GetPharmaciesOutputDto {
         if (offset < 0) throw InvalidArgumentException("Offset must be a positive integer")
         if (limit < 0) throw InvalidArgumentException("Limit must be a positive integer")
 
@@ -31,8 +32,8 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
 
         return pharmacies.values.toList()
             .let { pharmacies ->
-                if (location != null)
-                    pharmacies.filter { pharmacy -> pharmacy.location.distanceTo(location) <= (range ?: 10000) }
+                if (location != null && range != null)
+                    pharmacies.filter { pharmacy -> pharmacy.location.distanceTo(location) <= range }
                 else
                     pharmacies
             }.let { pharmacies ->
@@ -55,13 +56,18 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
             }
             .filter { pharmacy -> !user.flaggedPharmacies.contains(pharmacy.pharmacyId) }
             .filter { pharmacy -> pharmacy.totalFlags < BANNED_PHARMACY_FLAG_THRESHOLD }
-            .paginate(limit, offset)
-            .map { pharmacy ->
-                PharmacyWithUserData(
-                    pharmacy,
-                    userRating = user.ratings[pharmacy.pharmacyId],
-                    userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy.pharmacyId),
-                    userFlagged = user.flaggedPharmacies.contains(pharmacy.pharmacyId)
+            .let { totalPharmacies ->
+                GetPharmaciesOutputDto(
+                    pharmacies = totalPharmacies.paginate(limit, offset)
+                        .map { pharmacy ->
+                            PharmacyWithUserData(
+                                pharmacy,
+                                userRating = user.ratings[pharmacy.pharmacyId],
+                                userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy.pharmacyId),
+                                userFlagged = user.flaggedPharmacies.contains(pharmacy.pharmacyId)
+                            )
+                        },
+                    totalCount = totalPharmacies.size
                 )
             }
     }

@@ -32,13 +32,14 @@ class RealTimeUpdatesWebSocketHandler(
 
     val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    lateinit var sendUpdatesJob: Job
+    var sendUpdatesJob: Job? = null
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val user = authenticate(session)
 
         println("Websocket - User authenticated. Connection established.")
 
+        sendUpdatesJob?.cancel()
         sendUpdatesJob = coroutineScope.launch {
             realTimeUpdatesService.sendToSession(user, session) { realTimeUpdate ->
                 if (!session.isOpen) {
@@ -66,7 +67,7 @@ class RealTimeUpdatesWebSocketHandler(
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
-        sendUpdatesJob.cancel()
+        sendUpdatesJob?.cancel()
     }
 
     override fun handleObject(session: WebSocketSession, obj: Array<RealTimeUpdateSubscriptionDto>) {

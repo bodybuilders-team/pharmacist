@@ -1,6 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
@@ -26,28 +25,28 @@ class MedicinePagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MedicineWithClosestPharmacyOutputModel> {
-        val currentOffset = params.key ?: 0
+        val offset = params.key ?: STARTING_KEY
+        val limit = params.loadSize
 
         val result = medicinesService.getMedicinesWithClosestPharmacy(
             substring = query,
             location = location,
-            limit = params.loadSize.toLong(),
-            offset = currentOffset.toLong()
+            limit = limit.toLong(),
+            offset = offset.toLong()
         )
 
         return if (result.isSuccess()) {
-            Log.d(
-                "MedicinePagingSource",
-                "limit = ${params.loadSize.toLong()}, offset = ${currentOffset.toLong()}, itemCount = ${result.data.medicines.size}"
-            )
-
             LoadResult.Page(
                 data = result.data.medicines,
-                prevKey = when (currentOffset) {
+                prevKey = when (offset) {
                     STARTING_KEY -> null
-                    else -> max(STARTING_KEY, currentOffset - params.loadSize)
+                    else -> max(STARTING_KEY, offset - limit)
                 },
-                nextKey = if (result.data.medicines.isEmpty()) null else currentOffset + params.loadSize
+                nextKey =
+                if (result.data.medicines.isEmpty() || result.data.medicines.size < limit)
+                    null
+                else
+                    offset + limit
             )
         } else {
             LoadResult.Error(Exception("Error loading data"))

@@ -31,7 +31,7 @@ class PharmacyActivity : PharmacistActivity() {
         )
     }
 
-    private val addPharmacyResultLauncher = AddMedicineToPharmacyActivity
+    private val addMedicineResultLauncher = AddMedicineToPharmacyActivity
         .registerForResult(this) { medicineId, quantity ->
             if (medicineId != null && quantity != null) {
                 Log.d("PharmacyActivity", "Medicine added: $medicineId, $quantity")
@@ -57,7 +57,7 @@ class PharmacyActivity : PharmacistActivity() {
                 onAddMedicineClick = {
                     AddMedicineToPharmacyActivity.navigateForResult(
                         this,
-                        addPharmacyResultLauncher,
+                        addMedicineResultLauncher,
                         pharmacyId
                     )
                 },

@@ -20,7 +20,7 @@ class MedicinesRepositoryMem(private val dataSource: MemDataSource) : MedicinesR
         offset: Int,
         limit: Int
     ): List<MedicineWithClosestPharmacyDto> {
-        val filteredMedicines = medicines.values.filter { it.name.contains(substring) }
+        val filteredMedicines = medicines.values.filter { it.name.lowercase().contains(substring.lowercase()) }
             .ifEmpty { null }
             ?.paginate(limit = limit, offset = offset)
             ?: emptyList()

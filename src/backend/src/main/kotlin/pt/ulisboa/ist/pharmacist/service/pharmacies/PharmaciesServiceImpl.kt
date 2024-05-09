@@ -53,7 +53,7 @@ class PharmaciesServiceImpl(
             offset = offset,
             limit = limit
         )
-        return GetPharmaciesOutputDto(pharmacies, 0)
+        return pharmacies
     }
 
     override fun addPharmacy(name: String, location: Location, pictureUrl: String, creatorId: Long): PharmacyDto {

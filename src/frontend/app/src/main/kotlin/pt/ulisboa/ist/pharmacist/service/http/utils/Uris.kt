@@ -33,8 +33,8 @@ object Uris {
 
     fun medicines(substring: String, location: Location?, limit: Long, offset: Long) =
         "$MEDICINES?substring=$substring" +
-                if (location != null) "&location=$location" else "" +
-                        "&limit=$limit&offset=$offset"
+                (if (location != null) "&location=$location" else "") +
+                ("&limit=$limit&offset=$offset")
 
     fun pharmacies(
         medicineId: Long?,
@@ -44,11 +44,12 @@ object Uris {
         offset: Long?
     ): String =
         "$PHARMACIES?" +
-                if (medicineId != null) "medicineId=$medicineId" else "" +
-                        if (location != null) "&location=$location" else "" +
-                                if (orderBy != null) "&orderBy=$orderBy" else "" +
-                                        if (limit != null) "&limit=$limit" else "" +
-                                                if (offset != null) "&offset=$offset" else ""
+                (if (medicineId != null) "medicine=$medicineId" else "") +
+                (if (location != null) "&location=$location" else "") +
+                (if (orderBy != null) "&orderBy=$orderBy" else "") +
+                (if (limit != null) "&limit=$limit" else "") +
+                (if (offset != null) "&offset=$offset" else "")
+
 
     fun pharmacyById(pharmacyId: Long) =
         PHARMACIES_GET_BY_ID.replace("{pid}", pharmacyId.toString())
@@ -60,7 +61,7 @@ object Uris {
         PHARMACY_MEDICINES
             .replace("{pid}", pharmacyId.toString()) + "?" +
                 (if (limit != null) "limit=$limit" else "") +
-                if (offset != null) "&offset=$offset" else ""
+                (if (offset != null) "&offset=$offset" else "")
 
     fun userFavoritePharmacyById(userId: Long, pharmacyId: Long) =
         USER_FAVORITE_PHARMACIES_GET_BY_ID
