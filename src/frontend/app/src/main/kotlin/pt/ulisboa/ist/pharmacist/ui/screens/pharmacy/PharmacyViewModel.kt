@@ -9,8 +9,10 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
@@ -48,24 +50,29 @@ class PharmacyViewModel(
 
     private val modificationEvents = MutableStateFlow<List<ModificationEvent>>(emptyList())
 
-    private val _medicinesState = Pager(
-        config = PagingConfig(
-            pageSize = PAGE_SIZE,
-            prefetchDistance = PREFETCH_DISTANCE,
-            enablePlaceholders = false
-        ),
-        pagingSourceFactory = {
-            PharmacyMedicinesPagingSource(
-                pharmaciesService = pharmacistService.pharmaciesService,
-                pid = pharmacyId
-            )
-        }
-    ).flow.cachedIn(viewModelScope)
-        .combine(modificationEvents) { pagingData, modificationEvents ->
-            modificationEvents.fold(pagingData) { pagingDataAcc, modificationEvent ->
-                applyModificationEvent(pagingDataAcc, modificationEvent)
+    private val newMedicineFlow = MutableStateFlow<Long?>(null)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val _medicinesState = newMedicineFlow.flatMapLatest {
+        Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PREFETCH_DISTANCE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                PharmacyMedicinesPagingSource(
+                    pharmaciesService = pharmacistService.pharmaciesService,
+                    pid = pharmacyId
+                )
             }
-        }
+        ).flow.cachedIn(viewModelScope)
+            .combine(modificationEvents) { pagingData, modificationEvents ->
+                modificationEvents.fold(pagingData) { pagingDataAcc, modificationEvent ->
+                    applyModificationEvent(pagingDataAcc, modificationEvent)
+                }
+            }
+    }
 
     private fun applyModificationEvent(
         pagingData: PagingData<MedicineStockModel>,
@@ -216,14 +223,7 @@ class PharmacyViewModel(
     }
 
     fun onMedicineAdded(medicineId: Long, quantity: Long) {
-        // TODO: This does not work. This paging is sus
-        pharmacy?.let {
-            modificationEvents.value += StockModificationEvent(
-                medicineId,
-                MedicineStockOperation.ADD,
-                quantity
-            )
-        }
+        viewModelScope.launch { newMedicineFlow.emit(medicineId) }
     }
 
 
