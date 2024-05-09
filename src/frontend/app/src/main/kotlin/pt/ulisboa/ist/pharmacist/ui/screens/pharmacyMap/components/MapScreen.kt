@@ -113,6 +113,12 @@ fun MapScreen(
         )
     )
 
+    LaunchedEffect(scaffoldSheetState.bottomSheetState.currentValue) {
+        if (scaffoldSheetState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
+            clickedPharmacyMarker = null
+        }
+    }
+
     BottomSheetScaffold(
         scaffoldState = scaffoldSheetState,
         sheetPeekHeight = 0.dp,
