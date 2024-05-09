@@ -21,8 +21,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./dockerfiles/Dockerfile-spring
+          file: dockerfiles/Dockerfile-spring
           push: true
           tags: devandrejesus/pharmacist-img:latest
       - name: Make deploy request to Render
