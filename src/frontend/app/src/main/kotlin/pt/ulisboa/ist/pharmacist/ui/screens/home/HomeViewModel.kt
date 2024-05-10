@@ -1,10 +1,12 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.home
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -35,13 +37,24 @@ class HomeViewModel(
      * Logs out the user.
      */
     fun logout() = viewModelScope.launch {
-        check(sessionManager.isLoggedIn()) { "The user is not logged in." }
+        if (!sessionManager.isLoggedIn()) {
+            Log.d("LOGOUT", "User is not logged in")
 
-        pharmacistService.usersService.logout()
+            sessionManager.clearSession()
+            isLoggedIn = false
+            isGuest = false
+            return@launch
+        }
+
+        Log.d("LOGOUT", "Logging out user")
+        withTimeoutOrNull(5000) {
+            pharmacistService.usersService.logout()
+        }
 
         sessionManager.clearSession()
         isLoggedIn = false
         isGuest = false
+        Log.d("LOGOUT", "User logged out")
     }
 
     /**

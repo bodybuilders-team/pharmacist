@@ -24,6 +24,7 @@ private const val STROKE_WIDTH = 4
 fun LoadingSpinner(
     modifier: Modifier = Modifier,
     text: String = stringResource(R.string.default_loading_text),
+    showText: Boolean = true
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -31,6 +32,7 @@ fun LoadingSpinner(
         modifier = modifier
     ) {
         CircularProgressIndicator(strokeWidth = STROKE_WIDTH.dp)
-        Text(text = text)
+        if (showText)
+            Text(text = text)
     }
 }

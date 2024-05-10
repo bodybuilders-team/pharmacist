@@ -121,4 +121,5 @@
     <string name="pick_location">Pick Location</string>
     <string name="medicine_available">medicine available</string>
     <string name="medicine_availableIn1Pharmacy_text">Available in 1 pharmacy</string>
+    <string name="loading_pharmacy">Loading pharmacy...</string>
 </resources>

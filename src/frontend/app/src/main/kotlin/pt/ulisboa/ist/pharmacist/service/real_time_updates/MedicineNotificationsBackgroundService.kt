@@ -79,7 +79,12 @@ class MedicineNotificationsBackgroundService : Service() {
             PharmacistApplication.MEDICINE_NOTIFICATION_CHANNEL
         )
             .setSmallIcon(R.drawable.pharmacy_logo)
-            .setContentTitle(getString(R.string.medicine_notification_title, notification.medicineStock.medicine.name))
+            .setContentTitle(
+                getString(
+                    R.string.medicine_notification_title,
+                    notification.medicineStock.medicine.name
+                )
+            )
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

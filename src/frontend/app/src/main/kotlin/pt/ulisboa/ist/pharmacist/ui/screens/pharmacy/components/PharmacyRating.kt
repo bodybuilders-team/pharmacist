@@ -37,10 +37,11 @@ private const val MAX_RATING = 5
 @Composable
 fun PharmacyRating(
     pharmacy: PharmacyWithUserDataModel,
-    onRatingChanged: (Int) -> Unit
+    onRatingChanged: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(0.8f)
+        modifier = modifier
     ) {
         Text(
             text = stringResource(R.string.rate_this_pharmacy),
