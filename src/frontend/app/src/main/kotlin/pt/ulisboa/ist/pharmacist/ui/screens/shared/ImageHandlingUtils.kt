@@ -142,6 +142,13 @@ object ImageHandlingUtils {
         return chooser
     }
 
+    /**
+     * Downloads an image.
+     *
+     * @param url the URL of the image
+     *
+     * @return the image bitmap
+     */
     fun downloadImage(url: String): ImageBitmap? {
         val inputStream = URL(url).openStream()
         return BitmapFactory.decodeStream(inputStream)?.asImageBitmap()

@@ -302,11 +302,12 @@ class PharmacyViewModel(
         }
     }
 
-
     enum class PharmacyLoadingState {
         NOT_LOADED,
         LOADING,
-        LOADED
+        LOADED;
+
+        fun isLoaded() = this == LOADED
     }
 
     companion object {

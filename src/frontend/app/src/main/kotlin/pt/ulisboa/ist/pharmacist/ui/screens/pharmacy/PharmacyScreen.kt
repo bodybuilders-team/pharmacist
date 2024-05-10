@@ -51,7 +51,7 @@ fun PharmacyScreen(
     val pagerState = rememberPagerState(initialPage = 0)
 
     PharmacistScreen {
-        if (loadingState == PharmacyViewModel.PharmacyLoadingState.LOADED && pharmacy != null)
+        if (loadingState.isLoaded() && pharmacy != null)
             if (isLandscape)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

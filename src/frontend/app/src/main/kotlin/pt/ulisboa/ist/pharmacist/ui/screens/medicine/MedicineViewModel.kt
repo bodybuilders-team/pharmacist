@@ -1,19 +1,23 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicine
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pt.ulisboa.ist.pharmacist.domain.medicines.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.LocationService
@@ -23,6 +27,7 @@ import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
 
 /**
@@ -45,6 +50,9 @@ class MedicineViewModel(
     var hasLocationPermission by mutableStateOf(false)
         private set
     private val locationFlow = MutableStateFlow<Location?>(null)
+
+    var medicineImage: ImageBitmap? by mutableStateOf(null)
+        private set
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _pharmaciesState = locationFlow.flatMapLatest { location ->
@@ -107,6 +115,22 @@ class MedicineViewModel(
                 locationFlow.emit(Location(it.latitude, it.longitude))
             }
             .collect()
+    }
+
+    /**
+     * Downloads the pharmacy image.
+     */
+    suspend fun downloadImage() {
+        medicine?.let {
+            withContext(Dispatchers.IO) {
+                val img: ImageBitmap? = ImageHandlingUtils.downloadImage(it.medicine.boxPhotoUrl)
+                if (img == null) {
+                    Log.e("PharmacyActivity", "Failed to download image")
+                    return@withContext
+                }
+                medicineImage = img
+            }
+        }
     }
 
     enum class MedicineLoadingState {

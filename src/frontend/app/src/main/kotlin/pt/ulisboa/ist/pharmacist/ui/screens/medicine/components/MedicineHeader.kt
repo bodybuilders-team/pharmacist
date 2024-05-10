@@ -2,11 +2,13 @@ package pt.ulisboa.ist.pharmacist.ui.screens.medicine.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.NotificationsOff
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +27,8 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 fun MedicineHeader(
     medicine: Medicine,
     toggleMedicineNotification: () -> Unit,
-    notificationsActive: Boolean
+    notificationsActive: Boolean,
+    onShareClick: () -> Unit
 ) {
     val isLandscape =
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -53,15 +56,24 @@ fun MedicineHeader(
             style = MaterialTheme.typography.bodyLarge
         )
 
-        IconButton(
-            modifier = Modifier,
-            onClick = toggleMedicineNotification,
-        ) {
-            Icon(
-                if (notificationsActive) Icons.Rounded.NotificationsActive else Icons.Rounded.NotificationsOff,
-                contentDescription = stringResource(R.string.medicine_addToNotifications_button_description),
-                tint = MaterialTheme.colorScheme.primary
-            )
+        Row {
+            IconButton(
+                modifier = Modifier,
+                onClick = toggleMedicineNotification,
+            ) {
+                Icon(
+                    if (notificationsActive) Icons.Rounded.NotificationsActive else Icons.Rounded.NotificationsOff,
+                    contentDescription = stringResource(R.string.medicine_addToNotifications_button_description),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            IconButton(onClick = onShareClick) {
+                Icon(
+                    Icons.Rounded.Share,
+                    contentDescription = stringResource(R.string.share),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

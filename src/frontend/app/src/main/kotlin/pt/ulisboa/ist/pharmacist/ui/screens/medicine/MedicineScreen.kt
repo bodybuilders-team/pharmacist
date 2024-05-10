@@ -44,7 +44,8 @@ fun MedicineScreen(
     loadingState: MedicineViewModel.MedicineLoadingState,
     pharmaciesState: Flow<PagingData<PharmacyWithUserDataModel>>,
     onPharmacyClick: (Pharmacy) -> Unit,
-    toggleMedicineNotification: () -> Unit
+    toggleMedicineNotification: () -> Unit,
+    onShareClick: () -> Unit
 ) {
     if (loadingState == MedicineViewModel.MedicineLoadingState.LOADED && medicineModel != null) {
         val (medicine, notificationsActive) = medicineModel
@@ -76,7 +77,7 @@ fun MedicineScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    MedicineHeader(medicine, toggleMedicineNotification, notificationsActive)
+                    MedicineHeader(medicine, toggleMedicineNotification, notificationsActive, onShareClick)
                     MedicinePharmacyList(pharmacies, onPharmacyClick)
                 }
             else
@@ -84,7 +85,7 @@ fun MedicineScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    MedicineHeader(medicine, toggleMedicineNotification, notificationsActive)
+                    MedicineHeader(medicine, toggleMedicineNotification, notificationsActive, onShareClick)
                     MedicinePharmacyList(pharmacies, onPharmacyClick)
                 }
         }
