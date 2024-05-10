@@ -84,7 +84,7 @@ class PharmacistApplication : DependenciesContainer, Application() {
     companion object {
         const val MEDICINE_NOTIFICATION_CHANNEL = "MedicineNotifications"
 
-        private const val API_ENDPOINT_TYPE = "render"
+        private const val API_ENDPOINT_TYPE = "localhost"
         val API_ENDPOINT = when (API_ENDPOINT_TYPE) {
             "localhost" -> "http://10.0.2.2:8080"
             "ngrok" -> "https://2b02-2001-818-e871-b700-c937-8172-33bf-a88.ngrok-free.app"

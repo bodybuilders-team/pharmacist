@@ -31,10 +31,8 @@ Summer Semester of 2023/2024
 The backend code is located in the [`src/backend`](./src/backend) directory.
 
 The backend is a **REST API** built using **[Spring Boot](https://spring.io/projects/spring-boot)**
-and
-**[Kotlin](https://kotlinlang.org/)**. It is responsible for managing the data and the business
-logic of the
-application.
+and **[Kotlin](https://kotlinlang.org/)**. It is responsible for managing the data and the business
+logic of the application.
 
 It's implemented following the **layered architecture** pattern, with the following layers:
 
@@ -51,9 +49,8 @@ store the data.
 
 The frontend code is located in the [`src/frontend`](./src/frontend) directory.
 
-The frontend is a **mobile application** for **Android** built using *
-*[Kotlin](https://kotlinlang.org/)** and
-**[Jetpack Compose](https://developer.android.com/develop/ui/compose)**. It is
+The frontend is a **mobile application** for **Android** built using
+**[Kotlin](https://kotlinlang.org/)** and **[Jetpack Compose](https://developer.android.com/develop/ui/compose)**. It is
 responsible for providing a user interface for the application.
 
 The frontend code is organized as follows:
@@ -85,10 +82,10 @@ To run the project, follow these steps:
 
 1. Clone the repository or download the source code;
 
-2. Run the **Docker Compose** command in the `src/backend` directory to start the server:
+2. Run the **Docker Compose** command in the root directory of the project to start the backend
+   server:
 
 ```bash
-cd src/backend
 docker-compose up
 ```
 
