@@ -7,5 +7,6 @@ package pt.ulisboa.ist.pharmacist.service.users.dtos.login
  */
 data class LoginOutputDto(
     val userId: Long,
-    val accessToken: String
+    val accessToken: String,
+    val isSuspended: Boolean
 )

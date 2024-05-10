@@ -70,6 +70,8 @@ class PharmacyMapViewModel(
     var followMyLocation by mutableStateOf(true)
     var zoomedInMyLocation by mutableStateOf(false)
 
+    val userSuspended by mutableStateOf(sessionManager.isSuspended)
+
     val mapProperties by mutableStateOf(
         MapProperties(
             isMyLocationEnabled = true,

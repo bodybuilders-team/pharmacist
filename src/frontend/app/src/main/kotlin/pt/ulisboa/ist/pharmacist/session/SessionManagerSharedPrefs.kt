@@ -29,19 +29,24 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
     override val isGuest: Boolean
         get() = prefs.getBoolean(IS_GUEST, false)
 
+    override val isSuspended: Boolean
+        get() = prefs.getBoolean(IS_SUSPENDED, false)
+
     override val logInFlow: MutableSharedFlow<Boolean> = MutableSharedFlow(extraBufferCapacity = 2)
 
     override fun setSession(
         userId: Long,
         accessToken: String,
         username: String,
-        isGuest: Boolean
+        isGuest: Boolean,
+        isSuspended: Boolean
     ) {
         prefs.edit()
             .putString(ACCESS_TOKEN, accessToken)
             .putString(USERNAME, username)
             .putLong(USER_ID, userId)
             .putBoolean(IS_GUEST, isGuest)
+            .putBoolean(IS_SUSPENDED, isSuspended)
             .apply()
 
         logInFlow.tryEmit(true)
@@ -53,6 +58,7 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
             .remove(USERNAME)
             .remove(USER_ID)
             .remove(IS_GUEST)
+            .remove(IS_SUSPENDED)
             .apply()
 
         logInFlow.tryEmit(false)
@@ -64,5 +70,6 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         private const val USERNAME = "username"
         private const val USER_ID = "userId"
         private const val IS_GUEST = "isGuest"
+        private const val IS_SUSPENDED = "isSuspended"
     }
 }

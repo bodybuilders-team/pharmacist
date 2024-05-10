@@ -8,5 +8,6 @@ package pt.ulisboa.ist.pharmacist.service.users.dtos.register
  */
 data class RegisterOutputDto(
     val userId: Long,
-    val accessToken: String
+    val accessToken: String,
+    val isSuspended: Boolean
 )

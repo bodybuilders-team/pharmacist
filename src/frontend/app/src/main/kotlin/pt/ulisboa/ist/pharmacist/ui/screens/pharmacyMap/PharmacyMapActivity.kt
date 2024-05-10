@@ -103,7 +103,8 @@ class PharmacyMapActivity : PharmacistActivity() {
                 locationAutofill = viewModel.locationAutofill,
                 onSearchPlaces = { query -> viewModel.searchPlaces(query) },
                 onPlaceClick = { placeId -> viewModel.onPlaceClick(placeId) },
-                searchQuery = viewModel.searchQuery
+                searchQuery = viewModel.searchQuery,
+                userSuspended = viewModel.userSuspended
             )
         }
     }

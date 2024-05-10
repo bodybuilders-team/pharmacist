@@ -79,7 +79,8 @@ fun MapScreen(
     locationAutofill: List<PharmacyMapViewModel.AutocompleteResult>,
     onSearchPlaces: (String) -> Unit,
     onPlaceClick: (PharmacyMapViewModel.AutocompleteResult) -> Unit,
-    searchQuery: String
+    searchQuery: String,
+    userSuspended: Boolean
 ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -123,11 +124,15 @@ fun MapScreen(
         scaffoldState = scaffoldSheetState,
         sheetPeekHeight = 0.dp,
         sheetContent = {
-            if (clickedPharmacyMarker != null) {
-                clickedPharmacyMarker?.let { pharmacyId ->
-                    pharmacies[pharmacyId]?.let { pharmacy ->
-                        PharmacyDetails(onPharmacyDetailsClick, pharmacy)
-                    }
+            clickedPharmacyMarker?.let { pharmacyId ->
+                pharmacies[pharmacyId]?.let { pharmacy ->
+                    PharmacyDetails(onPharmacyDetailsClick = {
+                        clickedPharmacyMarker = null
+                        scaffoldSheetScope.launch {
+                            scaffoldSheetState.bottomSheetState.hide()
+                        }
+                        onPharmacyDetailsClick(pharmacyId)
+                    }, pharmacy)
                 }
             }
         }) {
@@ -170,26 +175,31 @@ fun MapScreen(
                     }
                 ) {
                     pharmacies.forEach { (_, pharmacyWithUserData) ->
-                        Marker(
-                            state = MarkerState(position = pharmacyWithUserData.pharmacy.location.toLatLng()),
-                            onClick = { _ ->
-                                if (!addingPharmacy && zoomedInMyLocation) {
-                                    clickedPharmacyMarker = pharmacyWithUserData.pharmacy.pharmacyId
-                                    scaffoldSheetScope.launch {
-                                        scaffoldSheetState.bottomSheetState.expand()
+                        if (!pharmacyWithUserData.userFlagged)
+                            Marker(
+                                state = MarkerState(position = pharmacyWithUserData.pharmacy.location.toLatLng()),
+                                onClick = { _ ->
+                                    if (!addingPharmacy && zoomedInMyLocation) {
+                                        clickedPharmacyMarker =
+                                            pharmacyWithUserData.pharmacy.pharmacyId
+                                        scaffoldSheetScope.launch {
+                                            scaffoldSheetState.bottomSheetState.expand()
+                                        }
                                     }
-                                }
-                                false
-                            },
-                            onInfoWindowClick = { onPharmacyDetailsClick(pharmacyWithUserData.pharmacy.pharmacyId) },
-                            icon = BitmapDescriptorFactory.defaultMarker(
-                                when {
-                                    clickedPharmacyMarker == pharmacyWithUserData.pharmacy.pharmacyId -> BitmapDescriptorFactory.HUE_RED
-                                    pharmacyWithUserData.userMarkedAsFavorite -> BitmapDescriptorFactory.HUE_YELLOW
-                                    else -> BitmapDescriptorFactory.HUE_GREEN
-                                }
+                                    false
+                                },
+                                onInfoWindowClick = {
+                                    clickedPharmacyMarker = null
+                                    onPharmacyDetailsClick(pharmacyWithUserData.pharmacy.pharmacyId)
+                                },
+                                icon = BitmapDescriptorFactory.defaultMarker(
+                                    when {
+                                        clickedPharmacyMarker == pharmacyWithUserData.pharmacy.pharmacyId -> BitmapDescriptorFactory.HUE_RED
+                                        pharmacyWithUserData.userMarkedAsFavorite -> BitmapDescriptorFactory.HUE_YELLOW
+                                        else -> BitmapDescriptorFactory.HUE_GREEN
+                                    }
+                                )
                             )
-                        )
                     }
 
                     if (addingPharmacy)
@@ -232,20 +242,21 @@ fun MapScreen(
                     searchQuery = searchQuery
                 )
 
-            AddPharmacyButton(addingPharmacy, pickingOnMap, onClick = {
-                if (addingPharmacy) {
-                    if (pickingOnMap) {
-                        newPharmacyMarkerState = MarkerState(cameraPositionState.position.target)
-                        setPosition(cameraPositionState.position.target)
-                        pickingOnMap = false
-                    } else {
-                        addingPharmacy = false
-                        newPharmacyMarkerState = null
-                        onAddPharmacyCancelClick()
-                    }
-                } else
-                    addingPharmacy = true
-            })
+            if (!userSuspended)
+                AddPharmacyButton(addingPharmacy, pickingOnMap, onClick = {
+                    if (addingPharmacy) {
+                        if (pickingOnMap) {
+                            newPharmacyMarkerState = MarkerState(cameraPositionState.position.target)
+                            setPosition(cameraPositionState.position.target)
+                            pickingOnMap = false
+                        } else {
+                            addingPharmacy = false
+                            newPharmacyMarkerState = null
+                            onAddPharmacyCancelClick()
+                        }
+                    } else
+                        addingPharmacy = true
+                })
         }
     }
 }

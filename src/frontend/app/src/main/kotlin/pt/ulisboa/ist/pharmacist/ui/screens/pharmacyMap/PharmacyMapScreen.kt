@@ -62,7 +62,8 @@ fun PharmacyMapScreen(
     locationAutofill: MutableList<PharmacyMapViewModel.AutocompleteResult>,
     onSearchPlaces: (String) -> Unit,
     onPlaceClick: (PharmacyMapViewModel.AutocompleteResult) -> Unit,
-    searchQuery: String
+    searchQuery: String,
+    userSuspended: Boolean
 ) {
     PharmacistScreen {
         Column(
@@ -89,7 +90,8 @@ fun PharmacyMapScreen(
                     locationAutofill = locationAutofill,
                     onSearchPlaces = onSearchPlaces,
                     onPlaceClick = onPlaceClick,
-                    searchQuery = searchQuery
+                    searchQuery = searchQuery,
+                    userSuspended = userSuspended
                 )
             else
                 PermissionScreen(

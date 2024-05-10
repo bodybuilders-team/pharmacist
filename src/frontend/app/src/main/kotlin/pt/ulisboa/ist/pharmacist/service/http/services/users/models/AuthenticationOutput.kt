@@ -8,6 +8,7 @@ package pt.ulisboa.ist.pharmacist.service.http.services.users.models
  */
 data class AuthenticationOutput(
     val userId: Long,
-    val accessToken: String
+    val accessToken: String,
+    val isSuspended: Boolean
 )
 

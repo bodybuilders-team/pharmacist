@@ -57,7 +57,8 @@ class AuthenticationViewModel(
             sessionManager.setSession(
                 result.data.userId,
                 result.data.accessToken,
-                username
+                username,
+                isSuspended = result.data.isSuspended
             )
             AuthenticationState.AUTHENTICATED
         } else {
@@ -76,7 +77,8 @@ class AuthenticationViewModel(
             sessionManager.setSession(
                 result.data.userId,
                 result.data.accessToken,
-                username
+                username,
+                isSuspended = result.data.isSuspended
             )
             AuthenticationState.AUTHENTICATED
         } else {

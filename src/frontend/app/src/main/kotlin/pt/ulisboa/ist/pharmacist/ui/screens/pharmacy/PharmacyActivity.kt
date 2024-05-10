@@ -108,7 +108,12 @@ class PharmacyActivity : PharmacistActivity() {
                     }
                 },
                 onReportClick = {
-                    viewModel.updateReportStatus()
+                    lifecycleScope.launch {
+                        val success = viewModel.updateReportStatus()
+                        if (success) {// TODO: Handle error
+                            finish()
+                        }
+                    }
                 },
                 onRatingChanged = { rating ->
                     viewModel.updateRating(rating)

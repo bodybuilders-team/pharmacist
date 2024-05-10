@@ -15,6 +15,7 @@ interface SessionManager {
     val accessToken: String?
     val username: String?
     val isGuest: Boolean
+    val isSuspended: Boolean
     val logInFlow: SharedFlow<Boolean>
 
     /**
@@ -36,7 +37,8 @@ interface SessionManager {
         userId: Long,
         accessToken: String,
         username: String,
-        isGuest: Boolean = false
+        isGuest: Boolean = false,
+        isSuspended: Boolean = false
     )
 
     /**

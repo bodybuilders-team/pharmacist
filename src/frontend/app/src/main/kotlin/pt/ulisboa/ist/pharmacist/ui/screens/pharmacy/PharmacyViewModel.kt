@@ -229,20 +229,18 @@ class PharmacyViewModel(
         }
     }
 
-    fun updateReportStatus() = pharmacy?.let {
-        viewModelScope.launch {
-            if (it.userFlagged) {
-                val result = pharmacistService.usersService.unflagPharmacy(it.pharmacy.pharmacyId)
-
-                if (result.isSuccess())
-                    pharmacy = pharmacy?.copy(userFlagged = false)
-            } else {
-                val result = pharmacistService.usersService.flagPharmacy(it.pharmacy.pharmacyId)
-
-                if (result.isSuccess())
-                    pharmacy = pharmacy?.copy(userFlagged = true)
+    suspend fun updateReportStatus(): Boolean {
+        pharmacy?.let {
+            Log.d("PharmacyViewModel", "Flagging pharmacy ${it.pharmacy.pharmacyId}")
+            val result = pharmacistService.usersService.flagPharmacy(it.pharmacy.pharmacyId)
+            if (result.isSuccess()) {
+                pharmacy = pharmacy?.copy(userFlagged = true)
+                Log.d("PharmacyViewModel", "Pharmacy ${it.pharmacy.pharmacyId} flagged")
+                return@updateReportStatus true
             }
         }
+
+        return false
     }
 
     fun modifyStock(

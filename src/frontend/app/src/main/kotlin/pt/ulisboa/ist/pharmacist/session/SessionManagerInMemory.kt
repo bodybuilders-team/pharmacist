@@ -14,6 +14,7 @@ class SessionManagerInMemory : SessionManager {
     private var _username: String? by mutableStateOf(null)
     private var _userId: Long? by mutableStateOf(null)
     private var _isGuest: Boolean by mutableStateOf(false)
+    private var _isSuspended: Boolean by mutableStateOf(false)
 
     override val accessToken
         get() = _accessToken
@@ -27,13 +28,23 @@ class SessionManagerInMemory : SessionManager {
     override val isGuest: Boolean
         get() = _isGuest
 
+    override val isSuspended: Boolean
+        get() = _isSuspended
+
     override val logInFlow: MutableSharedFlow<Boolean> = MutableSharedFlow(extraBufferCapacity = 2)
 
-    override fun setSession(userId: Long, accessToken: String, username: String, isGuest: Boolean) {
+    override fun setSession(
+        userId: Long,
+        accessToken: String,
+        username: String,
+        isGuest: Boolean,
+        isSuspended: Boolean
+    ) {
         this._userId = userId
         this._accessToken = accessToken
         this._username = username
         this._isGuest = isGuest
+        this._isSuspended = isSuspended
     }
 
     override fun clearSession() {
@@ -41,5 +52,6 @@ class SessionManagerInMemory : SessionManager {
         this._username = null
         this._userId = null
         this._isGuest = false
+        this._isSuspended = false
     }
 }

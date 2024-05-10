@@ -106,7 +106,7 @@ fun PharmacyHeader(
                     tint = if (pharmacy.userMarkedAsFavorite) Favorite else MaterialTheme.colorScheme.primary
                 )
             }
-            IconButton(onClick = onReportClick) { // TODO: After report, show a dialog to confirm the report and then return to the pharmacy map
+            IconButton(onClick = onReportClick) {
                 Icon(
                     if (pharmacy.userFlagged) Icons.Rounded.Flag else Icons.Rounded.OutlinedFlag,
                     contentDescription = stringResource(R.string.report_pharmacy),

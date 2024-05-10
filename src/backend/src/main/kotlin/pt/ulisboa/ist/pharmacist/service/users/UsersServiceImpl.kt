@@ -56,7 +56,8 @@ class UsersServiceImpl(
 
         return RegisterOutputDto(
             userId = user.userId,
-            accessToken = accessToken
+            accessToken = accessToken,
+            isSuspended = user.suspended
         )
     }
 
@@ -80,7 +81,8 @@ class UsersServiceImpl(
 
         return LoginOutputDto(
             userId = user.userId,
-            accessToken = accessToken
+            accessToken = accessToken,
+            isSuspended = user.suspended
         )
     }
 

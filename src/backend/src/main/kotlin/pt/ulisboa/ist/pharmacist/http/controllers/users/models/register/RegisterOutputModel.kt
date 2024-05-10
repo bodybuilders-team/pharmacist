@@ -9,10 +9,12 @@ import pt.ulisboa.ist.pharmacist.service.users.dtos.register.RegisterOutputDto
  */
 data class RegisterOutputModel(
     val userId: Long,
-    val accessToken: String
+    val accessToken: String,
+    val isSuspended: Boolean
 ) {
     constructor(registerOutputDto: RegisterOutputDto) : this(
         userId = registerOutputDto.userId,
-        accessToken = registerOutputDto.accessToken
+        accessToken = registerOutputDto.accessToken,
+        isSuspended = registerOutputDto.isSuspended
     )
 }
