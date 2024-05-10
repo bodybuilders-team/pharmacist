@@ -1,7 +1,9 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.createMedicine
 
-import androidx.compose.foundation.Image
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -10,8 +12,6 @@ import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,10 +20,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
+import pt.ulisboa.ist.pharmacist.ui.screens.createMedicine.components.CreateMedicineImage
+import pt.ulisboa.ist.pharmacist.ui.screens.createMedicine.components.CreateMedicineNameAndDescription
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
@@ -43,9 +46,10 @@ fun CreateMedicineScreen(
     onAddPictureButtonClick: () -> Unit,
     onCreateMedicine: (String, String) -> Unit
 ) {
-    PharmacistScreen {
-        var _hasCameraPermission by remember { mutableStateOf(hasCameraPermission) }
+    var _hasCameraPermission by remember { mutableStateOf(hasCameraPermission) }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    PharmacistScreen {
         if (!_hasCameraPermission) {
             PermissionScreen(
                 onPermissionGranted = { _hasCameraPermission = true },
@@ -66,40 +70,57 @@ fun CreateMedicineScreen(
 
             ScreenTitle(title = stringResource(R.string.create_medicine))
 
-            // TODO: Add validation of these fields
-            TextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(R.string.medicine_name)) },
-                modifier = Modifier.padding(16.dp)
-            )
-
-            TextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text(stringResource(R.string.medicine_description)) },
-                modifier = Modifier.padding(16.dp)
-            )
-
-            Column {
-                if (boxPhoto != null)
-                    Image(
-                        bitmap = boxPhoto,
-                        contentDescription = stringResource(R.string.medicine_boxPhoto_description),
-                        modifier = Modifier.padding(16.dp)
-                    )
-
-                IconButton(
-                    onClick = onAddPictureButtonClick,
-                    modifier = Modifier.padding(16.dp)
+            if (isLandscape)
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Rounded.Image,
-                        contentDescription = stringResource(R.string.take_photo_select_image),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                    CreateMedicineImage(boxPhoto, modifier = Modifier.weight(1f))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CreateMedicineNameAndDescription(
+                            name,
+                            onNameChange = { name = it },
+                            description,
+                            onDescriptionChange = { description = it }
+                        )
+                        IconButton(
+                            onClick = onAddPictureButtonClick,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Icon(
+                                Icons.Rounded.Image,
+                                contentDescription = stringResource(R.string.take_photo_select_image),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 }
-            }
+            else
+                Column(
+                    modifier = Modifier,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CreateMedicineNameAndDescription(
+                        name,
+                        onNameChange = { name = it },
+                        description,
+                        onDescriptionChange = { description = it }
+                    )
+
+                    CreateMedicineImage(boxPhoto)
+
+                    IconButton(
+                        onClick = onAddPictureButtonClick,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Icon(
+                            Icons.Rounded.Image,
+                            contentDescription = stringResource(R.string.take_photo_select_image),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
 
             IconTextButton(
                 enabled = name.isNotBlank() && description.isNotBlank() && boxPhoto != null,
@@ -110,7 +131,6 @@ fun CreateMedicineScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
-
         }
     }
 }

@@ -77,7 +77,12 @@ fun MedicineScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    MedicineHeader(medicine, toggleMedicineNotification, notificationsActive, onShareClick)
+                    MedicineHeader(
+                        medicine,
+                        toggleMedicineNotification,
+                        notificationsActive,
+                        onShareClick
+                    )
                     MedicinePharmacyList(pharmacies, onPharmacyClick)
                 }
             else
@@ -85,7 +90,12 @@ fun MedicineScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    MedicineHeader(medicine, toggleMedicineNotification, notificationsActive, onShareClick)
+                    MedicineHeader(
+                        medicine,
+                        toggleMedicineNotification,
+                        notificationsActive,
+                        onShareClick
+                    )
                     MedicinePharmacyList(pharmacies, onPharmacyClick)
                 }
         }

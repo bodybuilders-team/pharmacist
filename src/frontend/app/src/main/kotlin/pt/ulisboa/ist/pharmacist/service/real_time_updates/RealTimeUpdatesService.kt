@@ -12,7 +12,6 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import okio.ByteString
 import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
 import pt.ulisboa.ist.pharmacist.session.SessionManager
