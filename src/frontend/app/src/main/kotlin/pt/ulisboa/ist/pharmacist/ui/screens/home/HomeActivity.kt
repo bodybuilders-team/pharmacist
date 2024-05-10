@@ -34,6 +34,7 @@ class HomeActivity : PharmacistActivity() {
 
         setContent {
             HomeScreen(
+                isLoading = viewModel.isLoading,
                 loggedIn = viewModel.isLoggedIn,
                 isGuest = viewModel.isGuest,
                 username = viewModel.username,

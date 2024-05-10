@@ -39,6 +39,7 @@ const val WELCOME_TEXT_WIDTH_FACTOR = 0.9f
  */
 @Composable
 fun HomeScreen(
+    isLoading: Boolean,
     loggedIn: Boolean,
     isGuest: Boolean,
     username: String?,
@@ -64,6 +65,7 @@ fun HomeScreen(
             ) {
                 HomeHeader(loggedIn, username, Modifier.weight(1f))
                 HomeButtons(
+                    isLoading,
                     loggedIn,
                     onLoginClick,
                     onRegisterClick,
@@ -85,6 +87,7 @@ fun HomeScreen(
             ) {
                 HomeHeader(loggedIn, username)
                 HomeButtons(
+                    isLoading,
                     loggedIn,
                     onLoginClick,
                     onRegisterClick,

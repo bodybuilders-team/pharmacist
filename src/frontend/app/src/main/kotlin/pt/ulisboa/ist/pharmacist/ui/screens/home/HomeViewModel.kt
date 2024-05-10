@@ -33,6 +33,9 @@ class HomeViewModel(
     val username
         get() = sessionManager.username
 
+    var isLoading: Boolean by mutableStateOf(false)
+        private set
+
     /**
      * Logs out the user.
      */
@@ -48,12 +51,14 @@ class HomeViewModel(
 
         Log.d("LOGOUT", "Logging out user")
         withTimeoutOrNull(5000) {
+            isLoading = true
             pharmacistService.usersService.logout()
         }
 
         sessionManager.clearSession()
         isLoggedIn = false
         isGuest = false
+        isLoading = false
         Log.d("LOGOUT", "User logged out")
     }
 
@@ -78,6 +83,7 @@ class HomeViewModel(
         if (isLoggedIn || isGuest) return@launch
 
         val guestUserName = "Guest${UUID.randomUUID()}"
+        isLoading = true
         val result = pharmacistService.usersService.register(
             username = guestUserName,
             password = UUID.randomUUID().toString()
@@ -93,5 +99,6 @@ class HomeViewModel(
             isLoggedIn = true
             isGuest = true
         }
+        isLoading = false
     }
 }

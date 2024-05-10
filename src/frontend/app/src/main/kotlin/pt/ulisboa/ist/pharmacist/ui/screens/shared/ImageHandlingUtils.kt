@@ -15,6 +15,7 @@ import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isFailure
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import java.net.URL
 
 object ImageHandlingUtils {
 
@@ -106,7 +107,6 @@ object ImageHandlingUtils {
 
         val signedUrl = createSignedUrlResult.data.signedUrl
 
-
         val uploadResult =
             pharmacistService.uploaderService.uploadBoxPhoto(signedUrl, boxPhotoData, mediaType)
 
@@ -140,6 +140,11 @@ object ImageHandlingUtils {
         chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(camIntent))
 
         return chooser
+    }
+
+    fun downloadImage(url: String): ImageBitmap? {
+        val inputStream = URL(url).openStream()
+        return BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
     }
 }
 
