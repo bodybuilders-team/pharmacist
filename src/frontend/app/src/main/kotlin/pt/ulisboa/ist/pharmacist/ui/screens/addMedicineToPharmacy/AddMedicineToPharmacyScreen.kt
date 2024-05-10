@@ -1,6 +1,8 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
@@ -42,35 +45,30 @@ fun AddMedicineToPharmacyScreen(
     createMedicine: () -> Unit,
     addMedicineToPharmacy: (Long, Long) -> Unit,
 ) {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    var stock by remember { mutableLongStateOf(0L) }
+
     PharmacistTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = stringResource(R.string.available_medicines),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp)
-            )
-            MedicineSearch(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .weight(0.8f),
-                hasLocationPermission = hasLocationPermission,
-                medicinesState = medicinesState,
-                onSearch = onSearch,
-                onMedicineClicked = onMedicineClicked,
-                selectedMedicine = selectedMedicine
-            )
-
-            var stock by remember { mutableLongStateOf(0L) }
-
-            if (selectedMedicine != null) {
-                PharmacyMedicineEntry(
+        if (isLandscape)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                MedicineSelector(
+                    hasLocationPermission,
+                    medicinesState,
+                    onSearch,
+                    onMedicineClicked,
+                    selectedMedicine,
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .align(Alignment.CenterHorizontally),
-                    medicine = selectedMedicine,
-                    stock = stock,
+                        .fillMaxWidth(0.5f)
+                )
+
+                SelectedMedicine(
+                    selectedMedicine,
+                    stock,
+                    addMedicineToPharmacy,
+                    createMedicine,
                     onAddStockClick = {
                         stock += 1
                     },
@@ -79,30 +77,119 @@ fun AddMedicineToPharmacyScreen(
                     }
                 )
             }
+        else
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                MedicineSelector(
+                    hasLocationPermission,
+                    medicinesState,
+                    onSearch,
+                    onMedicineClicked,
+                    selectedMedicine,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.8f)
+                )
 
-            IconTextButton(
-                onClick = {
-                    if (selectedMedicine != null)
-                        addMedicineToPharmacy(selectedMedicine.medicineId, stock)
-                },
-                enabled = selectedMedicine != null,
-                imageVector = Icons.Rounded.AddCircleOutline,
-                text = stringResource(R.string.add_medicine_to_pharmacy),
-                contentDescription = stringResource(R.string.add_medicine_to_pharmacy),
+                SelectedMedicine(
+                    selectedMedicine,
+                    stock,
+                    addMedicineToPharmacy,
+                    createMedicine,
+                    onAddStockClick = {
+                        stock += 1
+                    },
+                    onRemoveStockClick = {
+                        stock -= 1
+                    }
+                )
+            }
+    }
+}
+
+@Composable
+private fun SelectedMedicine(
+    selectedMedicine: Medicine?,
+    stock: Long,
+    addMedicineToPharmacy: (Long, Long) -> Unit,
+    createMedicine: () -> Unit,
+    onAddStockClick: (Long) -> Unit,
+    onRemoveStockClick: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (selectedMedicine != null)
+            PharmacyMedicineEntry(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth(0.9f),
+                medicine = selectedMedicine,
+                stock = stock,
+                onAddStockClick = onAddStockClick,
+                onRemoveStockClick = onRemoveStockClick
+            )
+        else
+            Text(
+                text = stringResource(R.string.no_medicine_selected),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
             )
 
-            IconTextButton(
-                onClick = createMedicine,
-                imageVector = Icons.Rounded.Medication,
-                text = stringResource(R.string.create_medicine),
-                contentDescription = stringResource(R.string.create_medicine),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 8.dp)
-            )
-        }
+        IconTextButton(
+            onClick = {
+                if (selectedMedicine != null)
+                    addMedicineToPharmacy(selectedMedicine.medicineId, stock)
+            },
+            enabled = selectedMedicine != null,
+            imageVector = Icons.Rounded.AddCircleOutline,
+            text = stringResource(R.string.add_medicine_to_pharmacy),
+            contentDescription = stringResource(R.string.add_medicine_to_pharmacy),
+            modifier = Modifier
+        )
+
+        IconTextButton(
+            onClick = createMedicine,
+            imageVector = Icons.Rounded.Medication,
+            text = stringResource(R.string.create_medicine),
+            contentDescription = stringResource(R.string.create_medicine),
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun MedicineSelector(
+    hasLocationPermission: Boolean,
+    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>,
+    onSearch: (String) -> Unit,
+    onMedicineClicked: (Medicine) -> Unit,
+    selectedMedicine: Medicine?,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(R.string.available_medicines),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .padding(top = 16.dp)
+        )
+        MedicineSearch(
+            modifier = Modifier
+                .weight(0.8f),
+            hasLocationPermission = hasLocationPermission,
+            medicinesState = medicinesState,
+            onSearch = onSearch,
+            onMedicineClicked = onMedicineClicked,
+            selectedMedicine = selectedMedicine
+        )
     }
 }
 

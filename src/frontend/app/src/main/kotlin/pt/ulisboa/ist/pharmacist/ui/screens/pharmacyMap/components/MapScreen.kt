@@ -173,7 +173,7 @@ fun MapScreen(
                         Marker(
                             state = MarkerState(position = pharmacyWithUserData.pharmacy.location.toLatLng()),
                             onClick = { _ ->
-                                if (!addingPharmacy) {
+                                if (!addingPharmacy && zoomedInMyLocation) {
                                     clickedPharmacyMarker = pharmacyWithUserData.pharmacy.pharmacyId
                                     scaffoldSheetScope.launch {
                                         scaffoldSheetState.bottomSheetState.expand()

@@ -107,7 +107,7 @@ fun StarRatingBar(
             val iconTintColor = if (isSelected) Gold else Color.LightGray
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.star),
                 tint = iconTintColor,
                 modifier = Modifier
                     .selectable(

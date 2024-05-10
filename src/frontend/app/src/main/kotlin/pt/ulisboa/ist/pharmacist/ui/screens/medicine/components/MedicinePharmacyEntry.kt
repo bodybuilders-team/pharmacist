@@ -85,11 +85,11 @@ fun MedicinePharmacyEntry(
                     Row {
                         Icon(
                             imageVector = Icons.Rounded.Favorite,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.favorite_pharmacy),
                             tint = Favorite,
                         )
                         Text(
-                            text = "Favorite Pharmacy",
+                            text = stringResource(R.string.favorite_pharmacy),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
