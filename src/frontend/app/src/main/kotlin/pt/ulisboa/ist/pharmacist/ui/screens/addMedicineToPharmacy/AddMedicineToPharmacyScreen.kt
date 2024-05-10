@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,9 +27,11 @@ import kotlinx.coroutines.flow.Flow
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.service.http.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearch
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 import pt.ulisboa.ist.pharmacist.ui.theme.PharmacistTheme
 
 
@@ -37,8 +40,9 @@ import pt.ulisboa.ist.pharmacist.ui.theme.PharmacistTheme
  */
 @Composable
 fun AddMedicineToPharmacyScreen(
+    loadingState: AddMedicineToPharmacyState,
     hasLocationPermission: Boolean,
-    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>,
+    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>?,
     onSearch: (String) -> Unit,
     onMedicineClicked: (Medicine) -> Unit,
     selectedMedicine: Medicine?,
@@ -49,63 +53,72 @@ fun AddMedicineToPharmacyScreen(
     var stock by remember { mutableLongStateOf(0L) }
 
     PharmacistTheme {
-        if (isLandscape)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                MedicineSelector(
-                    hasLocationPermission,
-                    medicinesState,
-                    onSearch,
-                    onMedicineClicked,
-                    selectedMedicine,
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                )
+        if (loadingState == AddMedicineToPharmacyState.LOADED) {
+            if (isLandscape)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    MedicineSelector(
+                        hasLocationPermission,
+                        medicinesState!!,
+                        onSearch,
+                        onMedicineClicked,
+                        selectedMedicine,
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                    )
 
-                SelectedMedicine(
-                    selectedMedicine,
-                    stock,
-                    addMedicineToPharmacy,
-                    createMedicine,
-                    onAddStockClick = {
-                        stock += 1
-                    },
-                    onRemoveStockClick = {
-                        stock -= 1
-                    }
-                )
-            }
-        else
-            Column(
+                    SelectedMedicine(
+                        selectedMedicine,
+                        stock,
+                        addMedicineToPharmacy,
+                        createMedicine,
+                        onAddStockClick = {
+                            stock += 1
+                        },
+                        onRemoveStockClick = {
+                            stock -= 1
+                        }
+                    )
+                }
+            else
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    MedicineSelector(
+                        hasLocationPermission,
+                        medicinesState!!,
+                        onSearch,
+                        onMedicineClicked,
+                        selectedMedicine,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
+                    )
+
+                    SelectedMedicine(
+                        selectedMedicine,
+                        stock,
+                        addMedicineToPharmacy,
+                        createMedicine,
+                        onAddStockClick = {
+                            stock += 1
+                        },
+                        onRemoveStockClick = {
+                            stock -= 1
+                        }
+                    )
+                }
+        } else {
+            Box(
                 modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentAlignment = Alignment.Center
             ) {
-                MedicineSelector(
-                    hasLocationPermission,
-                    medicinesState,
-                    onSearch,
-                    onMedicineClicked,
-                    selectedMedicine,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(0.8f)
-                )
-
-                SelectedMedicine(
-                    selectedMedicine,
-                    stock,
-                    addMedicineToPharmacy,
-                    createMedicine,
-                    onAddStockClick = {
-                        stock += 1
-                    },
-                    onRemoveStockClick = {
-                        stock -= 1
-                    }
-                )
+                LoadingSpinner()
             }
+        }
     }
 }
 
@@ -144,7 +157,7 @@ private fun SelectedMedicine(
                 if (selectedMedicine != null)
                     addMedicineToPharmacy(selectedMedicine.medicineId, stock)
             },
-            enabled = selectedMedicine != null,
+            enabled = selectedMedicine != null && stock > 0,
             imageVector = Icons.Rounded.AddCircleOutline,
             text = stringResource(R.string.add_medicine_to_pharmacy),
             contentDescription = stringResource(R.string.add_medicine_to_pharmacy),

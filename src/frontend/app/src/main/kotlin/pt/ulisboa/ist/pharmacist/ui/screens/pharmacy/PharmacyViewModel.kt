@@ -251,15 +251,7 @@ class PharmacyViewModel(
         quantity: Long = 1
     ) = pharmacy?.let {
         viewModelScope.launch {
-            medicinesList.compute(medicineId) { _, medicineStock ->
-                medicineStock?.copy(
-                    stock = medicineStock.stock + when (operation) {
-                        MedicineStockOperation.ADD -> quantity
-                        MedicineStockOperation.REMOVE -> -quantity
-                    }
-                )
-            }
-            val result = pharmacistService.pharmaciesService.changeMedicineStock(
+            pharmacistService.pharmaciesService.changeMedicineStock(
                 pharmacyId = it.pharmacy.pharmacyId,
                 medicineId = medicineId,
                 operation = operation,

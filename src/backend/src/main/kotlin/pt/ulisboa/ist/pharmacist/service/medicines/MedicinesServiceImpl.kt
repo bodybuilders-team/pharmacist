@@ -35,7 +35,7 @@ class MedicinesServiceImpl(
             limit = limit
         )
 
-        return GetMedicinesWithClosestPharmacyOutputDto(0, medicines)
+        return GetMedicinesWithClosestPharmacyOutputDto( medicines)
     }
 
     override fun createMedicine(name: String, description: String, boxPhotoUrl: String): MedicineDto {

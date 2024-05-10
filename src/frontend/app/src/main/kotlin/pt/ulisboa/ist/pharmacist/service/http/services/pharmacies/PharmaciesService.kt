@@ -5,12 +5,14 @@ import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.service.http.HTTPService
 import pt.ulisboa.ist.pharmacist.service.http.connection.APIResult
+import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.addPharmacy.AddPharmacyOutputModel
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.ChangeMedicineStockModel
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacies.GetPharmaciesOutputModel
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.ListAvailableMedicinesOutputModel
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
 import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 
@@ -99,6 +101,29 @@ class PharmaciesService(
         )
     }
 
+    suspend fun listAllAvailableMedicines(
+        pharmacyId: Long
+    ): APIResult<ListAvailableMedicinesOutputModel> {
+        var offset = 0L
+        val allMedicines = mutableListOf<MedicineStockModel>()
+
+        while (true) {
+            val result = listAvailableMedicines(pharmacyId, MAX_LIMIT, offset)
+            if (result.isSuccess()) {
+                val medicines = result.data.medicines
+                if (medicines.isEmpty())
+                    break
+
+                allMedicines.addAll(medicines)
+                offset += MAX_LIMIT
+            } else {
+                return APIResult.Failure(result.error)
+            }
+        }
+
+        return APIResult.Success(ListAvailableMedicinesOutputModel(allMedicines))
+    }
+
     suspend fun ratePharmacy(pharmacyId: Long, rating: Int): APIResult<Unit> {
         return post<Unit>(
             link = Uris.pharmacyRating(pharmacyId),
@@ -158,6 +183,10 @@ class PharmaciesService(
                 "location" to location
             )
         )
+    }
+
+    companion object {
+        private const val MAX_LIMIT = 100L
     }
 }
 

@@ -196,13 +196,3 @@ class RealTimeUpdatesService(
     }
 }
 
-class JsonWebSocket(private val webSocket: WebSocket) {
-    fun send(message: Any) {
-        val json = Gson().toJson(message)
-        webSocket.send(json)
-    }
-
-    fun sendByteString(byteString: ByteString) {
-        webSocket.send(byteString)
-    }
-}

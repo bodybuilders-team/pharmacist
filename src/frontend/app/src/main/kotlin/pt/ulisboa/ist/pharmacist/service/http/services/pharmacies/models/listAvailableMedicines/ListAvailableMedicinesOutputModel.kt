@@ -3,7 +3,6 @@ package pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAv
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 
 data class ListAvailableMedicinesOutputModel(
-    val totalCount: Int,
     val medicines: List<MedicineStockModel>
 )
 

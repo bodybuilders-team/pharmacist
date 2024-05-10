@@ -16,6 +16,7 @@ import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.AddNewMedicineOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ChangeMedicineStockOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.ListAvailableMedicinesOutputDto
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.MedicineStockDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyDto
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyWithUserDataDto
 
@@ -82,7 +83,7 @@ class PharmaciesServiceImpl(
             offset = offset,
             limit = limit
         )
-        return ListAvailableMedicinesOutputDto(medicines)
+        return ListAvailableMedicinesOutputDto(medicines.map { MedicineStockDto(it) })
     }
 
     override fun addNewMedicine(pharmacyId: Long, medicineId: Long, quantity: Long): AddNewMedicineOutputDto {

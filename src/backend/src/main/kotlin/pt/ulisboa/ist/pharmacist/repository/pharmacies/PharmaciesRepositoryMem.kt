@@ -10,6 +10,7 @@ import pt.ulisboa.ist.pharmacist.service.exceptions.AlreadyExistsException
 import pt.ulisboa.ist.pharmacist.service.exceptions.InvalidArgumentException
 import pt.ulisboa.ist.pharmacist.service.exceptions.NotFoundException
 import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.GetPharmaciesOutputDto
+import pt.ulisboa.ist.pharmacist.service.pharmacies.dtos.PharmacyWithUserDataDto
 import pt.ulisboa.ist.pharmacist.service.utils.paginate
 
 @Repository
@@ -66,8 +67,7 @@ class PharmaciesRepositoryMem(private val dataSource: MemDataSource) : Pharmacie
                                 userMarkedAsFavorite = user.favoritePharmacies.contains(pharmacy.pharmacyId),
                                 userFlagged = user.flaggedPharmacies.contains(pharmacy.pharmacyId)
                             )
-                        },
-                    totalCount = totalPharmacies.size
+                        }.map { PharmacyWithUserDataDto(it) },
                 )
             }
     }

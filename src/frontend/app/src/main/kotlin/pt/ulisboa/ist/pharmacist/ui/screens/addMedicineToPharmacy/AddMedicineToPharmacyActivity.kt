@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.createMedicine.CreateMedicineActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateToForResult
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
@@ -43,11 +44,14 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
         viewModel.checkForLocationAccessPermission(this)
 
         lifecycleScope.launch {
+            if (viewModel.loadingState == NOT_LOADED)
+                viewModel.loadAvailableMedicines(pharmacyId)
             viewModel.startObtainingLocation(this@AddMedicineToPharmacyActivity)
         }
 
         setContent {
             AddMedicineToPharmacyScreen(
+                loadingState = viewModel.loadingState,
                 hasLocationPermission = viewModel.hasLocationPermission,
                 medicinesState = viewModel.medicinesState,
                 onSearch = { viewModel.searchMedicines(it) },
