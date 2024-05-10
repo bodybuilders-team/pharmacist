@@ -38,40 +38,33 @@ class CreateMedicineViewModel(
             }
     }
 
-    fun createMedicine(name: String, description: String): Long? {
-        var createdMedicineId: Long? = null
-        viewModelScope.launch {
-            val boxPhotoUrl = boxPhotoUrl
-            if (boxPhotoUrl == null) {
-                Log.e("CreateMedicineModel", "Box photo URL is null")
-                createdMedicineId = null
-                return@launch
-            }
-            if (name == "" || description == "") {
-                Log.e("CreateMedicineModel", "Name and description must not be empty")
-                createdMedicineId = null
-                return@launch
-            }
-
-            state = CreateMedicineState.CREATING_MEDICINE
-
-            val createMedicineResult =
-                pharmacistService.medicinesService.createMedicine(name, description, boxPhotoUrl)
-
-            if (createMedicineResult.isFailure()) {
-                Log.e("CreateMedicineModel", "Failed to create medicine")
-                createdMedicineId = null
-                return@launch
-            }
-
-            Log.d("CreateMedicineModel", "Medicine created successfully")
-            state = CreateMedicineState.MEDICINE_CREATED
-
-            createdMedicineId = createMedicineResult.data.medicineId
+    suspend fun createMedicine(name: String, description: String): Long? {
+        val boxPhotoUrl = boxPhotoUrl
+        if (boxPhotoUrl == null) {
+            Log.e("CreateMedicineModel", "Box photo URL is null")
+            return null
         }
+        if (name == "" || description == "") {
+            Log.e("CreateMedicineModel", "Name and description must not be empty")
+            return null
+        }
+
+        state = CreateMedicineState.CREATING_MEDICINE
+
+        val createMedicineResult =
+            pharmacistService.medicinesService.createMedicine(name, description, boxPhotoUrl)
+
+        if (createMedicineResult.isFailure()) {
+            Log.e("CreateMedicineModel", "Failed to create medicine")
+            return null
+        }
+
+        Log.d("CreateMedicineModel", "Medicine created successfully")
+        state = CreateMedicineState.MEDICINE_CREATED
+
         boxPhoto = null
-        boxPhotoUrl = null
-        return createdMedicineId
+        this.boxPhotoUrl = null
+        return createMedicineResult.data.medicineId
     }
 
 

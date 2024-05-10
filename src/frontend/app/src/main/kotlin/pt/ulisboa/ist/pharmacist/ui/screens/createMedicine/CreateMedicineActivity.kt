@@ -3,28 +3,22 @@ package pt.ulisboa.ist.pharmacist.ui.screens.createMedicine
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaType
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasCameraPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateToForResult
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 
 /**
- * Activity for the [MedicineScreen].
+ * Activity for the [CreateMedicine].
  */
 class CreateMedicineActivity : PharmacistActivity() {
 
@@ -35,61 +29,30 @@ class CreateMedicineActivity : PharmacistActivity() {
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val imageResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode != RESULT_OK) return@registerForActivityResult
 
-            if (result.data?.extras?.getParcelable("data", Bitmap::class.java) != null) {
+            if (result.data?.extras?.get("data") is Bitmap)
                 handleTakePhoto(result)
-            } else {
+            else
                 handleImageSelection(result)
-            }
         }
 
     private fun handleImageSelection(result: ActivityResult) {
-        val uri = result.data?.data
-
-        if (uri == null) {
-            Log.e("CreateMedicineActivity", "Failed to get uri")
-            return
-        }
-
-        val inputStream: InputStream? = contentResolver.openInputStream(uri)
-
-        if (inputStream == null) {
-            Log.e("CreateMedicineActivity", "Failed to open input stream")
-            return
-        }
-
-        val mimeTypeStr = contentResolver.getType(uri)
-        val mimeType = mimeTypeStr?.toMediaType()
-
-        if (mimeType == null) {
-            Log.e("CreateMedicineActivity", "Failed to get mime type")
-            return
-        }
-
-        viewModel.uploadBoxPhoto(inputStream.readBytes(), mimeType)
+        ImageHandlingUtils.handleImageSelection(contentResolver, result)
+            ?.let { (inputStream, mediaType) ->
+                viewModel.uploadBoxPhoto(inputStream.readBytes(), mediaType)
+            }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun handleTakePhoto(result: ActivityResult) {
-        val imageBitmap = result.data?.extras?.getParcelable("data", Bitmap::class.java)
-
-        if (imageBitmap !is Bitmap) {
-            Log.e("CreateMedicineActivity", "Failed to get image bitmap")
-            return
-        }
-
-        val stream = ByteArrayOutputStream()
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        val imageBytes = stream.toByteArray()
-
-        viewModel.uploadBoxPhoto(imageBytes, "image/jpeg".toMediaType())
+        ImageHandlingUtils.handleTakePhoto(result)
+            ?.let { (boxPhotoData, mediaType) ->
+                viewModel.uploadBoxPhoto(boxPhotoData, mediaType)
+            }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -110,17 +73,8 @@ class CreateMedicineActivity : PharmacistActivity() {
                         }
                     }
                 },
-                onSelectImage = {
-                    val galIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                    galIntent.addCategory(Intent.CATEGORY_OPENABLE)
-                    galIntent.setType("image/jpeg")
-
-                    val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-                    val chooser = Intent.createChooser(galIntent, "Some text here")
-                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(camIntent))
-
-                    imageResultLauncher.launch(chooser)
+                onAddPictureButtonClick = {
+                    imageResultLauncher.launch(ImageHandlingUtils.getChooserIntent())
                 }
             )
         }

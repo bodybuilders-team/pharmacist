@@ -38,11 +38,10 @@ class PharmacyMapActivity : PharmacistActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode != RESULT_OK) return@registerForActivityResult
 
-            if (result.data?.extras?.get("data") is Bitmap) {
+            if (result.data?.extras?.get("data") is Bitmap)
                 handleTakePhoto(result)
-            } else {
+            else
                 handleImageSelection(result)
-            }
         }
 
     private fun handleImageSelection(result: ActivityResult) {

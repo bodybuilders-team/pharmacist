@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScreen
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
 
 
@@ -32,14 +33,14 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.ScreenTitle
  * Create Medicine screen.
  *
  * @param boxPhoto the box photo
- * @param onSelectImage function to be executed when the user selects an image
+ * @param onAddPictureButtonClick function to be executed when the user selects an image
  * @param onCreateMedicine function to be executed when the user creates a medicine
  */
 @Composable
 fun CreateMedicineScreen(
     hasCameraPermission: Boolean,
     boxPhoto: ImageBitmap?,
-    onSelectImage: () -> Unit,
+    onAddPictureButtonClick: () -> Unit,
     onCreateMedicine: (String, String) -> Unit
 ) {
     PharmacistScreen {
@@ -89,7 +90,7 @@ fun CreateMedicineScreen(
                     )
 
                 IconButton(
-                    onClick = onSelectImage,
+                    onClick = onAddPictureButtonClick,
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Icon(
@@ -100,7 +101,7 @@ fun CreateMedicineScreen(
                 }
             }
 
-            pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton(
+            IconTextButton(
                 enabled = name.isNotBlank() && description.isNotBlank() && boxPhoto != null,
                 onClick = { onCreateMedicine(name, description) },
                 imageVector = Icons.Rounded.Add,

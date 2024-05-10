@@ -5,8 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
@@ -19,6 +22,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyLoadingState.LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyLoadingState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyLoadingState.NOT_LOADED
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 
 /**
  * View model for the [PharmacyActivity].
@@ -38,6 +42,9 @@ class PharmacyViewModel(
         private set
 
     var pharmacy by mutableStateOf<PharmacyWithUserDataModel?>(null)
+        private set
+
+    var pharmacyImage by mutableStateOf<ImageBitmap?>(null)
         private set
 
     //private val modificationEvents = MutableSharedFlow<ModificationEvent>()
@@ -275,6 +282,22 @@ class PharmacyViewModel(
                         RealTimeUpdateSubscription.pharmacyMedicineStock(pharmacyId, medicineId)
                     )
                 )
+            }
+        }
+    }
+
+    /**
+     * Downloads the pharmacy image.
+     */
+    suspend fun downloadImage() {
+        pharmacy?.let {
+            withContext(Dispatchers.IO) {
+                val img: ImageBitmap? = ImageHandlingUtils.downloadImage(it.pharmacy.pictureUrl)
+                if (img == null) {
+                    Log.e("PharmacyActivity", "Failed to download image")
+                    return@withContext
+                }
+                pharmacyImage = img
             }
         }
     }
