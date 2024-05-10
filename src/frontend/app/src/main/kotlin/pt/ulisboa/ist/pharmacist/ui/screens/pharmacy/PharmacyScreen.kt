@@ -70,7 +70,7 @@ fun PharmacyScreen(
                     PharmacyRating(
                         pharmacy = pharmacy,
                         onRatingChanged = onRatingChanged,
-                        modifier = Modifier.fillMaxWidth(0.3f)
+                        modifier = Modifier.fillMaxWidth(0.35f)
                     )
                     PharmacyMedicineList(
                         medicinesStock,

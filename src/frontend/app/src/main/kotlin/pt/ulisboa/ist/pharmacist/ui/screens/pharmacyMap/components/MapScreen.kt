@@ -126,7 +126,7 @@ fun MapScreen(
             if (clickedPharmacyMarker != null) {
                 clickedPharmacyMarker?.let { pharmacyId ->
                     pharmacies[pharmacyId]?.let { pharmacy ->
-                        PharmacyDetails(onPharmacyDetailsClick, pharmacy.pharmacy)
+                        PharmacyDetails(onPharmacyDetailsClick, pharmacy)
                     }
                 }
             }

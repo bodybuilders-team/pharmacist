@@ -1,10 +1,15 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,7 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.StarRatingBar
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 
 /**
  * Component to display the details of a pharmacy on the map.
@@ -26,40 +34,62 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 @Composable
 fun PharmacyDetails(
     onPharmacyDetailsClick: (Long) -> Unit,
-    pharmacy: Pharmacy
+    pharmacy: PharmacyWithUserDataModel
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
             .padding(16.dp)
             .clickable {
-                onPharmacyDetailsClick(pharmacy.pharmacyId)
-            }
+                onPharmacyDetailsClick(pharmacy.pharmacy.pharmacyId)
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Text(
-            text = pharmacy.name,
-            style = MaterialTheme.typography.titleLarge
-        )
-        if (pharmacy.globalRating != null)
-            Text(
-                text = "${
-                    String.format("%.1f", pharmacy.globalRating)
-                } ⭐ (${pharmacy.numberOfRatings.sum()})",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        Text(
-            text = stringResource(R.string.pharmacyMap_clickForDetails_text),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Light
-        )
         MeteredAsyncImage(
-            url = pharmacy.pictureUrl,
+            url = pharmacy.pharmacy.pictureUrl,
             contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
             modifier = Modifier
-                .fillMaxWidth(0.6f)
-                .padding(top = 16.dp, bottom = 8.dp)
-                .align(Alignment.CenterHorizontally)
         )
+        Column(
+            modifier = Modifier.align(Alignment.Top)
+        ) {
+            Text(
+                text = pharmacy.pharmacy.name,
+                style = MaterialTheme.typography.titleLarge
+            )
+            if (pharmacy.pharmacy.globalRating != null)
+                Row {
+                    Text(
+                        text = String.format("%.1f", pharmacy.pharmacy.globalRating),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    StarRatingBar(
+                        rating = pharmacy.pharmacy.globalRating.toInt(),
+                        densityFactor = 7f
+                    )
+                }
+            if (pharmacy.userMarkedAsFavorite)
+                Row {
+                    Icon(
+                        imageVector = Icons.Rounded.Favorite,
+                        contentDescription = stringResource(R.string.favorite_pharmacy),
+                        tint = Favorite,
+                    )
+                    Text(
+                        text = stringResource(R.string.favorite_pharmacy),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+            Text(
+                text = stringResource(R.string.pharmacyMap_clickForDetails_text),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Light
+            )
+
+        }
+
     }
 }
