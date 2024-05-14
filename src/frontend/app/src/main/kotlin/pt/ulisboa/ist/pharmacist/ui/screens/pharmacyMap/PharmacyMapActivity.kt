@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.launch
@@ -61,16 +62,17 @@ class PharmacyMapActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            viewModel.getCurrentLocation(this@PharmacyMapActivity)
-        }
-
         viewModel.hasLocationPermission = hasLocationPermission()
         viewModel.hasCameraPermission = hasCameraPermission()
         viewModel.listenForRealTimeUpdates()
         viewModel.loadPharmacyList()
 
         setContent {
+            LaunchedEffect(key1 = viewModel.hasLocationPermission) {
+                if (viewModel.hasLocationPermission)
+                    viewModel.getCurrentLocation(this@PharmacyMapActivity)
+            }
+
             PharmacyMapScreen(
                 followMyLocation = viewModel.followMyLocation,
                 zoomedInMyLocation = viewModel.zoomedInMyLocation,

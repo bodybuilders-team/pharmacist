@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.ulisboa.ist.pharmacist.R
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 
 /**
  * Screen to request permissions
@@ -82,23 +84,25 @@ fun PermissionScreen(
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
+            IconTextButton(
+                text = settingsPermissionNoteButtonText,
+                imageVector = Icons.Rounded.Settings,
+                contentDescription = settingsPermissionNoteButtonText,
                 onClick = {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     val uri = Uri.fromParts("package", context.packageName, null)
                     intent.data = uri
                     context.startActivity(intent)
                 }
-            ) {
-                Text(text = settingsPermissionNoteButtonText)
-            }
+            )
         } else
-            Button(
+            IconTextButton(
                 onClick = {
                     permissionLauncher.launch(permissionRequests.toTypedArray())
-                }
-            ) {
-                Text(text = stringResource(R.string.grant_permission_button))
-            }
+                },
+                text = stringResource(R.string.grant_permission_button),
+                imageVector = Icons.Rounded.Settings,
+                contentDescription = stringResource(R.string.grant_permission_button)
+            )
     }
 }
