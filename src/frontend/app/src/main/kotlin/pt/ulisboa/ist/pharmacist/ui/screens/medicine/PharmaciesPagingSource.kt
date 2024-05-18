@@ -3,9 +3,9 @@ package pt.ulisboa.ist.pharmacist.ui.screens.medicine
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.PharmaciesService
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.PharmaciesService
+import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import kotlin.math.max
 
 class PharmaciesPagingSource(

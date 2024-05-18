@@ -34,7 +34,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 

@@ -15,12 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
 
 @Composable
 fun PharmacyMedicineList(
-    medicinesStock: List<MedicineStockModel>,
+    medicinesStock: List<pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.listAvailableMedicines.MedicineStockModel>,
     onAddMedicineClick: () -> Unit,
     onMedicineClick: (Long) -> Unit,
     onAddStockClick: (Long) -> Unit,

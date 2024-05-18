@@ -3,12 +3,18 @@ package pt.ulisboa.ist.pharmacist.ui.screens.authentication
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivity.Companion.AuthenticationMethod
@@ -18,13 +24,20 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivit
  *
  * @param sessionManager the manager used to handle the user session
  * @param authenticationMethod the authentication method
- * @param pharmacistService the service used to interact with the pharmacist API
+ * @param pharmacistRepository the service used to interact with the pharmacist API
  */
-class AuthenticationViewModel(
-    pharmacistService: PharmacistService,
+@HiltViewModel
+class AuthenticationViewModel @AssistedInject constructor(
+    pharmacistRepository: PharmacistRepository,
     sessionManager: SessionManager,
-    private val authenticationMethod: AuthenticationMethod
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+    @Assisted val authenticationMethod: AuthenticationMethod
+) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(authenticationMethod: AuthenticationMethod): AuthenticationViewModel
+    }
+
     var authenticationState: AuthenticationState by mutableStateOf(AuthenticationState.NOT_AUTHENTICATED)
         private set
 
@@ -103,6 +116,17 @@ class AuthenticationViewModel(
         } else {
             _events.emit(Event.ShowToast(result.error.title))
             AuthenticationState.NOT_AUTHENTICATED
+        }
+    }
+
+    companion object {
+        fun provideFactory(
+            assistedFactory: Factory,
+            authenticationMethod: AuthenticationMethod
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return assistedFactory.create(authenticationMethod) as T
+            }
         }
     }
 

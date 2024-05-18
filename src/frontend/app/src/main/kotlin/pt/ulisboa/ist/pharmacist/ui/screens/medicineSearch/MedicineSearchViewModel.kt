@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -13,8 +14,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.service.LocationService
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
@@ -27,10 +28,11 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
  *
  */
 @OptIn(ExperimentalCoroutinesApi::class)
+@HiltViewModel
 class MedicineSearchViewModel(
-    pharmacistService: PharmacistService,
+    pharmacistRepository: PharmacistRepository,
     sessionManager: SessionManager
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+) : PharmacistViewModel(pharmacistRepository, sessionManager) {
     var hasLocationPermission by mutableStateOf(false)
         private set
     private var queryFlow = MutableStateFlow("")
@@ -47,7 +49,7 @@ class MedicineSearchViewModel(
             ),
             pagingSourceFactory = {
                 MedicinePagingSource(
-                    medicinesService = pharmacistService.medicinesService,
+                    medicinesService = pharmacistRepository.medicinesRepository,
                     query = search,
                     location = location
                 )

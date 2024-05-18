@@ -20,21 +20,23 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.LocationService
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
+import javax.inject.Inject
 
 /**
  * View model for the [PharmacyMapActivity].
@@ -46,10 +48,11 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
  *
  * @property state the current state of the view model
  */
-class PharmacyMapViewModel(
-    pharmacistService: PharmacistService,
+@HiltViewModel
+class PharmacyMapViewModel @Inject constructor(
+    pharmacistService: PharmacistRepository,
     sessionManager: SessionManager,
-    private val realTimeUpdatesService: RealTimeUpdatesService,
+    val realTimeUpdatesService: RealTimeUpdatesService,
     val placesClient: PlacesClient,
     val geoCoder: Geocoder
 ) : PharmacistViewModel(pharmacistService, sessionManager) {

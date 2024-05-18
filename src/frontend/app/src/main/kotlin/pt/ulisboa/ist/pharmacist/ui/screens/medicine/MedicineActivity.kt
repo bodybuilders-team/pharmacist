@@ -10,28 +10,32 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
+import javax.inject.Inject
 
 /**
  * Activity for the [MedicineScreen].
  */
+@AndroidEntryPoint
 class MedicineActivity : PharmacistActivity() {
 
     private val medicineId by lazy {
         intent.getLongExtra(MEDICINE_ID, -1)
     }
 
-    private val viewModel by viewModelInit {
-        MedicineViewModel(
-            dependenciesContainer.pharmacistService,
-            dependenciesContainer.sessionManager,
+    @Inject
+    lateinit var viewModelFactory: MedicineViewModel.Factory
+    private val viewModel: MedicineViewModel by viewModels<MedicineViewModel> {
+        MedicineViewModel.provideFactory(
+            viewModelFactory,
             medicineId
         )
     }

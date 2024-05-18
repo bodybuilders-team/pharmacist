@@ -8,48 +8,32 @@ import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
+import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.MedicineNotificationsBackgroundService
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import pt.ulisboa.ist.pharmacist.session.SessionManagerSharedPrefs
+import javax.inject.Inject
 
 /**
  * The Pharmacist application.
  *
  * @property jsonEncoder the JSON encoder used to serialize/deserialize objects
  * @property sessionManager the manager used to handle the user session
- * @property pharmacistService the service used to handle the pharmacist requests
+ * @property pharmacistRepository the service used to handle the pharmacist requests
  */
-class PharmacistApplication : DependenciesContainer, Application() {
-
-    override val jsonEncoder: Gson = GsonBuilder().create()
-
-    override val sessionManager: SessionManager = SessionManagerSharedPrefs(context = this)
-
-    override val httpClient = OkHttpClient.Builder()
-        .connectTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
-        .writeTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
-//        .connectionSpecs(listOf(okhttp3.ConnectionSpec.MODERN_TLS))
-        .build()
-
-    override val pharmacistService = PharmacistService(
-        context = this,
-        httpClient = httpClient,
-        sessionManager = sessionManager
-    )
-
-    override val realTimeUpdatesService = RealTimeUpdatesService(
-        apiEndpoint = API_ENDPOINT,
-        sessionManager = sessionManager,
-        httpClient = httpClient
-    )
+@HiltAndroidApp
+class PharmacistApplication @Inject constructor(
+    override val pharmacistRepository: PharmacistRepository,
+    override val httpClient: OkHttpClient,
+    override val jsonEncoder: Gson,
+    override val sessionManager: SessionManager,
+    override val realTimeUpdatesService: RealTimeUpdatesService
+) : DependenciesContainer, Application() {
 
     private val serviceScope = CoroutineScope(Dispatchers.Default)
 

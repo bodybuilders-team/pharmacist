@@ -6,15 +6,20 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
+import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
+import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -32,12 +37,19 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
  *
  * @property loadingState the current loading state of the view model
  */
-class PharmacyViewModel(
-    pharmacistService: PharmacistService,
+@HiltViewModel
+class PharmacyViewModel @AssistedInject constructor(
+    pharmacistRepository: PharmacistRepository,
     sessionManager: SessionManager,
-    private val realTimeUpdatesService: RealTimeUpdatesService,
-    val pharmacyId: Long
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+    val realTimeUpdatesService: RealTimeUpdatesService,
+    @Assisted val pharmacyId: Long
+) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(pharmacyId: Long): PharmacyViewModel
+    }
+
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
 
@@ -51,7 +63,8 @@ class PharmacyViewModel(
 
     //private val newMedicineFlow = MutableStateFlow<Long?>(null)
 
-    val medicinesList = mutableStateMapOf<Long, MedicineStockModel>()
+    val medicinesList =
+        mutableStateMapOf<Long, pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.listAvailableMedicines.MedicineStockModel>()
 
     /*@OptIn(ExperimentalCoroutinesApi::class)
      private val _medicinesState = newMedicineFlow.flatMapLatest {
@@ -87,7 +100,7 @@ class PharmacyViewModel(
                 "fetchAllMedicines - Fetching medicines for pharmacy ${pharmacy!!.pharmacy.pharmacyId}" +
                         " with offset $offset and limit $limit"
             )
-            val result = pharmacistService.pharmaciesService.listAvailableMedicines(
+            val result = pharmacistRepository.pharmaciesRepository.listAvailableMedicines(
                 pharmacyId = pharmacyId,
                 limit = limit,
                 offset = offset
@@ -173,7 +186,7 @@ class PharmacyViewModel(
     fun loadPharmacy(pharmacyId: Long) = viewModelScope.launch {
         loadingState = LOADING
 
-        val result = pharmacistService.pharmaciesService.getPharmacyById(pharmacyId)
+        val result = pharmacistRepository.pharmaciesRepository.getPharmacyById(pharmacyId)
         if (result.isSuccess()) {
             pharmacy = result.data
             realTimeUpdatesService.subscribeToUpdates(
@@ -201,12 +214,13 @@ class PharmacyViewModel(
             viewModelScope.launch {
                 if (it.userMarkedAsFavorite) {
                     val result =
-                        pharmacistService.usersService.removeFavorite(it.pharmacy.pharmacyId)
+                        pharmacistRepository.usersRepository.removeFavorite(it.pharmacy.pharmacyId)
 
                     if (result.isSuccess())
                         pharmacy = pharmacy?.copy(userMarkedAsFavorite = false)
                 } else {
-                    val result = pharmacistService.usersService.addFavorite(it.pharmacy.pharmacyId)
+                    val result =
+                        pharmacistRepository.usersRepository.usersService.addFavorite(it.pharmacy.pharmacyId)
 
                     if (result.isSuccess())
                         pharmacy = pharmacy?.copy(userMarkedAsFavorite = true)
@@ -218,11 +232,14 @@ class PharmacyViewModel(
     fun updateRating(rating: Int) = pharmacy?.let {
         viewModelScope.launch {
             val result =
-                pharmacistService.pharmaciesService.ratePharmacy(it.pharmacy.pharmacyId, rating)
+                pharmacistRepository.pharmaciesRepository.ratePharmacy(
+                    it.pharmacy.pharmacyId,
+                    rating
+                )
 
             if (result.isSuccess()) {
                 val result2 =
-                    pharmacistService.pharmaciesService.getPharmacyById(it.pharmacy.pharmacyId)
+                    pharmacistRepository.pharmaciesRepository.getPharmacyById(it.pharmacy.pharmacyId)
                 if (result2.isSuccess())
                     pharmacy = result2.data
             }
@@ -232,7 +249,7 @@ class PharmacyViewModel(
     suspend fun updateReportStatus(): Boolean {
         pharmacy?.let {
             Log.d("PharmacyViewModel", "Flagging pharmacy ${it.pharmacy.pharmacyId}")
-            val result = pharmacistService.usersService.flagPharmacy(it.pharmacy.pharmacyId)
+            val result = pharmacistRepository.usersRepository.flagPharmacy(it.pharmacy.pharmacyId)
             if (result.isSuccess()) {
                 pharmacy = pharmacy?.copy(userFlagged = true)
                 Log.d("PharmacyViewModel", "Pharmacy ${it.pharmacy.pharmacyId} flagged")
@@ -249,7 +266,7 @@ class PharmacyViewModel(
         quantity: Long = 1
     ) = pharmacy?.let {
         viewModelScope.launch {
-            pharmacistService.pharmaciesService.changeMedicineStock(
+            pharmacistRepository.pharmaciesRepository.changeMedicineStock(
                 pharmacyId = it.pharmacy.pharmacyId,
                 medicineId = medicineId,
                 operation = operation,
@@ -260,13 +277,14 @@ class PharmacyViewModel(
 
     fun onMedicineAdded(medicineId: Long, quantity: Long) {
         viewModelScope.launch {
-            val result = pharmacistService.medicinesService.getMedicineById(medicineId)
+            val result = pharmacistRepository.medicinesRepository.getMedicineById(medicineId)
 
             if (result.isSuccess()) {
-                medicinesList[medicineId] = MedicineStockModel(
-                    medicine = result.data.medicine,
-                    stock = quantity
-                )
+                medicinesList[medicineId] =
+                    pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.listAvailableMedicines.MedicineStockModel(
+                        medicine = result.data.medicine,
+                        stock = quantity
+                    )
                 realTimeUpdatesService.subscribeToUpdates(
                     listOf(
                         RealTimeUpdateSubscription.pharmacyMedicineStock(pharmacyId, medicineId)
@@ -303,6 +321,15 @@ class PharmacyViewModel(
     companion object {
         private const val PAGE_SIZE = 10
         private const val PREFETCH_DISTANCE = 1
+
+        fun provideFactory(
+            assistedFactory: Factory,
+            pharmacyId: Long
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return assistedFactory.create(pharmacyId) as T
+            }
+        }
     }
 
 

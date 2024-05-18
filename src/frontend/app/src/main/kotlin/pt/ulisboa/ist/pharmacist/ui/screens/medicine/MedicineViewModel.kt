@@ -6,10 +6,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +26,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pt.ulisboa.ist.pharmacist.domain.medicines.GetMedicineOutputModel
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
+import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.service.LocationService
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.LOADED
@@ -36,11 +42,18 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
  * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  */
-class MedicineViewModel(
-    pharmacistService: PharmacistService,
+@HiltViewModel
+class MedicineViewModel @AssistedInject constructor(
+    pharmacistRepository: PharmacistRepository,
     sessionManager: SessionManager,
-    val medicineId: Long
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+    @Assisted val medicineId: Long
+) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(medicineId: Long): MedicineViewModel
+    }
+
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
 
@@ -64,7 +77,7 @@ class MedicineViewModel(
             ),
             pagingSourceFactory = {
                 PharmaciesPagingSource(
-                    pharmaciesService = pharmacistService.pharmaciesService,
+                    pharmaciesService = pharmacistRepository.pharmaciesService,
                     mid = medicineId,
                     location = location
                 )
@@ -142,6 +155,15 @@ class MedicineViewModel(
     companion object {
         private const val PAGE_SIZE = 10
         private const val PREFETCH_DISTANCE = 1
+
+        fun provideFactory(
+            assistedFactory: Factory,
+            medicineId: Long
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return assistedFactory.create(medicineId) as T
+            }
+        }
     }
 }
 

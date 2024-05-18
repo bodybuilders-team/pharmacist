@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isFailure
+import pt.ulisboa.ist.pharmacist.repository.network.PharmacistService
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.net.URL

@@ -7,9 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.places.api.Places
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
@@ -21,13 +20,14 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 /**
  * Activity for the [PharmacyMapScreen].
  */
+@AndroidEntryPoint
 class PharmacyMapActivity : PharmacistActivity() {
 
     private val viewModel by viewModelInit {
         Places.initialize(this, getString(R.string.google_maps_key))
 
         PharmacyMapViewModel(
-            dependenciesContainer.pharmacistService,
+            dependenciesContainer.pharmacistRepository,
             dependenciesContainer.sessionManager,
             dependenciesContainer.realTimeUpdatesService,
             placesClient = Places.createClient(this),

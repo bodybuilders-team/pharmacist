@@ -10,31 +10,34 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
+import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
+import javax.inject.Inject
 
 
 /**
  * Activity for the [PharmacyScreen].
  */
+@AndroidEntryPoint
 class PharmacyActivity : PharmacistActivity() {
 
     private val pharmacyId by lazy {
         intent.getLongExtra(PHARMACY_ID, -1)
     }
 
-    private val viewModel by viewModelInit {
-        PharmacyViewModel(
-            dependenciesContainer.pharmacistService,
-            dependenciesContainer.sessionManager,
-            dependenciesContainer.realTimeUpdatesService,
+    @Inject
+    lateinit var viewModelFactory: PharmacyViewModel.Factory
+    private val viewModel: PharmacyViewModel by viewModels<PharmacyViewModel> {
+        PharmacyViewModel.provideFactory(
+            viewModelFactory,
             pharmacyId
         )
     }

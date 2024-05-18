@@ -6,10 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isFailure
+import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -21,17 +22,18 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
  * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  */
+@HiltViewModel
 class CreateMedicineViewModel(
-    pharmacistService: PharmacistService,
+    pharmacistRepository: PharmacistRepository,
     sessionManager: SessionManager
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+) : PharmacistViewModel(pharmacistRepository, sessionManager) {
     var hasCameraPermission by mutableStateOf(false)
     private var boxPhotoUrl by mutableStateOf<String?>(null)
     var boxPhoto by mutableStateOf<ImageBitmap?>(null)
     var state by mutableStateOf(CreateMedicineState.NOT_STARTED)
 
     fun uploadBoxPhoto(boxPhotoData: ByteArray, mediaType: MediaType) = viewModelScope.launch {
-        ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, pharmacistService)
+        ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, pharmacistRepository)
             ?.let {
                 boxPhotoUrl = it.boxPhotoUrl
                 boxPhoto = it.boxPhoto
@@ -52,7 +54,7 @@ class CreateMedicineViewModel(
         state = CreateMedicineState.CREATING_MEDICINE
 
         val createMedicineResult =
-            pharmacistService.medicinesService.createMedicine(name, description, boxPhotoUrl)
+            pharmacistRepository.medicinesRepository.createMedicine(name, description, boxPhotoUrl)
 
         if (createMedicineResult.isFailure()) {
             Log.e("CreateMedicineModel", "Failed to create medicine")

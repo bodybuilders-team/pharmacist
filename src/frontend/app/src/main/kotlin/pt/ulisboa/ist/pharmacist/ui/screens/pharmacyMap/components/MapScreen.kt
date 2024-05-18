@@ -37,7 +37,7 @@ import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapViewModel
 
 /**
@@ -246,7 +246,8 @@ fun MapScreen(
                 AddPharmacyButton(addingPharmacy, pickingOnMap, onClick = {
                     if (addingPharmacy) {
                         if (pickingOnMap) {
-                            newPharmacyMarkerState = MarkerState(cameraPositionState.position.target)
+                            newPharmacyMarkerState =
+                                MarkerState(cameraPositionState.position.target)
                             setPosition(cameraPositionState.position.target)
                             pickingOnMap = false
                         } else {

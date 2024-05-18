@@ -9,25 +9,22 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasCameraPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateToForResult
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [CreateMedicine].
  */
+@AndroidEntryPoint
 class CreateMedicineActivity : PharmacistActivity() {
 
-    private val viewModel by viewModelInit {
-        CreateMedicineViewModel(
-            dependenciesContainer.pharmacistService,
-            dependenciesContainer.sessionManager
-        )
-    }
+    private val viewModel: CreateMedicineViewModel by viewModels()
 
     private val imageResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

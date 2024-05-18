@@ -5,10 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import java.util.UUID
@@ -19,10 +20,11 @@ import java.util.UUID
  * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  */
+@HiltViewModel
 class HomeViewModel(
-    pharmacistService: PharmacistService,
+    pharmacistRepository: PharmacistRepository,
     sessionManager: SessionManager
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+) : PharmacistViewModel(pharmacistRepository, sessionManager) {
 
     var isLoggedIn: Boolean by mutableStateOf(sessionManager.isLoggedIn())
         private set
@@ -52,7 +54,7 @@ class HomeViewModel(
         Log.d("LOGOUT", "Logging out user")
         withTimeoutOrNull(5000) {
             isLoading = true
-            pharmacistService.usersService.logout()
+            pharmacistRepository.usersRepository.logout()
         }
 
         sessionManager.clearSession()
