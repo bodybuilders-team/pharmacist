@@ -6,11 +6,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.AndroidEntryPoint
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -24,16 +24,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 @AndroidEntryPoint
 class PharmacyMapActivity : PharmacistActivity() {
 
-    private val viewModel by viewModelInit {
-        Places.initialize(this, getString(R.string.google_maps_key))
-
-        PharmacyMapViewModel(
-            sessionManager = dependenciesContainer.sessionManager,
-            realTimeUpdatesService = dependenciesContainer.realTimeUpdatesService,
-            placesClient = Places.createClient(this),
-            geoCoder = Geocoder(this)
-        )
-    }
+    private val viewModel: PharmacyMapViewModel by viewModels()
 
     private val imageResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

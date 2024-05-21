@@ -120,18 +120,23 @@ class MedicineViewModel @AssistedInject constructor(
             if (!it.notificationsActive) {
                 val result = medicineApi.addMedicineNotification(medicineId)
                 if (result.isSuccess()) {
-                    medicine = pharmacistDb.medicineDao().updateMedicineNotificationStatus(
+                    pharmacistDb.medicineDao().updateMedicineNotificationStatus(
                         medicineId = medicineId,
                         notificationsActive = true
-                    ).toMedicineWithNotificationStatus()
+                    )
+                    medicine = pharmacistDb.medicineDao().getMedicineById(medicineId)
+                        .toMedicineWithNotificationStatus()
                 }
             } else {
                 val result = medicineApi.removeMedicineNotification(medicineId)
-                if (result.isSuccess())
-                    medicine = pharmacistDb.medicineDao().updateMedicineNotificationStatus(
+                if (result.isSuccess()) {
+                    pharmacistDb.medicineDao().updateMedicineNotificationStatus(
                         medicineId = medicineId,
-                        notificationsActive = false
-                    ).toMedicineWithNotificationStatus()
+                        notificationsActive = true
+                    )
+                    medicine = pharmacistDb.medicineDao().getMedicineById(medicineId)
+                        .toMedicineWithNotificationStatus()
+                }
             }
         }
     }

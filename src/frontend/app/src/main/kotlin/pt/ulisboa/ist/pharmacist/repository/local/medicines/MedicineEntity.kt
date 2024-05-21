@@ -1,7 +1,6 @@
 package pt.ulisboa.ist.pharmacist.repository.local.medicines
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 /**
@@ -22,8 +21,9 @@ data class MedicineEntity(
     val notificationsActive: Boolean
 )
 
+
 data class PharmacyMedicineFlatEntity(
-    @PrimaryKey val medicineId: Long,
+    val medicineId: Long,
     val name: String,
     val description: String,
     val boxPhotoUrl: String,

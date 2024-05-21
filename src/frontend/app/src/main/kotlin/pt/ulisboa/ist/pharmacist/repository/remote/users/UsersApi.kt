@@ -4,11 +4,11 @@ import android.content.Context
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.repository.network.HTTPService
 import pt.ulisboa.ist.pharmacist.repository.network.connection.APIResult
+import pt.ulisboa.ist.pharmacist.repository.network.utils.Uris
 import pt.ulisboa.ist.pharmacist.repository.remote.users.login.LoginInputDto
 import pt.ulisboa.ist.pharmacist.repository.remote.users.login.LoginOutputDto
 import pt.ulisboa.ist.pharmacist.repository.remote.users.register.RegisterInputDto
 import pt.ulisboa.ist.pharmacist.repository.remote.users.register.RegisterOutputDto
-import pt.ulisboa.ist.pharmacist.repository.network.utils.Uris
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import java.io.IOException
 import javax.inject.Inject

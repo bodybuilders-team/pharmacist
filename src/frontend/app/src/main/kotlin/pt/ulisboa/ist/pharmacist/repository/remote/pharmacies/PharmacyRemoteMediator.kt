@@ -44,7 +44,6 @@ class PharmacyRemoteMediator(
             pharmacistDb.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     pharmacistDb.pharmacyDao().clearAllPharmacies()
-                    pharmacistDb.pharmacyDao().clearAllPharmacyUserList()
                 }
                 pharmacistDb.pharmacyDao().upsertPharmacies(result.data.pharmacies.map {
                     it.toPharmacyEntity()

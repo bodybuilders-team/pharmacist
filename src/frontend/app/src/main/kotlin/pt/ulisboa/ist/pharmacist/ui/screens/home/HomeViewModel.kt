@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager

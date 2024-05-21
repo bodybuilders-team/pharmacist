@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi

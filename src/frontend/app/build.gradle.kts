@@ -1,9 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
-    //id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -90,8 +88,7 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     annotationProcessor(libs.androidx.room.compiler)
-    kapt(libs.androidx.room.compiler)
-    //ksp(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.rxjava2)
     implementation(libs.androidx.room.rxjava3)
@@ -100,10 +97,5 @@ dependencies {
     implementation(libs.androidx.room.paging)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
-}
-
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
+    ksp(libs.hilt.android.compiler)
 }

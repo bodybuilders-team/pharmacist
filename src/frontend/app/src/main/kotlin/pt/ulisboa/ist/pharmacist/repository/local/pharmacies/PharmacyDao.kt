@@ -4,7 +4,6 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PharmacyDao {
@@ -25,7 +24,7 @@ interface PharmacyDao {
     fun getPagingSourceByMedicineId(medicineId: Long): PagingSource<Int, PharmacyEntity>
 
     @Query("SELECT * FROM pharmacies")
-    fun getAllPharmacies(): List<PharmacyEntity>
+    suspend fun getAllPharmacies(): List<PharmacyEntity>
 
     @Query("SELECT * FROM pharmacies WHERE pharmacyId = :id")
     suspend fun getPharmacyById(id: Long): PharmacyEntity
@@ -38,8 +37,5 @@ interface PharmacyDao {
 
     @Query("DELETE FROM pharmacies")
     suspend fun clearAllPharmacies()
-
-    @Query("DELETE FROM pharmacy_user")
-    suspend fun clearAllPharmacyUserList()
 }
 

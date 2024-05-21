@@ -36,13 +36,11 @@ private val githubRepoUrl = Uri.parse("https://github.com/bodybuilders-team/phar
  *
  * @param onOpenUrl callback to be invoked when a link is clicked
  * @param onSendEmail callback to be invoked when an email is clicked
- * @param onBackButtonClicked callback to be invoked when the back button is clicked
  */
 @Composable
 fun AboutScreen(
     onOpenUrl: (Uri) -> Unit,
-    onSendEmail: (String) -> Unit,
-    onBackButtonClicked: () -> Unit
+    onSendEmail: (String) -> Unit
 ) {
     PharmacistScreen {
         LazyColumn(

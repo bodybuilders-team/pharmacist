@@ -20,7 +20,6 @@ import kotlinx.coroutines.withContext
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicine
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineEntity

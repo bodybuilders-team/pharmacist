@@ -1,7 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens
 
 import androidx.lifecycle.ViewModel
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import javax.inject.Inject
 

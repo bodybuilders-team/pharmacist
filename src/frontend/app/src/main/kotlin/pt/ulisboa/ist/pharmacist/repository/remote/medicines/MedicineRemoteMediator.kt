@@ -9,7 +9,6 @@ import okio.IOException
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineEntity
-import pt.ulisboa.ist.pharmacist.repository.network.connection.APIResult
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 
 @OptIn(ExperimentalPagingApi::class)

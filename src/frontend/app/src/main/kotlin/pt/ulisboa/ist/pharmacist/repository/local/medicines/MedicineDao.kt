@@ -15,19 +15,21 @@ interface MedicineDao {
     @Upsert
     suspend fun upsertPharmacyMedicineList(pharmacyMedicineList: List<PharmacyMedicineEntity>)
 
-    @Update(entity = MedicineEntity::class)
+    @Query("UPDATE medicines SET notificationsActive = :notificationsActive WHERE medicineId = :medicineId")
     fun updateMedicineNotificationStatus(
         medicineId: Long,
         notificationsActive: Boolean
-    ): MedicineEntity
+    )
 
-    @Query("""
+    @Query(
+        """
         SELECT medicines.medicineId, medicines.name, medicines.description, medicines.boxPhotoUrl, medicines.closestPharmacy, medicines.notificationsActive, pharmacy_medicine.stock
         FROM medicines
         INNER JOIN pharmacy_medicine ON medicines.medicineId = pharmacy_medicine.medicineId
         WHERE pharmacy_medicine.pharmacyId = :pharmacyId
-        """)
-    fun getPharmacyMedicineByPharmacyId(pharmacyId: Long): List<PharmacyMedicineFlatEntity>
+        """
+    )
+    suspend fun getPharmacyMedicineByPharmacyId(pharmacyId: Long): List<PharmacyMedicineFlatEntity>
 
     @Query("SELECT * FROM medicines")
     fun pagingSource(): PagingSource<Int, MedicineEntity>
@@ -35,16 +37,21 @@ interface MedicineDao {
     @Query("SELECT * FROM medicines WHERE name LIKE :query")
     fun pagingSource(query: String): PagingSource<Int, MedicineEntity>
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM medicines
         WHERE medicineId NOT IN (
             SELECT medicineId FROM pharmacy_medicine WHERE pharmacyId = :pharmacyId
         ) AND name LIKE :query
-    """)
-    fun pagingSourceMedicineNotInPharmacy(query: String, pharmacyId: Long): PagingSource<Int, MedicineEntity>
+    """
+    )
+    fun pagingSourceMedicineNotInPharmacy(
+        query: String,
+        pharmacyId: Long
+    ): PagingSource<Int, MedicineEntity>
 
     @Query("SELECT * FROM medicines WHERE medicineId = :medicineId")
-    fun getMedicineById(medicineId: Long): MedicineEntity
+    suspend fun getMedicineById(medicineId: Long): MedicineEntity
 
     @Query("DELETE FROM medicines")
     suspend fun clearAllMedicines()

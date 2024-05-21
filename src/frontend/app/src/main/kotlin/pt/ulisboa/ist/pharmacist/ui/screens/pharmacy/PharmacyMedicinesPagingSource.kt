@@ -49,7 +49,7 @@ class PharmacyMedicinesPagingSource(
                 }
             )
             LoadResult.Page(
-                data = result.data.medicines.map { MedicineStock(it.medicine, it.stock)},
+                data = result.data.medicines.map { MedicineStock(it.medicine, it.stock) },
                 prevKey = when (offset) {
                     STARTING_KEY -> null
                     else -> max(STARTING_KEY, offset - limit)
