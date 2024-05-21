@@ -3,7 +3,6 @@ package pt.ulisboa.ist.pharmacist.repository.local.medicines
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.Update
 import androidx.room.Upsert
 
 @Dao

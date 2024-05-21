@@ -45,7 +45,6 @@ import javax.inject.Inject
 /**
  * View model for the [PharmacyMapActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  * @property placesClient the client used to interact with the Places API
  * @property geoCoder the geocoder used to get the location of an address
@@ -54,13 +53,13 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class PharmacyMapViewModel @Inject constructor(
-    @Inject private val pharmacistDb: PharmacistDatabase,
-    @Inject private val pharmacyApi: PharmacyApi,
-    @Inject private val uploaderApi: UploaderApi,
+    private val pharmacistDb: PharmacistDatabase,
+    private val pharmacyApi: PharmacyApi,
+    private val uploaderApi: UploaderApi,
     private val realTimeUpdatesService: RealTimeUpdatesService,
-    sessionManager: SessionManager,
-    val placesClient: PlacesClient,
-    val geoCoder: Geocoder
+    private val placesClient: PlacesClient,
+    private val geoCoder: Geocoder,
+    sessionManager: SessionManager
 ) : PharmacistViewModel(sessionManager) {
 
     var pharmacyPhotoUrl by mutableStateOf<String?>(null)

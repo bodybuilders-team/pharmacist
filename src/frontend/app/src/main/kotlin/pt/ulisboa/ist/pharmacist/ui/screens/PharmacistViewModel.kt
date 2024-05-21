@@ -2,7 +2,6 @@ package pt.ulisboa.ist.pharmacist.ui.screens
 
 import androidx.lifecycle.ViewModel
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import javax.inject.Inject
 
 /**
  * View model for the [PharmacistActivity].
@@ -10,6 +9,6 @@ import javax.inject.Inject
  *
  * @property sessionManager the manager used to handle the user session
  */
-abstract class PharmacistViewModel @Inject constructor(
+abstract class PharmacistViewModel(
     protected val sessionManager: SessionManager
 ) : ViewModel()

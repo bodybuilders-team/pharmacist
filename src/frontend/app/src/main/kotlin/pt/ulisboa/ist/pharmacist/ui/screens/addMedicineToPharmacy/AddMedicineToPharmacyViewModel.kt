@@ -47,7 +47,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
 /**
  * View model for the [AddMedicineToPharmacyActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  * @property pharmacyId the id of the pharmacy
  * @property selectedMedicine the selected medicine
@@ -55,9 +54,9 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
  */
 @HiltViewModel
 class AddMedicineToPharmacyViewModel @AssistedInject constructor(
-    val pharmacistDb: PharmacistDatabase,
-    val pharmacyApi: PharmacyApi,
-    val medicineApi: MedicineApi,
+    private val pharmacistDb: PharmacistDatabase,
+    private val pharmacyApi: PharmacyApi,
+    private val medicineApi: MedicineApi,
     sessionManager: SessionManager,
     @Assisted val pharmacyId: Long
 ) : PharmacistViewModel(sessionManager) {

@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
@@ -34,15 +33,13 @@ import javax.inject.Inject
  *
  * @property pharmacistDb the local database
  * @property medicineApi the remote medicine API
- * @property pharmacistRepository the repository used to handle the pharmacist data
  * @property sessionManager the manager used to handle the user session
  *
  */
 @HiltViewModel
-class MedicineSearchViewModel(
-    @Inject private val pharmacistDb: PharmacistDatabase,
-    @Inject private val medicineApi: MedicineApi,
-    pharmacistRepository: PharmacistRepository,
+class MedicineSearchViewModel @Inject constructor(
+    private val pharmacistDb: PharmacistDatabase,
+    private val medicineApi: MedicineApi,
     sessionManager: SessionManager
 ) : PharmacistViewModel(sessionManager) {
     var hasLocationPermission by mutableStateOf(false)

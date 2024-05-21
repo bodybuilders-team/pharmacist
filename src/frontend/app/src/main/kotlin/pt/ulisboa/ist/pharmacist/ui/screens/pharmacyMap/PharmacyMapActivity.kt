@@ -1,22 +1,18 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
 import android.graphics.Bitmap
-import android.location.Geocoder
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
-import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.AndroidEntryPoint
-import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasCameraPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [PharmacyMapScreen].

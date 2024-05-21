@@ -15,18 +15,18 @@ import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
+import javax.inject.Inject
 
 
 /**
  * View model for the [CreateMedicineActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  */
 @HiltViewModel
-class CreateMedicineViewModel(
-    val medicineApi: MedicineApi,
-    val uploaderApi: UploaderApi,
+class CreateMedicineViewModel @Inject constructor(
+    private val medicineApi: MedicineApi,
+    private val uploaderApi: UploaderApi,
     sessionManager: SessionManager
 ) : PharmacistViewModel(sessionManager) {
     var hasCameraPermission by mutableStateOf(false)

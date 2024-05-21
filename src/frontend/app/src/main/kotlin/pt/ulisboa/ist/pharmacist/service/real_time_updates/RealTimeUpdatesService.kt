@@ -17,9 +17,8 @@ import pt.ulisboa.ist.pharmacist.repository.network.utils.Uris
 import pt.ulisboa.ist.pharmacist.repository.network.utils.fromJson
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import java.net.HttpURLConnection
-import javax.inject.Inject
 
-class RealTimeUpdatesService @Inject constructor(
+class RealTimeUpdatesService(
     val sessionManager: SessionManager,
     val httpClient: OkHttpClient
 ) {

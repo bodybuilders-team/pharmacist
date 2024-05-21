@@ -13,16 +13,16 @@ import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import java.util.UUID
+import javax.inject.Inject
 
 /**
  * View model for the [HomeActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  */
 @HiltViewModel
-class HomeViewModel(
-    val usersApi: UsersApi,
+class HomeViewModel @Inject constructor(
+    private val usersApi: UsersApi,
     sessionManager: SessionManager
 ) : PharmacistViewModel(sessionManager) {
 

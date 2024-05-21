@@ -42,7 +42,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineL
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
-import javax.inject.Inject
 
 /**
  * View model for the [MedicineActivity].
@@ -51,9 +50,9 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MedicineViewModel @AssistedInject constructor(
-    @Inject private val pharmacistDb: PharmacistDatabase,
-    @Inject private val medicineApi: MedicineApi,
-    @Inject private val pharmacyApi: PharmacyApi,
+    private val pharmacistDb: PharmacistDatabase,
+    private val medicineApi: MedicineApi,
+    private val pharmacyApi: PharmacyApi,
     sessionManager: SessionManager,
     @Assisted val medicineId: Long
 ) : PharmacistViewModel(sessionManager) {

@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.MedicineNotificationsBackgroundService
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -24,11 +23,9 @@ import javax.inject.Inject
  *
  * @property jsonEncoder the JSON encoder used to serialize/deserialize objects
  * @property sessionManager the manager used to handle the user session
- * @property pharmacistRepository the service used to handle the pharmacist requests
  */
 @HiltAndroidApp
 class PharmacistApplication @Inject constructor(
-    override val pharmacistRepository: PharmacistRepository,
     override val httpClient: OkHttpClient,
     override val jsonEncoder: Gson,
     override val sessionManager: SessionManager,

@@ -7,9 +7,8 @@ import pt.ulisboa.ist.pharmacist.repository.network.HTTPService
 import pt.ulisboa.ist.pharmacist.repository.network.connection.APIResult
 import pt.ulisboa.ist.pharmacist.repository.network.utils.Uris
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import javax.inject.Inject
 
-class MedicineApi @Inject constructor(
+class MedicineApi(
     context: Context,
     httpClient: OkHttpClient,
     sessionManager: SessionManager

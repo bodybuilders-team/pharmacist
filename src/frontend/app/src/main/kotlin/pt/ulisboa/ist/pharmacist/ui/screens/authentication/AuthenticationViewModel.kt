@@ -13,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -25,12 +24,10 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivit
  *
  * @param sessionManager the manager used to handle the user session
  * @param authenticationMethod the authentication method
- * @param pharmacistRepository the service used to interact with the pharmacist API
  */
 @HiltViewModel
 class AuthenticationViewModel @AssistedInject constructor(
-    pharmacistRepository: PharmacistRepository,
-    val usersApi: UsersApi,
+    private val usersApi: UsersApi,
     sessionManager: SessionManager,
     @Assisted val authenticationMethod: AuthenticationMethod
 ) : PharmacistViewModel(sessionManager) {

@@ -6,7 +6,6 @@ import androidx.room.TypeConverters
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineDao
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineEntity
-import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineFlatEntity
 import pt.ulisboa.ist.pharmacist.repository.local.pharmacies.PharmacyConverters
 import pt.ulisboa.ist.pharmacist.repository.local.pharmacies.PharmacyDao
 import pt.ulisboa.ist.pharmacist.repository.local.pharmacies.PharmacyEntity

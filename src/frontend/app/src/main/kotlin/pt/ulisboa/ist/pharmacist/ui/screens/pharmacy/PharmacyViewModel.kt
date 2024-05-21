@@ -43,19 +43,17 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 /**
  * View model for the [PharmacyActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
- *
  * @property loadingState the current loading state of the view model
  */
 @HiltViewModel
 class PharmacyViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
-    val pharmacistDb: PharmacistDatabase,
-    val medicineApi: MedicineApi,
-    val pharmacyApi: PharmacyApi,
-    val usersApi: UsersApi,
-    val realTimeUpdatesService: RealTimeUpdatesService,
+    private val pharmacistDb: PharmacistDatabase,
+    private val medicineApi: MedicineApi,
+    private val pharmacyApi: PharmacyApi,
+    private val usersApi: UsersApi,
+    private val realTimeUpdatesService: RealTimeUpdatesService,
     @Assisted val pharmacyId: Long
 ) : PharmacistViewModel(sessionManager) {
 
