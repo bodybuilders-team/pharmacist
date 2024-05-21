@@ -3,8 +3,6 @@ package pt.ulisboa.ist.pharmacist.ui.screens.authentication
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -25,7 +23,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivit
  * @param sessionManager the manager used to handle the user session
  * @param authenticationMethod the authentication method
  */
-@HiltViewModel
+@HiltViewModel(assistedFactory = AuthenticationViewModel.Factory::class)
 class AuthenticationViewModel @AssistedInject constructor(
     private val usersApi: UsersApi,
     sessionManager: SessionManager,
@@ -115,17 +113,6 @@ class AuthenticationViewModel @AssistedInject constructor(
         } else {
             _events.emit(Event.ShowToast(result.error.title))
             AuthenticationState.NOT_AUTHENTICATED
-        }
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: Factory,
-            authenticationMethod: AuthenticationMethod
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(authenticationMethod) as T
-            }
         }
     }
 

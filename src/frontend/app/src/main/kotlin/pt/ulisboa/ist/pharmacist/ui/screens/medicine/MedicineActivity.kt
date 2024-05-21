@@ -15,12 +15,12 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
-import javax.inject.Inject
 
 /**
  * Activity for the [MedicineScreen].
@@ -32,14 +32,13 @@ class MedicineActivity : PharmacistActivity() {
         intent.getLongExtra(MEDICINE_ID, -1)
     }
 
-    @Inject
-    lateinit var viewModelFactory: MedicineViewModel.Factory
-    private val viewModel: MedicineViewModel by viewModels<MedicineViewModel> {
-        MedicineViewModel.provideFactory(
-            viewModelFactory,
-            medicineId
-        )
-    }
+    private val viewModel: MedicineViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<MedicineViewModel.Factory> { factory ->
+                factory.create(medicineId)
+            }
+        }
+    )
 
     companion object {
         const val MEDICINE_ID = "medicineId"

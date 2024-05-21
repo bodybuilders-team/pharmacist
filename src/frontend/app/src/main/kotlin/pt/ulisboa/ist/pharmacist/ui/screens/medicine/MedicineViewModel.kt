@@ -6,8 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -48,7 +46,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
  *
  * @property sessionManager the manager used to handle the user session
  */
-@HiltViewModel
+@HiltViewModel(assistedFactory = MedicineViewModel.Factory::class)
 class MedicineViewModel @AssistedInject constructor(
     private val pharmacistDb: PharmacistDatabase,
     private val medicineApi: MedicineApi,
@@ -179,15 +177,6 @@ class MedicineViewModel @AssistedInject constructor(
     companion object {
         private const val PAGE_SIZE = 10
         private const val PREFETCH_DISTANCE = 1
-
-        fun provideFactory(
-            assistedFactory: Factory,
-            medicineId: Long
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(medicineId) as T
-            }
-        }
     }
 }
 

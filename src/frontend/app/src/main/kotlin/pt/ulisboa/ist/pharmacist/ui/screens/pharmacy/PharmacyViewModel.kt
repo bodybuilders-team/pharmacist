@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.room.withTransaction
 import dagger.assisted.Assisted
@@ -46,7 +44,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
  * @property sessionManager the manager used to handle the user session
  * @property loadingState the current loading state of the view model
  */
-@HiltViewModel
+@HiltViewModel(assistedFactory = PharmacyViewModel.Factory::class)
 class PharmacyViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     private val pharmacistDb: PharmacistDatabase,
@@ -359,21 +357,6 @@ class PharmacyViewModel @AssistedInject constructor(
 
         fun isLoaded() = this == LOADED
     }
-
-    companion object {
-        private const val PAGE_SIZE = 10
-        private const val PREFETCH_DISTANCE = 1
-
-        fun provideFactory(
-            assistedFactory: Factory,
-            pharmacyId: Long
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(pharmacyId) as T
-            }
-        }
-    }
-
 
     sealed class ModificationEvent {
         data class StockModificationEvent(

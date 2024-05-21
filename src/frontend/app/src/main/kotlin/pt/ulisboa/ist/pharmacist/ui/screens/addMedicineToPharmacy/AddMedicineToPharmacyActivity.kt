@@ -11,12 +11,11 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.createMedicine.CreateMedicineActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateToForResult
-import javax.inject.Inject
 
 /**
  * Activity for the [AddMedicineToPharmacyScreen].
@@ -28,14 +27,13 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
         intent.getLongExtra(PHARMACY_ID, -1)
     }
 
-    @Inject
-    lateinit var viewModelFactory: AddMedicineToPharmacyViewModel.Factory
-    private val viewModel: AddMedicineToPharmacyViewModel by viewModels<AddMedicineToPharmacyViewModel> {
-        AddMedicineToPharmacyViewModel.provideFactory(
-            viewModelFactory,
-            pharmacyId
-        )
-    }
+    private val viewModel: AddMedicineToPharmacyViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<AddMedicineToPharmacyViewModel.Factory> { factory ->
+                factory.create(pharmacyId)
+            }
+        }
+    )
 
     private val createMedicineResultLauncher =
         CreateMedicineActivity.registerForResult(this) { medicineId ->
@@ -49,8 +47,6 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
         viewModel.checkForLocationAccessPermission(this)
 
         lifecycleScope.launch {
-            if (viewModel.loadingState == NOT_LOADED)
-                viewModel.loadAvailableMedicines(pharmacyId)
             viewModel.startObtainingLocation(this@AddMedicineToPharmacyActivity)
         }
 

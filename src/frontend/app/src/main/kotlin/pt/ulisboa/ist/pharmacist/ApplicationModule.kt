@@ -7,7 +7,6 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,6 +16,7 @@ import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
+import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
 import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -98,6 +98,20 @@ object ApplicationModule {
 
     @Provides
     @Singleton
+    fun provideUploaderApi(
+        @ApplicationContext context: Context,
+        httpClient: OkHttpClient,
+        sessionManager: SessionManager
+    ): UploaderApi {
+        return UploaderApi(
+            context = context,
+            httpClient = httpClient,
+            sessionManager = sessionManager
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideRealTimeUpdatesService(
         sessionManager: SessionManager,
         httpClient: OkHttpClient
@@ -112,12 +126,6 @@ object ApplicationModule {
     @Singleton
     fun provideGson(): Gson {
         return GsonBuilder().create()
-    }
-
-    @Binds
-    @Singleton
-    fun bindDependenciesContainer(application: PharmacistApplication): DependenciesContainer {
-        return application
     }
 
     @Provides

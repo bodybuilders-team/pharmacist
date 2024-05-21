@@ -5,19 +5,15 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.map
-import dagger.Module
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.InstallIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,16 +27,12 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
-import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineRemoteMediator
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
-import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.LOADED
-import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
 
@@ -52,7 +44,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
  * @property selectedMedicine the selected medicine
  * @property hasLocationPermission true if the user has location permission, false otherwise
  */
-@HiltViewModel
+@HiltViewModel(assistedFactory = AddMedicineToPharmacyViewModel.Factory::class)
 class AddMedicineToPharmacyViewModel @AssistedInject constructor(
     private val pharmacistDb: PharmacistDatabase,
     private val pharmacyApi: PharmacyApi,
@@ -105,33 +97,10 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
     }
         .cachedIn(viewModelScope)
 
-    fun loadAvailableMedicines(pharmacyId: Long) = viewModelScope.launch {
-        loadingState = LOADING
-
-        val result = pharmacyApi.listAllAvailableMedicines(pharmacyId)
-
-        if (result.isFailure()) {
-            Log.e("AddMedicineToPharmacyViewModel", "Failed to list all available medicines")
-            loadingState = NOT_LOADED
-            return@launch
-        }
-
-        if (result.isSuccess()) {
-            Log.d(
-                "AddMedicineToPharmacyViewModel",
-                "Available medicines loaded, ${result.data.medicines}"
-            )
-            val availableMedicines = result.data.medicines
-        }
-
-        loadingState = LOADED
-    }
-
 
     fun searchMedicines(query: String) {
         this.queryFlow.value = query
     }
-
 
     suspend fun addMedicineToPharmacy(medicineId: Long, stock: Long): Boolean {
         if (stock <= 0) {
@@ -196,15 +165,6 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
     companion object {
         private const val PAGE_SIZE = 10
         private const val PREFETCH_DISTANCE = 1
-
-        fun provideFactory(
-            assistedFactory: Factory,
-            pharmacyId: Long
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(pharmacyId) as T
-            }
-        }
     }
 
     enum class AddMedicineToPharmacyState {
@@ -213,7 +173,3 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
         LOADED
     }
 }
-
-@InstallIn(PharmacistActivity::class)
-@Module
-interface AssistedInjectModule
