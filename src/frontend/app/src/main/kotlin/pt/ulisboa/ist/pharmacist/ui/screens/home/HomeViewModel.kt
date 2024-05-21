@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import java.util.UUID
@@ -22,9 +23,9 @@ import java.util.UUID
  */
 @HiltViewModel
 class HomeViewModel(
-    pharmacistRepository: PharmacistRepository,
+    val usersApi: UsersApi,
     sessionManager: SessionManager
-) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+) : PharmacistViewModel(sessionManager) {
 
     var isLoggedIn: Boolean by mutableStateOf(sessionManager.isLoggedIn())
         private set
@@ -54,7 +55,7 @@ class HomeViewModel(
         Log.d("LOGOUT", "Logging out user")
         withTimeoutOrNull(5000) {
             isLoading = true
-            pharmacistRepository.usersRepository.logout()
+            usersApi.logout()
         }
 
         sessionManager.clearSession()
@@ -86,7 +87,7 @@ class HomeViewModel(
 
         val guestUserName = "Guest${UUID.randomUUID()}"
         isLoading = true
-        val result = pharmacistService.usersService.register(
+        val result = usersApi.register(
             username = guestUserName,
             password = UUID.randomUUID().toString()
         )

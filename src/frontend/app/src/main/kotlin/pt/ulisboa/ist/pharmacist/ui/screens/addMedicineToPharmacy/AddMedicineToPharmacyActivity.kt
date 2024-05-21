@@ -9,8 +9,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.createMedicine.CreateMedicineActivity
@@ -57,7 +59,7 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
             AddMedicineToPharmacyScreen(
                 loadingState = viewModel.loadingState,
                 hasLocationPermission = viewModel.hasLocationPermission,
-                medicinesState = viewModel.medicinesState,
+                medicinePagingItems = viewModel.medicinePagingFlow.collectAsLazyPagingItems(),
                 onSearch = { viewModel.searchMedicines(it) },
                 onMedicineClicked = { medicine ->
                     viewModel.selectedMedicine =

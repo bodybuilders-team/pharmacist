@@ -21,13 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithNotificationStatus
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 
 @Composable
 fun MedicineHeader(
-    medicine: Medicine,
+    medicine: MedicineWithNotificationStatus,
     toggleMedicineNotification: () -> Unit,
-    notificationsActive: Boolean,
     onShareClick: () -> Unit
 ) {
     val isLandscape =
@@ -62,7 +62,7 @@ fun MedicineHeader(
                 onClick = toggleMedicineNotification,
             ) {
                 Icon(
-                    if (notificationsActive) Icons.Rounded.NotificationsActive else Icons.Rounded.NotificationsOff,
+                    if (medicine.notificationsActive) Icons.Rounded.NotificationsActive else Icons.Rounded.NotificationsOff,
                     contentDescription = stringResource(R.string.medicine_addToNotifications_button_description),
                     tint = MaterialTheme.colorScheme.primary
                 )

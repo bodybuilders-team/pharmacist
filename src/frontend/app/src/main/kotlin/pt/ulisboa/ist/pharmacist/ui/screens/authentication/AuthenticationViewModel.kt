@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivity.Companion.AuthenticationMethod
@@ -29,9 +30,10 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivit
 @HiltViewModel
 class AuthenticationViewModel @AssistedInject constructor(
     pharmacistRepository: PharmacistRepository,
+    val usersApi: UsersApi,
     sessionManager: SessionManager,
     @Assisted val authenticationMethod: AuthenticationMethod
-) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+) : PharmacistViewModel(sessionManager) {
 
     @AssistedFactory
     interface Factory {
@@ -61,7 +63,7 @@ class AuthenticationViewModel @AssistedInject constructor(
     }
 
     private fun register(username: String, password: String) = viewModelScope.launch {
-        val result = pharmacistService.usersService.register(
+        val result = usersApi.register(
             username = username,
             password = password
         )
@@ -81,7 +83,7 @@ class AuthenticationViewModel @AssistedInject constructor(
     }
 
     private fun login(username: String, password: String) = viewModelScope.launch {
-        val result = pharmacistService.usersService.login(
+        val result = usersApi.login(
             username = username,
             password = password
         )
@@ -101,7 +103,7 @@ class AuthenticationViewModel @AssistedInject constructor(
     }
 
     private fun upgrade(username: String, password: String) = viewModelScope.launch {
-        val result = pharmacistService.usersService.upgrade(
+        val result = usersApi.upgrade(
             username = username,
             password = password
         )

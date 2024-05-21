@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.StarRatingBar
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
@@ -35,7 +34,7 @@ import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
  */
 @Composable
 fun MedicinePharmacyEntry(
-    pharmacy: PharmacyWithUserDataModel,
+    pharmacy: Pharmacy,
     onPharmacyClick: (Pharmacy) -> Unit
 ) {
     ElevatedCard(modifier = Modifier
@@ -46,12 +45,12 @@ fun MedicinePharmacyEntry(
             shape = MaterialTheme.shapes.medium
         )
         .clickable {
-            onPharmacyClick(pharmacy.pharmacy)
+            onPharmacyClick(pharmacy)
         }
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             MeteredAsyncImage(
-                url = pharmacy.pharmacy.pictureUrl,
+                url = pharmacy.pictureUrl,
                 contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
                 modifier = Modifier
                     .width(100.dp)
@@ -65,19 +64,19 @@ fun MedicinePharmacyEntry(
                     .align(Alignment.Top)
             ) {
                 Text(
-                    text = pharmacy.pharmacy.name,
+                    text = pharmacy.name,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                 )
-                if (pharmacy.pharmacy.globalRating != null)
+                if (pharmacy.globalRating != null)
                     Row {
                         Text(
-                            text = String.format("%.1f", pharmacy.pharmacy.globalRating),
+                            text = String.format("%.1f", pharmacy.globalRating),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
                         StarRatingBar(
-                            rating = pharmacy.pharmacy.globalRating.toInt(),
+                            rating = pharmacy.globalRating.toInt(),
                             densityFactor = 6f
                         )
                     }

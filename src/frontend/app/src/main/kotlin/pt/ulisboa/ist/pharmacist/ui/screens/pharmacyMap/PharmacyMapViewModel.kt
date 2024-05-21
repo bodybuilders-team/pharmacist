@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
+import androidx.room.withTransaction
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -27,9 +28,12 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
+import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyEntity
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
+import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
@@ -50,12 +54,14 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class PharmacyMapViewModel @Inject constructor(
-    pharmacistService: PharmacistRepository,
+    @Inject private val pharmacistDb: PharmacistDatabase,
+    @Inject private val pharmacyApi: PharmacyApi,
+    @Inject private val uploaderApi: UploaderApi,
+    private val realTimeUpdatesService: RealTimeUpdatesService,
     sessionManager: SessionManager,
-    val realTimeUpdatesService: RealTimeUpdatesService,
     val placesClient: PlacesClient,
     val geoCoder: Geocoder
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+) : PharmacistViewModel(sessionManager) {
 
     var pharmacyPhotoUrl by mutableStateOf<String?>(null)
     var newPharmacyPhoto by mutableStateOf<ImageBitmap?>(null)
@@ -65,7 +71,7 @@ class PharmacyMapViewModel @Inject constructor(
     var hasLocationPermission by mutableStateOf(false)
     var hasCameraPermission by mutableStateOf(false)
 
-    val pharmacies = mutableStateMapOf<Long, PharmacyWithUserDataModel>()
+    val pharmacies = mutableStateMapOf<Long, Pharmacy>()
 
     var cameraPositionState by mutableStateOf(CameraPositionState())
         private set
@@ -91,15 +97,13 @@ class PharmacyMapViewModel @Inject constructor(
         realTimeUpdatesService.listenForRealTimeUpdates(
             onNewPharmacy = { newPharmacy ->
                 pharmacies[newPharmacy.pharmacyId] =
-                    PharmacyWithUserDataModel(
-                        Pharmacy(
-                            pharmacyId = newPharmacy.pharmacyId,
-                            name = newPharmacy.name,
-                            location = newPharmacy.location,
-                            pictureUrl = newPharmacy.pictureUrl,
-                            globalRating = null,
-                            numberOfRatings = emptyArray()
-                        ),
+                    Pharmacy(
+                        pharmacyId = newPharmacy.pharmacyId,
+                        name = newPharmacy.name,
+                        location = newPharmacy.location,
+                        pictureUrl = newPharmacy.pictureUrl,
+                        globalRating = null,
+                        numberOfRatings = emptyArray(),
                         userRating = null,
                         userMarkedAsFavorite = false,
                         userFlagged = false
@@ -111,12 +115,10 @@ class PharmacyMapViewModel @Inject constructor(
                 }
             },
             onPharmacyGlobalRating = { pharmacyGlobalRatingData ->
-                pharmacies.compute(pharmacyGlobalRatingData.pharmacyId) { _, pharmacyWithUserData ->
-                    pharmacyWithUserData?.copy(
-                        pharmacy = pharmacyWithUserData.pharmacy.copy(
-                            globalRating = pharmacyGlobalRatingData.globalRating,
-                            numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
-                        )
+                pharmacies.compute(pharmacyGlobalRatingData.pharmacyId) { _, pharmacy ->
+                    pharmacy?.copy(
+                        globalRating = pharmacyGlobalRatingData.globalRating,
+                        numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
                     )
                 }
             },
@@ -140,7 +142,7 @@ class PharmacyMapViewModel @Inject constructor(
      * @param mediaType the media type of the box photo
      */
     fun uploadBoxPhoto(boxPhotoData: ByteArray, mediaType: MediaType) = viewModelScope.launch {
-        ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, pharmacistService)
+        ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, uploaderApi)
             ?.let {
                 pharmacyPhotoUrl = it.boxPhotoUrl
                 newPharmacyPhoto = it.boxPhoto
@@ -155,12 +157,17 @@ class PharmacyMapViewModel @Inject constructor(
 
         state = PharmacyMapState.LOADING
 
-        val result = pharmacistService.pharmaciesService.getPharmacies(limit = 1000)
+        val result = pharmacyApi.getPharmacies(limit = 1000)
 
         if (result.isSuccess()) {
-            result.data.pharmacies.forEach {
-                pharmacies[it.pharmacy.pharmacyId] = it
+            pharmacistDb.withTransaction {
+                pharmacistDb.pharmacyDao()
+                    .upsertPharmacies(result.data.pharmacies.map { it.toPharmacyEntity() })
+                pharmacistDb.pharmacyDao().getAllPharmacies().forEach {
+                    pharmacies[it.pharmacyId] = it.toPharmacy()
+                }
             }
+
             realTimeUpdatesService.subscribeToUpdates(
                 listOf(RealTimeUpdateSubscription.newPharmacies()) +
                         result.data.pharmacies.flatMap {
@@ -260,7 +267,7 @@ class PharmacyMapViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            val result = pharmacistService.pharmaciesService.addPharmacy(
+            val result = pharmacyApi.addPharmacy(
                 name = name,
                 pharmacyPhotoUrl = pharmacyPhotoUrl!!,
                 location = location

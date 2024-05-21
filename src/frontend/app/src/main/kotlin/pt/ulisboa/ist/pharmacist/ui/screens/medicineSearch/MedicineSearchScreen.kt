@@ -25,12 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
-import androidx.paging.PagingData
-import androidx.paging.compose.collectAsLazyPagingItems
-import kotlinx.coroutines.flow.Flow
+import androidx.paging.compose.LazyPagingItems
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.repository.network.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.components.MedicineEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.components.PermissionScreen
@@ -44,15 +42,15 @@ private const val TEXT_FIELD_WIDTH_FACTOR = 0.8f
 @Composable
 fun MedicineSearchScreen(
     hasLocationPermission: Boolean,
-    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>,
+    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>,
     onSearch: (String) -> Unit,
-    onMedicineClicked: (Medicine) -> Unit
+    onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit
 ) {
     PharmacistScreen {
         MedicineSearch(
             modifier = Modifier.fillMaxSize(),
             hasLocationPermission = hasLocationPermission,
-            medicinesState = medicinesState,
+            medicinePagingItems = medicinePagingItems,
             onSearch = onSearch,
             onMedicineClicked = onMedicineClicked
         )
@@ -63,13 +61,11 @@ fun MedicineSearchScreen(
 fun MedicineSearch(
     modifier: Modifier = Modifier,
     hasLocationPermission: Boolean,
-    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>,
+    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>,
     onSearch: (String) -> Unit,
-    onMedicineClicked: (Medicine) -> Unit,
-    selectedMedicine: Medicine? = null
+    onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
+    selectedMedicine: MedicineWithClosestPharmacy? = null
 ) {
-    val medicinePagingItems = medicinesState.collectAsLazyPagingItems()
-
     Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemCount}")
     Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.loadState.refresh}")
     Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemSnapshotList}")
@@ -127,10 +123,9 @@ fun MedicineSearch(
 
         LazyColumn(modifier = Modifier.fillMaxWidth(TEXT_FIELD_WIDTH_FACTOR)) {
             items(medicinePagingItems.itemCount) { index ->
-                val (medicine, closestPharmacy) = medicinePagingItems[index]!!
+                val medicine = medicinePagingItems[index]!!
                 MedicineEntry(
                     medicine = medicine,
-                    closestPharmacy = closestPharmacy,
                     onMedicineClicked = { onMedicineClicked(medicine) },
                     isSelected = if (selectedMedicine?.medicineId != null) selectedMedicine.medicineId == medicine.medicineId else false
                 )

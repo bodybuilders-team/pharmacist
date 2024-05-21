@@ -4,8 +4,12 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,30 +19,65 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithClosestPharmacy
+import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
+import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineRemoteMediator
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
+import javax.inject.Inject
 
 /**
  * View model for the [MedicineSearchActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
+ * @property pharmacistDb the local database
+ * @property medicineApi the remote medicine API
+ * @property pharmacistRepository the repository used to handle the pharmacist data
  * @property sessionManager the manager used to handle the user session
  *
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MedicineSearchViewModel(
+    @Inject private val pharmacistDb: PharmacistDatabase,
+    @Inject private val medicineApi: MedicineApi,
     pharmacistRepository: PharmacistRepository,
     sessionManager: SessionManager
-) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+) : PharmacistViewModel(sessionManager) {
     var hasLocationPermission by mutableStateOf(false)
         private set
     private var queryFlow = MutableStateFlow("")
     private val locationFlow = MutableStateFlow<Location?>(null)
 
-    private val _medicinesState = combine(queryFlow, locationFlow) { searchValue, location ->
+    @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
+    val medicinePagingFlow = combine(queryFlow, locationFlow) { query, location ->
+        Pair(query, location)
+    }.flatMapLatest { (query, location) ->
+        Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PREFETCH_DISTANCE,
+                enablePlaceholders = false
+            ),
+            remoteMediator = MedicineRemoteMediator(
+                pharmacistDb = pharmacistDb,
+                medicineApi = medicineApi,
+                query = query,
+                location = location
+            ),
+            pagingSourceFactory = { pharmacistDb.medicineDao().pagingSource(query) }
+        )
+            .flow
+            .map { pagingData ->
+                pagingData.map {
+                    it.toMedicineWithClosestPharmacy()
+                }
+            }
+    }
+        .cachedIn(viewModelScope)
+
+    /*private val _medicinesState = combine(queryFlow, locationFlow) { searchValue, location ->
         Pair(searchValue, location)
     }.flatMapLatest { (search, location) ->
         Pager(
@@ -55,9 +94,9 @@ class MedicineSearchViewModel(
                 )
             },
         ).flow
-    }
+    }*/
 
-    val medicinesState get() = _medicinesState
+    // val medicinesState get() = _medicinesState
 
     fun searchMedicines(query: String) {
         this.queryFlow.value = query

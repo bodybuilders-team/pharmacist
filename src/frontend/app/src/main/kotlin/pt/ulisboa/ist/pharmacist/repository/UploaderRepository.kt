@@ -1,9 +1,9 @@
 package pt.ulisboa.ist.pharmacist.repository
 
-import pt.ulisboa.ist.pharmacist.repository.network.services.upload.UploaderService
+import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
 
 class UploaderRepository(
-    val uploaderNetworkDataSource: UploaderService
+    val uploaderNetworkDataSource: UploaderApi
 ) {
     // TODO: Implement the methods
 }

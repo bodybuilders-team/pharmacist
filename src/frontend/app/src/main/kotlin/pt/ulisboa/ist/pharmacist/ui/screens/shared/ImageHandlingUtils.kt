@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
-import pt.ulisboa.ist.pharmacist.repository.network.PharmacistService
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
+import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.net.URL
@@ -90,10 +90,10 @@ object ImageHandlingUtils {
     suspend fun uploadBoxPhoto(
         boxPhotoData: ByteArray,
         mediaType: MediaType,
-        pharmacistService: PharmacistService
+        uploaderApi: UploaderApi
     ): UploadBoxPhotoOutputData? {
         val createSignedUrlResult =
-            pharmacistService.uploaderService.createSignedUrl(mediaType.toString())
+            uploaderApi.createSignedUrl(mediaType.toString())
 
         if (createSignedUrlResult.isFailure()) {
             Log.e("ImageHandlingUtils", "Failed to create signed URL")
@@ -108,7 +108,7 @@ object ImageHandlingUtils {
         val signedUrl = createSignedUrlResult.data.signedUrl
 
         val uploadResult =
-            pharmacistService.uploaderService.uploadBoxPhoto(signedUrl, boxPhotoData, mediaType)
+            uploaderApi.uploadBoxPhoto(signedUrl, boxPhotoData, mediaType)
 
         if (uploadResult.isFailure()) {
             Log.e("ImageHandlingUtils", "Failed to upload box photo")

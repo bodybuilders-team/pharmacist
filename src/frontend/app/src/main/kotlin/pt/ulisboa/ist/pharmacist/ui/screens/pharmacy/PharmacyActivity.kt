@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
@@ -91,9 +91,9 @@ class PharmacyActivity : PharmacistActivity() {
                                     putExtra(
                                         Intent.EXTRA_TEXT,
                                         "Check out this pharmacy!" +
-                                                "\n\nName: ${it.pharmacy.name}" +
-                                                "\nAddress: https://www.google.com/maps/search/?api=1&query=${it.pharmacy.location.lat},${it.pharmacy.location.lon}" +
-                                                (if (it.pharmacy.globalRating != null) "\nRating: ${it.pharmacy.globalRating}⭐" else "") +
+                                                "\n\nName: ${it.name}" +
+                                                "\nAddress: https://www.google.com/maps/search/?api=1&query=${it.location.lat},${it.location.lon}" +
+                                                (if (it.globalRating != null) "\nRating: ${it.globalRating}⭐" else "") +
                                                 "\n\nDownload the Pharmacist app to see more details!"
                                     )
                                     putExtra(Intent.EXTRA_TITLE, "Check out this pharmacy!")

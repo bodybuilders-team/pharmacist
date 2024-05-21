@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.StarRatingBar
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
@@ -32,20 +32,20 @@ import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 @Composable
 fun PharmacyDetails(
     onPharmacyDetailsClick: (Long) -> Unit,
-    pharmacy: PharmacyWithUserDataModel
+    pharmacy: Pharmacy
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
             .clickable {
-                onPharmacyDetailsClick(pharmacy.pharmacy.pharmacyId)
+                onPharmacyDetailsClick(pharmacy.pharmacyId)
             },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         MeteredAsyncImage(
-            url = pharmacy.pharmacy.pictureUrl,
+            url = pharmacy.pictureUrl,
             contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
             modifier = Modifier
         )
@@ -53,18 +53,18 @@ fun PharmacyDetails(
             modifier = Modifier.align(Alignment.Top)
         ) {
             Text(
-                text = pharmacy.pharmacy.name,
+                text = pharmacy.name,
                 style = MaterialTheme.typography.titleLarge
             )
-            if (pharmacy.pharmacy.globalRating != null)
+            if (pharmacy.globalRating != null)
                 Row {
                     Text(
-                        text = String.format("%.1f", pharmacy.pharmacy.globalRating),
+                        text = String.format("%.1f", pharmacy.globalRating),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                     StarRatingBar(
-                        rating = pharmacy.pharmacy.globalRating.toInt(),
+                        rating = pharmacy.globalRating.toInt(),
                         densityFactor = 7f
                     )
                 }

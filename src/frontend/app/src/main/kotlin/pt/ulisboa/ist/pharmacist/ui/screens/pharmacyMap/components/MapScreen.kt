@@ -37,7 +37,7 @@ import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap.PharmacyMapViewModel
 
 /**
@@ -68,7 +68,7 @@ fun MapScreen(
     zoomedInMyLocation: Boolean,
     mapProperties: MapProperties,
     cameraPositionState: CameraPositionState,
-    pharmacies: SnapshotStateMap<Long, PharmacyWithUserDataModel>,
+    pharmacies: SnapshotStateMap<Long, Pharmacy>,
     onPharmacyDetailsClick: (Long) -> Unit,
     onAddPictureButtonClick: () -> Unit,
     onAddPharmacyFinishClick: (newPharmacyName: String, location: Location) -> Unit,
@@ -174,14 +174,14 @@ fun MapScreen(
                         clickedPharmacyMarker = null
                     }
                 ) {
-                    pharmacies.forEach { (_, pharmacyWithUserData) ->
-                        if (!pharmacyWithUserData.userFlagged)
+                    pharmacies.forEach { (_, pharmacy) ->
+                        if (!pharmacy.userFlagged)
                             Marker(
-                                state = MarkerState(position = pharmacyWithUserData.pharmacy.location.toLatLng()),
+                                state = MarkerState(position = pharmacy.location.toLatLng()),
                                 onClick = { _ ->
                                     if (!addingPharmacy && zoomedInMyLocation) {
                                         clickedPharmacyMarker =
-                                            pharmacyWithUserData.pharmacy.pharmacyId
+                                            pharmacy.pharmacyId
                                         scaffoldSheetScope.launch {
                                             scaffoldSheetState.bottomSheetState.expand()
                                         }
@@ -190,12 +190,12 @@ fun MapScreen(
                                 },
                                 onInfoWindowClick = {
                                     clickedPharmacyMarker = null
-                                    onPharmacyDetailsClick(pharmacyWithUserData.pharmacy.pharmacyId)
+                                    onPharmacyDetailsClick(pharmacy.pharmacyId)
                                 },
                                 icon = BitmapDescriptorFactory.defaultMarker(
                                     when {
-                                        clickedPharmacyMarker == pharmacyWithUserData.pharmacy.pharmacyId -> BitmapDescriptorFactory.HUE_RED
-                                        pharmacyWithUserData.userMarkedAsFavorite -> BitmapDescriptorFactory.HUE_YELLOW
+                                        clickedPharmacyMarker == pharmacy.pharmacyId -> BitmapDescriptorFactory.HUE_RED
+                                        pharmacy.userMarkedAsFavorite -> BitmapDescriptorFactory.HUE_YELLOW
                                         else -> BitmapDescriptorFactory.HUE_GREEN
                                     }
                                 )

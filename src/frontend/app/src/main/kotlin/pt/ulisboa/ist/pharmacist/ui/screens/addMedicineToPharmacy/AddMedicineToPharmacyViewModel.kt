@@ -8,11 +8,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.filter
+import androidx.paging.map
 import dagger.Module
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -20,19 +20,21 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.InstallIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.repository.network.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
+import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineRemoteMediator
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
@@ -40,7 +42,6 @@ import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.LOADING
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.NOT_LOADED
-import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicinePagingSource
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
 
 /**
@@ -54,17 +55,19 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
  */
 @HiltViewModel
 class AddMedicineToPharmacyViewModel @AssistedInject constructor(
-    pharmacistRepository: PharmacistRepository,
+    val pharmacistDb: PharmacistDatabase,
+    val pharmacyApi: PharmacyApi,
+    val medicineApi: MedicineApi,
     sessionManager: SessionManager,
     @Assisted val pharmacyId: Long
-) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+) : PharmacistViewModel(sessionManager) {
 
     @AssistedFactory
     interface Factory {
         fun create(pharmacyId: Long): AddMedicineToPharmacyViewModel
     }
 
-    var selectedMedicine by mutableStateOf<Medicine?>(null)
+    var selectedMedicine by mutableStateOf<MedicineWithClosestPharmacy?>(null)
 
     var hasLocationPermission by mutableStateOf(false)
         private set
@@ -74,42 +77,39 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
 
-    var medicinesState by mutableStateOf<Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>?>(
-        null
-    )
-        private set
-
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun initializeMedicinesState(availableMedicines: List<pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.listAvailableMedicines.MedicineStockModel>) =
-        combine(queryFlow, locationFlow) { searchValue, location ->
-            Pair(searchValue, location)
-        }.flatMapLatest { (search, location) ->
-            Pager(
-                config = PagingConfig(
-                    pageSize = PAGE_SIZE,
-                    prefetchDistance = PREFETCH_DISTANCE,
-                    enablePlaceholders = false
-                ),
-                pagingSourceFactory = {
-                    MedicinePagingSource(
-                        pharmacistRepository.medicinesRepository,
-                        search,
-                        location,
-                    )
-                },
-            ).flow.cachedIn(viewModelScope)
-        }.map { pagingData ->
-            pagingData.filter { medicine ->
-                !availableMedicines.any { it.medicine.medicineId == medicine.medicine.medicineId }
+    @OptIn(ExperimentalCoroutinesApi::class, ExperimentalPagingApi::class)
+    val medicinePagingFlow = combine(queryFlow, locationFlow) { query, location ->
+        Pair(query, location)
+    }.flatMapLatest { (query, location) ->
+        Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PREFETCH_DISTANCE,
+                enablePlaceholders = false
+            ),
+            remoteMediator = MedicineRemoteMediator(
+                pharmacistDb = pharmacistDb,
+                medicineApi = medicineApi,
+                query,
+                location
+            ),
+            pagingSourceFactory = {
+                pharmacistDb.medicineDao().pagingSourceMedicineNotInPharmacy(query, pharmacyId)
             }
-        }
-
+        )
+            .flow
+            .map { pagingData ->
+                pagingData.map {
+                    it.toMedicineWithClosestPharmacy()
+                }
+            }
+    }
+        .cachedIn(viewModelScope)
 
     fun loadAvailableMedicines(pharmacyId: Long) = viewModelScope.launch {
         loadingState = LOADING
 
-        val result = pharmacistRepository.pharmaciesRepository.listAllAvailableMedicines(pharmacyId)
+        val result = pharmacyApi.listAllAvailableMedicines(pharmacyId)
 
         if (result.isFailure()) {
             Log.e("AddMedicineToPharmacyViewModel", "Failed to list all available medicines")
@@ -123,7 +123,6 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
                 "Available medicines loaded, ${result.data.medicines}"
             )
             val availableMedicines = result.data.medicines
-            medicinesState = initializeMedicinesState(availableMedicines)
         }
 
         loadingState = LOADED
@@ -143,7 +142,7 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
 
         Log.d("AddMedicineToPharmacyViewModel", "addMedicineToPharmacy: $medicineId, $stock")
 
-        val result = pharmacistRepository.pharmaciesRepository.addNewMedicineToPharmacy(
+        val result = pharmacyApi.addNewMedicineToPharmacy(
             pharmacyId,
             medicineId,
             stock
@@ -162,7 +161,7 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
     fun addMedicine(medicineId: Long) = viewModelScope.launch {
         Log.d("AddMedicineToPharmacyViewModel", "addMedicine: $medicineId")
 
-        val result = pharmacistRepository.medicinesRepository.getMedicineById(medicineId)
+        val result = medicineApi.getMedicineById(medicineId)
 
         if (result.isFailure()) {
             Log.e("AddMedicineToPharmacyViewModel", "Failed to get medicine with id $medicineId")
@@ -170,7 +169,13 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
         }
 
         val medicine = result.data
-        selectedMedicine = medicine.medicine
+        selectedMedicine = MedicineWithClosestPharmacy(
+            medicine.medicine.medicineId,
+            medicine.medicine.name,
+            medicine.medicine.description,
+            medicine.medicine.boxPhotoUrl,
+            null
+        )
     }
 
 

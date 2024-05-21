@@ -34,7 +34,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
 import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 
@@ -42,7 +42,7 @@ import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 @OptIn(ExperimentalPagerApi::class)
 fun PharmacyHeader(
     pagerState: PagerState,
-    pharmacy: PharmacyWithUserDataModel,
+    pharmacy: Pharmacy,
     onFavoriteClick: () -> Unit,
     onReportClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -62,7 +62,7 @@ fun PharmacyHeader(
         ) { page ->
             if (page == 0)
                 MeteredAsyncImage(
-                    url = pharmacy.pharmacy.pictureUrl,
+                    url = pharmacy.pictureUrl,
                     contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
                     modifier = Modifier.fillMaxSize()
                 )
@@ -71,7 +71,7 @@ fun PharmacyHeader(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = CameraPositionState(
                         position = CameraPosition(
-                            pharmacy.pharmacy.location.toLatLng(),
+                            pharmacy.location.toLatLng(),
                             15f,
                             0f,
                             0f
@@ -85,8 +85,8 @@ fun PharmacyHeader(
                     )
                 ) {
                     Marker(
-                        state = MarkerState(position = pharmacy.pharmacy.location.toLatLng()),
-                        title = pharmacy.pharmacy.name
+                        state = MarkerState(position = pharmacy.location.toLatLng()),
+                        title = pharmacy.name
                     )
                 }
         }
@@ -95,7 +95,7 @@ fun PharmacyHeader(
             activeColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
         )
         Text(
-            text = pharmacy.pharmacy.name,
+            text = pharmacy.name,
             style = MaterialTheme.typography.titleLarge
         )
         Row {

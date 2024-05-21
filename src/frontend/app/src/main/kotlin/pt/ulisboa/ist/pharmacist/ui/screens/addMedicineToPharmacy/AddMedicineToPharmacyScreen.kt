@@ -22,11 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
-import kotlinx.coroutines.flow.Flow
+import androidx.paging.compose.LazyPagingItems
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.repository.network.services.medicines.models.getMedicinesWithClosestPharmacy.MedicineWithClosestPharmacyOutputModel
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearch
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
@@ -42,10 +41,10 @@ import pt.ulisboa.ist.pharmacist.ui.theme.PharmacistTheme
 fun AddMedicineToPharmacyScreen(
     loadingState: AddMedicineToPharmacyState,
     hasLocationPermission: Boolean,
-    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>?,
+    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>,
     onSearch: (String) -> Unit,
-    onMedicineClicked: (Medicine) -> Unit,
-    selectedMedicine: Medicine?,
+    onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
+    selectedMedicine: MedicineWithClosestPharmacy?,
     createMedicine: () -> Unit,
     addMedicineToPharmacy: (Long, Long) -> Unit,
 ) {
@@ -61,7 +60,7 @@ fun AddMedicineToPharmacyScreen(
                 ) {
                     MedicineSelector(
                         hasLocationPermission,
-                        medicinesState!!,
+                        medicinePagingItems,
                         onSearch,
                         onMedicineClicked,
                         selectedMedicine,
@@ -89,7 +88,7 @@ fun AddMedicineToPharmacyScreen(
                 ) {
                     MedicineSelector(
                         hasLocationPermission,
-                        medicinesState!!,
+                        medicinePagingItems,
                         onSearch,
                         onMedicineClicked,
                         selectedMedicine,
@@ -124,7 +123,7 @@ fun AddMedicineToPharmacyScreen(
 
 @Composable
 private fun SelectedMedicine(
-    selectedMedicine: Medicine?,
+    selectedMedicine: MedicineWithClosestPharmacy?,
     stock: Long,
     addMedicineToPharmacy: (Long, Long) -> Unit,
     createMedicine: () -> Unit,
@@ -140,7 +139,12 @@ private fun SelectedMedicine(
             PharmacyMedicineEntry(
                 modifier = Modifier
                     .fillMaxWidth(0.9f),
-                medicine = selectedMedicine,
+                medicine = Medicine(
+                    medicineId = selectedMedicine.medicineId,
+                    name = selectedMedicine.name,
+                    description = selectedMedicine.description,
+                    boxPhotoUrl = selectedMedicine.boxPhotoUrl
+                ),
                 stock = stock,
                 onAddStockClick = onAddStockClick,
                 onRemoveStockClick = onRemoveStockClick
@@ -178,10 +182,10 @@ private fun SelectedMedicine(
 @Composable
 fun MedicineSelector(
     hasLocationPermission: Boolean,
-    medicinesState: Flow<PagingData<MedicineWithClosestPharmacyOutputModel>>,
+    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>,
     onSearch: (String) -> Unit,
-    onMedicineClicked: (Medicine) -> Unit,
-    selectedMedicine: Medicine?,
+    onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
+    selectedMedicine: MedicineWithClosestPharmacy?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -198,7 +202,7 @@ fun MedicineSelector(
             modifier = Modifier
                 .weight(0.8f),
             hasLocationPermission = hasLocationPermission,
-            medicinesState = medicinesState,
+            medicinePagingItems = medicinePagingItems,
             onSearch = onSearch,
             onMedicineClicked = onMedicineClicked,
             selectedMedicine = selectedMedicine

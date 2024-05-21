@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
@@ -29,7 +30,7 @@ class MedicineSearchActivity : PharmacistActivity() {
         setContent {
             MedicineSearchScreen(
                 hasLocationPermission = viewModel.hasLocationPermission,
-                medicinesState = viewModel.medicinesState,
+                medicinePagingItems = viewModel.medicinePagingFlow.collectAsLazyPagingItems(),
                 onSearch = { viewModel.searchMedicines(it) },
                 onMedicineClicked = { medicine ->
                     MedicineActivity.navigate(this, medicine.medicineId)

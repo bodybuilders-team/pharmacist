@@ -11,6 +11,8 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
+import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
+import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -24,16 +26,17 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
  */
 @HiltViewModel
 class CreateMedicineViewModel(
-    pharmacistRepository: PharmacistRepository,
+    val medicineApi: MedicineApi,
+    val uploaderApi: UploaderApi,
     sessionManager: SessionManager
-) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+) : PharmacistViewModel(sessionManager) {
     var hasCameraPermission by mutableStateOf(false)
     private var boxPhotoUrl by mutableStateOf<String?>(null)
     var boxPhoto by mutableStateOf<ImageBitmap?>(null)
     var state by mutableStateOf(CreateMedicineState.NOT_STARTED)
 
     fun uploadBoxPhoto(boxPhotoData: ByteArray, mediaType: MediaType) = viewModelScope.launch {
-        ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, pharmacistRepository)
+        ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, uploaderApi)
             ?.let {
                 boxPhotoUrl = it.boxPhotoUrl
                 boxPhoto = it.boxPhoto
@@ -54,7 +57,7 @@ class CreateMedicineViewModel(
         state = CreateMedicineState.CREATING_MEDICINE
 
         val createMedicineResult =
-            pharmacistRepository.medicinesRepository.createMedicine(name, description, boxPhotoUrl)
+            medicineApi.createMedicine(name, description, boxPhotoUrl)
 
         if (createMedicineResult.isFailure()) {
             Log.e("CreateMedicineModel", "Failed to create medicine")

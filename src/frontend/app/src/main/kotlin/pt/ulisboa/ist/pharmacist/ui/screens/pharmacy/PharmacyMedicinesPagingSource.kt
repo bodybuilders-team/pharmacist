@@ -3,19 +3,20 @@ package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineStock
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.PharmaciesService
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import kotlin.math.max
 
 class PharmacyMedicinesPagingSource(
-    private val pharmaciesService: PharmaciesService,
+    private val pharmacyApi: PharmacyApi,
     private val realTimeUpdatesService: RealTimeUpdatesService,
     private val pid: Long
-) : PagingSource<Int, pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.listAvailableMedicines.MedicineStockModel>() {
+) : PagingSource<Int, MedicineStock>() {
 
-    override fun getRefreshKey(state: PagingState<Int, pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.listAvailableMedicines.MedicineStockModel>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, MedicineStock>): Int? {
         val anchorPosition = state.anchorPosition ?: return null
         val medicine = state.closestItemToPosition(anchorPosition) ?: return null
         return max(
@@ -24,7 +25,7 @@ class PharmacyMedicinesPagingSource(
         )
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, pt.ulisboa.ist.pharmacist.repository.network.services.pharmacies.models.listAvailableMedicines.MedicineStockModel> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MedicineStock> {
         val offset = params.key ?: STARTING_KEY
         val limit = params.loadSize
 
@@ -32,7 +33,7 @@ class PharmacyMedicinesPagingSource(
             "RealTimeUpdatesService",
             "Loading medicines for pharmacy $pid with offset $offset and limit $limit"
         )
-        val result = pharmaciesService.listAvailableMedicines(
+        val result = pharmacyApi.listAvailableMedicines(
             pharmacyId = pid,
             limit = limit.toLong(),
             offset = offset.toLong()
@@ -48,7 +49,7 @@ class PharmacyMedicinesPagingSource(
                 }
             )
             LoadResult.Page(
-                data = result.data.medicines,
+                data = result.data.medicines.map { MedicineStock(it.medicine, it.stock)},
                 prevKey = when (offset) {
                     STARTING_KEY -> null
                     else -> max(STARTING_KEY, offset - limit)

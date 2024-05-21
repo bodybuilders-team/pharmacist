@@ -13,6 +13,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
@@ -79,9 +80,9 @@ class MedicineActivity : PharmacistActivity() {
         setContent {
             MedicineScreen(
                 hasLocationPermission = viewModel.hasLocationPermission,
-                medicineModel = viewModel.medicine,
+                medicine = viewModel.medicine,
                 loadingState = viewModel.loadingState,
-                pharmaciesState = viewModel.pharmaciesState,
+                pharmacies = viewModel.pharmacyPagingFlow.collectAsLazyPagingItems(),
                 onPharmacyClick = { pharmacy ->
                     PharmacyActivity.navigate(this, pharmacy.pharmacyId)
                 },
@@ -98,7 +99,7 @@ class MedicineActivity : PharmacistActivity() {
                                     putExtra(
                                         Intent.EXTRA_TEXT,
                                         "Check out this medicine!" +
-                                                "\n\nName: ${it.medicine.name}" +
+                                                "\n\nName: ${it.name}" +
                                                 "\n\nDownload the Pharmacist app to see more details!"
                                     )
                                     putExtra(Intent.EXTRA_TITLE, "Check out this medicine!")

@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.AndroidEntryPoint
 import pt.ulisboa.ist.pharmacist.R
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
@@ -27,9 +28,8 @@ class PharmacyMapActivity : PharmacistActivity() {
         Places.initialize(this, getString(R.string.google_maps_key))
 
         PharmacyMapViewModel(
-            dependenciesContainer.pharmacistRepository,
-            dependenciesContainer.sessionManager,
-            dependenciesContainer.realTimeUpdatesService,
+            sessionManager = dependenciesContainer.sessionManager,
+            realTimeUpdatesService = dependenciesContainer.realTimeUpdatesService,
             placesClient = Places.createClient(this),
             geoCoder = Geocoder(this)
         )

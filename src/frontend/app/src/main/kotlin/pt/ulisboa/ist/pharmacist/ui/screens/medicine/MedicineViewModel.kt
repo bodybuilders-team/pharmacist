@@ -9,9 +9,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -24,10 +26,15 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pt.ulisboa.ist.pharmacist.domain.medicines.GetMedicineOutputModel
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithNotificationStatus
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
-import pt.ulisboa.ist.pharmacist.repository.PharmacistRepository
+import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithNotificationStatus
+import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyRemoteMediator
 import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
@@ -35,19 +42,21 @@ import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineL
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
+import javax.inject.Inject
 
 /**
  * View model for the [MedicineActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  */
 @HiltViewModel
 class MedicineViewModel @AssistedInject constructor(
-    pharmacistRepository: PharmacistRepository,
+    @Inject private val pharmacistDb: PharmacistDatabase,
+    @Inject private val medicineApi: MedicineApi,
+    @Inject private val pharmacyApi: PharmacyApi,
     sessionManager: SessionManager,
     @Assisted val medicineId: Long
-) : PharmacistViewModel(pharmacistRepository, sessionManager) {
+) : PharmacistViewModel(sessionManager) {
 
     @AssistedFactory
     interface Factory {
@@ -57,7 +66,7 @@ class MedicineViewModel @AssistedInject constructor(
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
 
-    var medicine: GetMedicineOutputModel? by mutableStateOf(null)
+    var medicine: MedicineWithNotificationStatus? by mutableStateOf(null)
         private set
 
     var hasLocationPermission by mutableStateOf(false)
@@ -67,25 +76,32 @@ class MedicineViewModel @AssistedInject constructor(
     var medicineImage: ImageBitmap? by mutableStateOf(null)
         private set
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _pharmaciesState = locationFlow.flatMapLatest { location ->
+    @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
+    val pharmacyPagingFlow = locationFlow.flatMapLatest { location ->
         Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
                 prefetchDistance = PREFETCH_DISTANCE,
                 enablePlaceholders = false
             ),
+            remoteMediator = PharmacyRemoteMediator(
+                pharmacistDb = pharmacistDb,
+                pharmacyApi = pharmacyApi,
+                medicineId = medicineId,
+                location = location
+            ),
             pagingSourceFactory = {
-                PharmaciesPagingSource(
-                    pharmaciesService = pharmacistRepository.pharmaciesService,
-                    mid = medicineId,
-                    location = location
-                )
-            },
-        ).flow.cachedIn(viewModelScope)
+                pharmacistDb.pharmacyDao().getPagingSourceByMedicineId(medicineId = medicineId)
+            }
+        )
+            .flow
+            .map { pagingData ->
+                pagingData.map {
+                    it.toPharmacy()
+                }
+            }
     }
-
-    val pharmaciesState get() = _pharmaciesState
+        .cachedIn(viewModelScope)
 
     /**
      * Loads the medicine with the given [mid].
@@ -93,26 +109,30 @@ class MedicineViewModel @AssistedInject constructor(
     fun loadMedicine(mid: Long) = viewModelScope.launch {
         loadingState = MedicineLoadingState.LOADING
 
-        val result = pharmacistService.medicinesService.getMedicineById(mid)
-        if (result.isSuccess())
-            medicine = result.data
+        val result = pharmacistDb.medicineDao().getMedicineById(mid)
+        medicine = result.toMedicineWithNotificationStatus()
 
         loadingState = LOADED
     }
 
     fun toggleMedicineNotification() = viewModelScope.launch {
-        medicine?.let { (_, notificationsActive) ->
-            if (!notificationsActive) {
-                val result = pharmacistService.medicinesService.addMedicineNotification(medicineId)
-                if (result.isSuccess())
-                    medicine = medicine?.copy(notificationsActive = true)
+        medicine?.let {
+            if (!it.notificationsActive) {
+                val result = medicineApi.addMedicineNotification(medicineId)
+                if (result.isSuccess()) {
+                    medicine = pharmacistDb.medicineDao().updateMedicineNotificationStatus(
+                        medicineId = medicineId,
+                        notificationsActive = true
+                    ).toMedicineWithNotificationStatus()
+                }
             } else {
-                val result =
-                    pharmacistService.medicinesService.removeMedicineNotification(medicineId)
+                val result = medicineApi.removeMedicineNotification(medicineId)
                 if (result.isSuccess())
-                    medicine = medicine?.copy(notificationsActive = false)
+                    medicine = pharmacistDb.medicineDao().updateMedicineNotificationStatus(
+                        medicineId = medicineId,
+                        notificationsActive = false
+                    ).toMedicineWithNotificationStatus()
             }
-
         }
     }
 
@@ -136,7 +156,7 @@ class MedicineViewModel @AssistedInject constructor(
     suspend fun downloadImage() {
         medicine?.let {
             withContext(Dispatchers.IO) {
-                val img: ImageBitmap? = ImageHandlingUtils.downloadImage(it.medicine.boxPhotoUrl)
+                val img: ImageBitmap? = ImageHandlingUtils.downloadImage(it.boxPhotoUrl)
                 if (img == null) {
                     Log.e("PharmacyActivity", "Failed to download image")
                     return@withContext
