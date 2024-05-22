@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -38,19 +39,25 @@ fun PharmacyDetails(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .fillMaxHeight(0.2f)
             .clickable {
                 onPharmacyDetailsClick(pharmacy.pharmacyId)
             },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         MeteredAsyncImage(
             url = pharmacy.pictureUrl,
             contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
             modifier = Modifier
+                .weight(4f)
+                .align(Alignment.Top)
         )
         Column(
-            modifier = Modifier.align(Alignment.Top)
+            modifier = Modifier
+                .align(Alignment.Top)
+                .weight(5.5f)
+                .padding(start = 8.dp),
         ) {
             Text(
                 text = pharmacy.name,

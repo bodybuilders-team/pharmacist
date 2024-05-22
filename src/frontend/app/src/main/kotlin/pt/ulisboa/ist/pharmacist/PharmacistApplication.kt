@@ -25,12 +25,12 @@ import javax.inject.Inject
  * @property sessionManager the manager used to handle the user session
  */
 @HiltAndroidApp
-class PharmacistApplication @Inject constructor(
-    override val httpClient: OkHttpClient,
-    override val jsonEncoder: Gson,
-    override val sessionManager: SessionManager,
-    override val realTimeUpdatesService: RealTimeUpdatesService
-) : DependenciesContainer, Application() {
+class PharmacistApplication : DependenciesContainer, Application() {
+
+    @Inject override lateinit var httpClient: OkHttpClient
+    @Inject override lateinit var jsonEncoder: Gson
+    @Inject override lateinit var sessionManager: SessionManager
+    @Inject override lateinit var realTimeUpdatesService: RealTimeUpdatesService
 
     private val serviceScope = CoroutineScope(Dispatchers.Default)
 

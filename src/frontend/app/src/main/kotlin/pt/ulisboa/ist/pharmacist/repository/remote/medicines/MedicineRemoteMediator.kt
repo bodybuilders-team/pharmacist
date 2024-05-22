@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.repository.remote.medicines
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -26,6 +27,9 @@ class MedicineRemoteMediator(
         val offset = state.pages.flatten().size
         val limit = state.config.pageSize
 
+        Log.d("MedicineRemoteMediator", "Offset: $offset, Limit: $limit")
+        Log.d("MedicineRemoteMediator", "Pages: ${state.pages}")
+
         return try {
             val result = medicineApi.getMedicinesWithClosestPharmacy(
                 substring = query,
@@ -37,6 +41,8 @@ class MedicineRemoteMediator(
             if (!result.isSuccess()) {
                 return MediatorResult.Error(Exception("Error loading data"))
             }
+
+            Log.d("MedicineRemoteMediator", "MedicineRemoteMediator: ${result.data.medicines}")
 
             pharmacistDb.withTransaction {
                 if (loadType == LoadType.REFRESH) {

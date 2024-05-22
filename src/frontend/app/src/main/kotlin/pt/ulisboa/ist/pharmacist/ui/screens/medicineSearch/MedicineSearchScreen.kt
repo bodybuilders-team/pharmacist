@@ -65,9 +65,9 @@ fun MedicineSearch(
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
     selectedMedicine: MedicineWithClosestPharmacy? = null
 ) {
-    Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemCount}")
+    /*Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemCount}")
     Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.loadState.refresh}")
-    Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemSnapshotList}")
+    Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemSnapshotList}")*/
 
     var query by remember { mutableStateOf("") }
 
