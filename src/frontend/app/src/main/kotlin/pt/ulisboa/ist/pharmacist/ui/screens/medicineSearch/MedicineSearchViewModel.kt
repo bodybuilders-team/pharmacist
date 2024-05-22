@@ -1,6 +1,7 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -49,6 +50,7 @@ class MedicineSearchViewModel @Inject constructor(
 
     @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
     val medicinePagingFlow = combine(queryFlow, locationFlow) { query, location ->
+        Log.d("MedicineRemoteMediator", "Newflow - Query: $query, Location: $location")
         Pair(query, location)
     }.flatMapLatest { (query, location) ->
         Pager(
@@ -63,7 +65,7 @@ class MedicineSearchViewModel @Inject constructor(
                 query = query,
                 location = location
             ),
-            pagingSourceFactory = { pharmacistDb.medicineDao().pagingSource(query) }
+            pagingSourceFactory = { pharmacistDb.medicineDao().pagingSource() }
         )
             .flow
             .map { pagingData ->
@@ -114,7 +116,7 @@ class MedicineSearchViewModel @Inject constructor(
     }
 
     companion object {
-        private const val PAGE_SIZE = 5
+        private const val PAGE_SIZE = 10
         private const val PREFETCH_DISTANCE = 1
     }
 }

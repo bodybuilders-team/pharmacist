@@ -30,7 +30,7 @@ interface MedicineDao {
     )
     suspend fun getPharmacyMedicineByPharmacyId(pharmacyId: Long): List<PharmacyMedicineFlatEntity>
 
-    @Query("SELECT * FROM medicines")
+    @Query("SELECT * FROM medicines ORDER BY medicineId ASC")
     fun pagingSource(): PagingSource<Int, MedicineEntity>
 
     @Query("SELECT * FROM medicines WHERE name LIKE :query")
