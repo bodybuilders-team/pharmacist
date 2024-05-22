@@ -16,12 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.StarRatingBar
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.CachedImage
 import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 
 /**
@@ -46,7 +47,7 @@ fun PharmacyDetails(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        MeteredAsyncImage(
+        CachedImage(
             url = pharmacy.pictureUrl,
             contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
             modifier = Modifier
@@ -91,6 +92,7 @@ fun PharmacyDetails(
             Text(
                 text = stringResource(R.string.pharmacyMap_clickForDetails_text),
                 style = MaterialTheme.typography.bodyMedium,
+                fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Light
             )
 

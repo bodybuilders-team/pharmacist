@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.CachedImage
 import kotlin.math.min
 
 /**
@@ -55,7 +55,7 @@ fun MedicineEntry(
                 .height(100.dp)
                 .padding(bottom = 8.dp)
         ) {
-            MeteredAsyncImage(
+            CachedImage(
                 url = medicine.boxPhotoUrl,
                 contentDescription = stringResource(R.string.medicine_boxPhoto_description),
                 modifier = Modifier

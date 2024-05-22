@@ -216,7 +216,7 @@ class PharmacyViewModel @AssistedInject constructor(
             Log.e("PharmacyViewModel", "Failed to load pharmacy", e)
             loadingState = NOT_LOADED
             return@launch
-        } 
+        }
 
         if (result.isSuccess()) {
             Log.d("PharmacyViewModel", "Pharmacy loaded: ${result.data}")

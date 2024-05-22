@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.StarRatingBar
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.CachedImage
 import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 
 /**
@@ -49,7 +49,7 @@ fun MedicinePharmacyEntry(
         }
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
-            MeteredAsyncImage(
+            CachedImage(
                 url = pharmacy.pictureUrl,
                 contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
                 modifier = Modifier

@@ -174,7 +174,7 @@ class MemDataSource {
                 "Farmácia São João",
                 Location(38.736946, -9.133621),
                 creatorId = 0L,
-                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                pictureUrl = "https://www.jf-penhafranca.pt/templates/yootheme/cache/54/farmacia-alves-da-graca-54cca7d1.jpeg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[0L]!!, 100),
                     MedicineStock(medicines[1L]!!, 50),
@@ -186,7 +186,7 @@ class MemDataSource {
                 "Farmácia do Chiado",
                 Location(38.7106, -9.1401),
                 creatorId = 0L,
-                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                pictureUrl = "https://www.jf-penhafranca.pt/templates/yootheme/cache/54/farmacia-alves-da-graca-54cca7d1.jpeg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[3L]!!, 100),
                     MedicineStock(medicines[4L]!!, 50),
@@ -198,7 +198,7 @@ class MemDataSource {
                 "Farmácia do Rossio",
                 Location(38.7149, -9.1394),
                 creatorId = 0L,
-                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                pictureUrl = "https://www.jf-penhafranca.pt/templates/yootheme/cache/54/farmacia-alves-da-graca-54cca7d1.jpeg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[0L]!!, 100),
                     MedicineStock(medicines[4L]!!, 50),
@@ -210,7 +210,7 @@ class MemDataSource {
                 "Farmácia do Restelo",
                 Location(38.7014, -9.2094),
                 creatorId = 0L,
-                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg",
+                pictureUrl = "https://www.jf-penhafranca.pt/templates/yootheme/cache/54/farmacia-alves-da-graca-54cca7d1.jpeg",
                 medicines = mutableListOf(
                     MedicineStock(medicines[3L]!!, 100),
                     MedicineStock(medicines[1L]!!, 50),
@@ -222,21 +222,21 @@ class MemDataSource {
                 "Farmácia do Areeiro",
                 Location(38.7425, -9.1321),
                 creatorId = 0L,
-                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
+                pictureUrl = "https://www.jf-penhafranca.pt/templates/yootheme/cache/54/farmacia-alves-da-graca-54cca7d1.jpeg"
             ),
             5L to Pharmacy(
                 5,
                 "Farmácia do Lumiar",
                 Location(38.7706, -9.1601),
                 creatorId = 0L,
-                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
+                pictureUrl = "https://www.jf-penhafranca.pt/templates/yootheme/cache/54/farmacia-alves-da-graca-54cca7d1.jpeg"
             ),
             6L to Pharmacy(
                 6,
                 "Farmácia do Parque",
                 Location(38.7606, -9.1501),
                 creatorId = 0L,
-                pictureUrl = "https://www.indice.eu/img/farmacias/farmacia-estacio-370.jpg"
+                pictureUrl = "https://www.jf-penhafranca.pt/templates/yootheme/cache/54/farmacia-alves-da-graca-54cca7d1.jpeg"
             )
         )
         pharmaciesCounter.set(pharmacies.size.toLong())

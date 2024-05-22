@@ -37,7 +37,6 @@ import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.NOT_LOADED
-import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearchViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
 
 /**

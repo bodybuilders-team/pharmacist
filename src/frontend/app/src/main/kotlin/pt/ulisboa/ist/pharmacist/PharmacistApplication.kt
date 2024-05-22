@@ -7,6 +7,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
+import coil.request.CachePolicy
+import coil.util.DebugLogger
 import com.google.gson.Gson
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -25,12 +31,16 @@ import javax.inject.Inject
  * @property sessionManager the manager used to handle the user session
  */
 @HiltAndroidApp
-class PharmacistApplication : DependenciesContainer, Application() {
+class PharmacistApplication : DependenciesContainer, Application(), ImageLoaderFactory {
 
-    @Inject override lateinit var httpClient: OkHttpClient
-    @Inject override lateinit var jsonEncoder: Gson
-    @Inject override lateinit var sessionManager: SessionManager
-    @Inject override lateinit var realTimeUpdatesService: RealTimeUpdatesService
+    @Inject
+    override lateinit var httpClient: OkHttpClient
+    @Inject
+    override lateinit var jsonEncoder: Gson
+    @Inject
+    override lateinit var sessionManager: SessionManager
+    @Inject
+    override lateinit var realTimeUpdatesService: RealTimeUpdatesService
 
     private val serviceScope = CoroutineScope(Dispatchers.Default)
 
@@ -76,5 +86,25 @@ class PharmacistApplication : DependenciesContainer, Application() {
             }
         }
         const val TAG = "PharmacistApp"
+    }
+
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .memoryCache {
+                MemoryCache.Builder(this)
+                    .maxSizePercent(0.1)
+                    .strongReferencesEnabled(true)
+                    .build()
+            }
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .diskCache {
+                DiskCache.Builder()
+                    .maxSizePercent(0.03)
+                    .directory(cacheDir)
+                    .build()
+            }
+            .logger(DebugLogger())
+            .build()
     }
 }

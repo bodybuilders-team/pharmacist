@@ -35,7 +35,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.CachedImage
 import pt.ulisboa.ist.pharmacist.ui.theme.Favorite
 
 @Composable
@@ -61,7 +61,7 @@ fun PharmacyHeader(
                 .height(200.dp),
         ) { page ->
             if (page == 0)
-                MeteredAsyncImage(
+                CachedImage(
                     url = pharmacy.pictureUrl,
                     contentDescription = stringResource(R.string.pharmacyMap_pharmacyPicture_description),
                     modifier = Modifier.fillMaxSize()
