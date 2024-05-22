@@ -47,14 +47,14 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
         viewModel.checkForLocationAccessPermission(this)
 
         lifecycleScope.launch {
-            viewModel.startObtainingLocation(this@AddMedicineToPharmacyActivity)
+            viewModel.obtainLocation(this@AddMedicineToPharmacyActivity)
         }
 
         setContent {
             AddMedicineToPharmacyScreen(
                 loadingState = viewModel.loadingState,
                 hasLocationPermission = viewModel.hasLocationPermission,
-                medicinePagingItems = viewModel.medicinePagingFlow.collectAsLazyPagingItems(),
+                medicinePagingItems = viewModel.medicinePagingFlow?.collectAsLazyPagingItems(),
                 onSearch = { viewModel.searchMedicines(it) },
                 onMedicineClicked = { medicine ->
                     viewModel.selectedMedicine =

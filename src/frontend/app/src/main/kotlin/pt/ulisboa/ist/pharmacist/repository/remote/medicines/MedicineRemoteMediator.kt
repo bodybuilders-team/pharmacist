@@ -24,20 +24,21 @@ class MedicineRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, MedicineEntity>
     ): MediatorResult {
-        val offset = when(loadType) {
+        val offset = when (loadType) {
             LoadType.REFRESH -> STARTING_KEY
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
             LoadType.APPEND -> {
-                val lastItem = state.lastItemOrNull()
-                    ?: return MediatorResult.Success(endOfPaginationReached = true)
-
-                lastItem.medicineId + 1
+                state.pages.flatten().size
             }
         }
+
         val limit = state.config.pageSize
 
         Log.d("MedicineRemoteMediator", "LoadType: $loadType")
-        Log.d("MedicineRemoteMediator", "Item count: ${state.pages.flatten().map { it.medicineId }}")
+        Log.d(
+            "MedicineRemoteMediator",
+            "Item count: ${state.pages.flatten().map { it.medicineId }}"
+        )
         Log.d("MedicineRemoteMediator", "Offset: $offset, Limit: $limit")
 
         return try {
@@ -48,14 +49,17 @@ class MedicineRemoteMediator(
                 offset = offset.toLong()
             )
 
+
             if (!result.isSuccess()) {
                 return MediatorResult.Error(Exception("Error loading data"))
             }
 
+            Log.d("MedicineRemoteMediator", "Result: ${result.data.medicines.size}")
+
             pharmacistDb.withTransaction {
-                /*if (loadType == LoadType.REFRESH) {
+                if (loadType == LoadType.REFRESH)
                     pharmacistDb.medicineDao().clearAllMedicines()
-                }*/
+
                 pharmacistDb.medicineDao().upsertMedicines(result.data.medicines.map {
                     MedicineEntity(
                         medicineId = it.medicine.medicineId,
@@ -68,7 +72,10 @@ class MedicineRemoteMediator(
                 })
             }
 
-            Log.d("MedicineRemoteMediator", "Reached end of pagination: ${result.data.medicines.isEmpty() || result.data.medicines.size < limit}")
+            Log.d(
+                "MedicineRemoteMediator",
+                "Reached end of pagination: ${result.data.medicines.isEmpty() || result.data.medicines.size < limit}"
+            )
 
             MediatorResult.Success(
                 endOfPaginationReached =

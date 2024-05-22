@@ -24,13 +24,13 @@ class MedicineSearchActivity : PharmacistActivity() {
         viewModel.checkForLocationAccessPermission(this)
 
         lifecycleScope.launch {
-            viewModel.startObtainingLocation(this@MedicineSearchActivity)
+            viewModel.obtainLocation(this@MedicineSearchActivity)
         }
 
         setContent {
             MedicineSearchScreen(
                 hasLocationPermission = viewModel.hasLocationPermission,
-                medicinePagingItems = viewModel.medicinePagingFlow.collectAsLazyPagingItems(),
+                medicinePagingItems = viewModel.medicinePagingFlow?.collectAsLazyPagingItems(),
                 onSearch = { viewModel.searchMedicines(it) },
                 onMedicineClicked = { medicine ->
                     MedicineActivity.navigate(this, medicine.medicineId)

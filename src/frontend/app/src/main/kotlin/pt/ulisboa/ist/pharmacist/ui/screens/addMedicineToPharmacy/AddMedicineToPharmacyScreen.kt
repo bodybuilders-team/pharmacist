@@ -41,7 +41,7 @@ import pt.ulisboa.ist.pharmacist.ui.theme.PharmacistTheme
 fun AddMedicineToPharmacyScreen(
     loadingState: AddMedicineToPharmacyState,
     hasLocationPermission: Boolean,
-    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>,
+    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>?,
     onSearch: (String) -> Unit,
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
     selectedMedicine: MedicineWithClosestPharmacy?,
@@ -182,7 +182,7 @@ private fun SelectedMedicine(
 @Composable
 fun MedicineSelector(
     hasLocationPermission: Boolean,
-    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>,
+    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>?,
     onSearch: (String) -> Unit,
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
     selectedMedicine: MedicineWithClosestPharmacy?,

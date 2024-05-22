@@ -24,6 +24,7 @@ import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyEntity
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyMedicineEntity
+import pt.ulisboa.ist.pharmacist.repository.network.connection.UnexpectedResponseException
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.MedicineStockOperation
@@ -209,8 +210,16 @@ class PharmacyViewModel @AssistedInject constructor(
     fun loadPharmacy(pharmacyId: Long) = viewModelScope.launch {
         loadingState = LOADING
 
-        val result = pharmacyApi.getPharmacyById(pharmacyId)
+        val result = try {
+            pharmacyApi.getPharmacyById(pharmacyId)
+        } catch (e: UnexpectedResponseException) {
+            Log.e("PharmacyViewModel", "Failed to load pharmacy", e)
+            loadingState = NOT_LOADED
+            return@launch
+        } 
+
         if (result.isSuccess()) {
+            Log.d("PharmacyViewModel", "Pharmacy loaded: ${result.data}")
             pharmacistDb.withTransaction {
                 pharmacistDb.pharmacyDao().upsertPharmacies(listOf(result.data.toPharmacyEntity()))
                 pharmacy = pharmacistDb.pharmacyDao().getPharmacyById(pharmacyId).toPharmacy()
@@ -224,10 +233,13 @@ class PharmacyViewModel @AssistedInject constructor(
                     RealTimeUpdateSubscription.pharmacyUserFavorited(pharmacyId)
                 )
             )
+            loadingState = LOADED
             fetchAllMedicines()
+        } else {
+            Log.d("PharmacyViewModel", "Pharmacy not retrieved")
         }
 
-        loadingState = LOADED
+
     }
 
     /**

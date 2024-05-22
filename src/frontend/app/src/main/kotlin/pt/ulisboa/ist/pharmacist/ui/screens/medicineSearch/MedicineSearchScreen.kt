@@ -39,9 +39,9 @@ private const val TEXT_FIELD_WIDTH_FACTOR = 0.8f
 @Composable
 fun MedicineSearchScreen(
     hasLocationPermission: Boolean,
-    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>,
+    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>?,
     onSearch: (String) -> Unit,
-    onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit
+    onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
 ) {
     PharmacistScreen {
         MedicineSearch(
@@ -58,11 +58,18 @@ fun MedicineSearchScreen(
 fun MedicineSearch(
     modifier: Modifier = Modifier,
     hasLocationPermission: Boolean,
-    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>,
+    medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>?,
     onSearch: (String) -> Unit,
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
     selectedMedicine: MedicineWithClosestPharmacy? = null
 ) {
+    if (medicinePagingItems == null)
+        return Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LoadingSpinner(modifier = Modifier.align(Alignment.Center))
+        }
+
     /*Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemCount}")
     Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.loadState.refresh}")
     Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemSnapshotList}")*/

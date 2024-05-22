@@ -52,9 +52,14 @@ class PharmacyActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.d("PharmacyActivity", "Pharmacy ID: $pharmacyId")
+
         viewModel.listenForRealTimeUpdates()
-        if (viewModel.loadingState == PharmacyViewModel.PharmacyLoadingState.NOT_LOADED)
+
+        if (viewModel.loadingState == PharmacyViewModel.PharmacyLoadingState.NOT_LOADED) {
+            Log.d("PharmacyActivity", "Loading pharmacy")
             viewModel.loadPharmacy(pharmacyId)
+        }
 
         setContent {
             PharmacyScreen(

@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -9,25 +10,28 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineRemoteMediator
-import pt.ulisboa.ist.pharmacist.service.LocationService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
-import javax.inject.Inject
 
 /**
  * View model for the [MedicineSearchActivity].
@@ -46,56 +50,8 @@ class MedicineSearchViewModel @Inject constructor(
     var hasLocationPermission by mutableStateOf(false)
         private set
     private var queryFlow = MutableStateFlow("")
-    private val locationFlow = MutableStateFlow<Location?>(null)
 
-    @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
-    val medicinePagingFlow = combine(queryFlow, locationFlow) { query, location ->
-        Log.d("MedicineRemoteMediator", "Newflow - Query: $query, Location: $location")
-        Pair(query, location)
-    }.flatMapLatest { (query, location) ->
-        Pager(
-            config = PagingConfig(
-                pageSize = PAGE_SIZE,
-                prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = false
-            ),
-            remoteMediator = MedicineRemoteMediator(
-                pharmacistDb = pharmacistDb,
-                medicineApi = medicineApi,
-                query = query,
-                location = location
-            ),
-            pagingSourceFactory = { pharmacistDb.medicineDao().pagingSource() }
-        )
-            .flow
-            .map { pagingData ->
-                pagingData.map {
-                    it.toMedicineWithClosestPharmacy()
-                }
-            }
-    }
-        .cachedIn(viewModelScope)
-
-    /*private val _medicinesState = combine(queryFlow, locationFlow) { searchValue, location ->
-        Pair(searchValue, location)
-    }.flatMapLatest { (search, location) ->
-        Pager(
-            config = PagingConfig(
-                pageSize = PAGE_SIZE,
-                prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = {
-                MedicinePagingSource(
-                    medicinesService = pharmacistRepository.medicinesRepository,
-                    query = search,
-                    location = location
-                )
-            },
-        ).flow
-    }*/
-
-    // val medicinesState get() = _medicinesState
+    var medicinePagingFlow: Flow<PagingData<MedicineWithClosestPharmacy>>? by mutableStateOf(null)
 
     fun searchMedicines(query: String) {
         this.queryFlow.value = query
@@ -105,14 +61,44 @@ class MedicineSearchViewModel @Inject constructor(
         hasLocationPermission = context.hasLocationPermission()
     }
 
-    suspend fun startObtainingLocation(context: Context) {
-        val locationService = LocationService(context)
+    @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
+    @SuppressLint("MissingPermission")
+    fun obtainLocation(context: Context) {
+        val fusedLocationProviderClient: FusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(context)
 
-        locationService.requestLocationUpdates()
-            .map {
-                locationFlow.emit(Location(it.latitude, it.longitude))
+        fusedLocationProviderClient.getCurrentLocation(PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener { location ->
+                location?.let {
+                    Log.d("MedicineSearchViewModel", "Location: $it")
+                    val location = Location(it.latitude, it.longitude)
+
+                    medicinePagingFlow = queryFlow.flatMapLatest { query ->
+                        Pager(
+                            config = PagingConfig(
+                                pageSize = PAGE_SIZE,
+                                prefetchDistance = PREFETCH_DISTANCE,
+                                enablePlaceholders = false,
+                                initialLoadSize = PAGE_SIZE
+                            ),
+                            remoteMediator = MedicineRemoteMediator(
+                                pharmacistDb = pharmacistDb,
+                                medicineApi = medicineApi,
+                                query = query,
+                                location = location
+                            ),
+                            pagingSourceFactory = { pharmacistDb.medicineDao().pagingSource() }
+                        )
+                            .flow
+                            .map { pagingData ->
+                                pagingData.map {
+                                    it.toMedicineWithClosestPharmacy()
+                                }
+                            }
+                    }
+                        .cachedIn(viewModelScope)
+                }
             }
-            .collect()
     }
 
     companion object {
