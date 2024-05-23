@@ -1,16 +1,12 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
 import android.Manifest
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.stringResource
 import com.google.android.gms.maps.model.LatLng
@@ -66,47 +62,42 @@ fun PharmacyMapScreen(
     userSuspended: Boolean
 ) {
     PharmacistScreen {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            var hasLocationPermission_ by remember { mutableStateOf(hasLocationPermission) }
+        var rememberedHasLocationPermission by remember { mutableStateOf(hasLocationPermission) }
 
-            if (hasLocationPermission_)
-                MapScreen(
-                    hasCameraPermission = hasCameraPermission,
-                    followMyLocation = followMyLocation,
-                    zoomedInMyLocation = zoomedInMyLocation,
-                    mapProperties = mapProperties,
-                    cameraPositionState = cameraPositionState,
-                    pharmacies = pharmacies,
-                    onPharmacyDetailsClick = onPharmacyDetailsClick,
-                    onAddPictureButtonClick = onAddPictureButtonClick,
-                    onAddPharmacyFinishClick = onAddPharmacyFinishClick,
-                    onAddPharmacyCancelClick = onAddPharmacyCancelClick,
-                    newPharmacyPhoto = newPharmacyPhoto,
-                    setFollowMyLocation = setFollowMyLocation,
-                    setPosition = setPosition,
-                    locationAutofill = locationAutofill,
-                    onSearchPlaces = onSearchPlaces,
-                    onPlaceClick = onPlaceClick,
-                    searchQuery = searchQuery,
-                    userSuspended = userSuspended
-                )
-            else
-                PermissionScreen(
-                    onPermissionGranted = {
-                        hasLocationPermission_ = true
-                    },
-                    permissionRequests = listOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                    ),
-                    permissionTitle = stringResource(R.string.pharmacy_map_location_permission_title),
-                    settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
-                    settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
-                )
-        }
+        if (rememberedHasLocationPermission)
+            MapScreen(
+                hasCameraPermission = hasCameraPermission,
+                followMyLocation = followMyLocation,
+                zoomedInMyLocation = zoomedInMyLocation,
+                mapProperties = mapProperties,
+                cameraPositionState = cameraPositionState,
+                pharmacies = pharmacies,
+                onPharmacyDetailsClick = onPharmacyDetailsClick,
+                onAddPictureButtonClick = onAddPictureButtonClick,
+                onAddPharmacyFinishClick = onAddPharmacyFinishClick,
+                onAddPharmacyCancelClick = onAddPharmacyCancelClick,
+                newPharmacyPhoto = newPharmacyPhoto,
+                setFollowMyLocation = setFollowMyLocation,
+                setPosition = setPosition,
+                locationAutofill = locationAutofill,
+                onSearchPlaces = onSearchPlaces,
+                onPlaceClick = onPlaceClick,
+                searchQuery = searchQuery,
+                userSuspended = userSuspended
+            )
+        else
+            PermissionScreen(
+                onPermissionGranted = {
+                    rememberedHasLocationPermission = true
+                },
+                permissionRequests = listOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ),
+                permissionTitle = stringResource(R.string.pharmacy_map_location_permission_title),
+                settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
+                settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
+            )
     }
 }
 

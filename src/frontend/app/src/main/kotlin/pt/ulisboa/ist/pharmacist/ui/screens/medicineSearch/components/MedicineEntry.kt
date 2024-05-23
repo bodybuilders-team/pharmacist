@@ -79,9 +79,9 @@ fun MedicineEntry(
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(0.1f)
                 )
-                if (medicine.closestPharmacy != null)
+                if (medicine.closestPharmacyName != null)
                     Text(
-                        text = "pharmacyId=${medicine.closestPharmacy}", // TODO: Need pharmacy name
+                        text = medicine.closestPharmacyName,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.weight(0.1f)
                     )

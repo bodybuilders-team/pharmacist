@@ -1,7 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,11 +25,9 @@ import androidx.paging.compose.LazyPagingItems
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
-import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState
 import pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch.MedicineSearch
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineEntry
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 import pt.ulisboa.ist.pharmacist.ui.theme.PharmacistTheme
 
 
@@ -39,8 +36,6 @@ import pt.ulisboa.ist.pharmacist.ui.theme.PharmacistTheme
  */
 @Composable
 fun AddMedicineToPharmacyScreen(
-    loadingState: AddMedicineToPharmacyState,
-    hasLocationPermission: Boolean,
     medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>?,
     onSearch: (String) -> Unit,
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
@@ -52,72 +47,61 @@ fun AddMedicineToPharmacyScreen(
     var stock by remember { mutableLongStateOf(0L) }
 
     PharmacistTheme {
-        if (loadingState == AddMedicineToPharmacyState.LOADED) {
-            if (isLandscape)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    MedicineSelector(
-                        hasLocationPermission,
-                        medicinePagingItems,
-                        onSearch,
-                        onMedicineClicked,
-                        selectedMedicine,
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                    )
-
-                    SelectedMedicine(
-                        selectedMedicine,
-                        stock,
-                        addMedicineToPharmacy,
-                        createMedicine,
-                        onAddStockClick = {
-                            stock += 1
-                        },
-                        onRemoveStockClick = {
-                            stock -= 1
-                        }
-                    )
-                }
-            else
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    MedicineSelector(
-                        hasLocationPermission,
-                        medicinePagingItems,
-                        onSearch,
-                        onMedicineClicked,
-                        selectedMedicine,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.8f)
-                    )
-
-                    SelectedMedicine(
-                        selectedMedicine,
-                        stock,
-                        addMedicineToPharmacy,
-                        createMedicine,
-                        onAddStockClick = {
-                            stock += 1
-                        },
-                        onRemoveStockClick = {
-                            stock -= 1
-                        }
-                    )
-                }
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+        if (isLandscape)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxSize()
             ) {
-                LoadingSpinner()
+                MedicineSelector(
+                    medicinePagingItems = medicinePagingItems,
+                    onSearch = onSearch,
+                    onMedicineClicked = onMedicineClicked,
+                    selectedMedicine = selectedMedicine,
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                )
+
+                SelectedMedicine(
+                    selectedMedicine,
+                    stock,
+                    addMedicineToPharmacy,
+                    createMedicine,
+                    onAddStockClick = {
+                        stock += 1
+                    },
+                    onRemoveStockClick = {
+                        stock -= 1
+                    }
+                )
             }
-        }
+        else
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                MedicineSelector(
+                    medicinePagingItems = medicinePagingItems,
+                    onSearch = onSearch,
+                    onMedicineClicked = onMedicineClicked,
+                    selectedMedicine = selectedMedicine,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.8f)
+                )
+
+                SelectedMedicine(
+                    selectedMedicine,
+                    stock,
+                    addMedicineToPharmacy,
+                    createMedicine,
+                    onAddStockClick = {
+                        stock += 1
+                    },
+                    onRemoveStockClick = {
+                        stock -= 1
+                    }
+                )
+            }
     }
 }
 
@@ -181,7 +165,6 @@ private fun SelectedMedicine(
 
 @Composable
 fun MedicineSelector(
-    hasLocationPermission: Boolean,
     medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>?,
     onSearch: (String) -> Unit,
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
@@ -201,7 +184,6 @@ fun MedicineSelector(
         MedicineSearch(
             modifier = Modifier
                 .weight(0.8f),
-            hasLocationPermission = hasLocationPermission,
             medicinePagingItems = medicinePagingItems,
             onSearch = onSearch,
             onMedicineClicked = onMedicineClicked,

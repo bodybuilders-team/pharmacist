@@ -126,11 +126,12 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
         pharmacistDb.medicineDao().upsertMedicine(result.data.toMedicineEntity())
         val medicine = pharmacistDb.medicineDao().getMedicineById(medicineId).toMedicine()
         selectedMedicine = MedicineWithClosestPharmacy(
-            medicine.medicineId,
-            medicine.name,
-            medicine.description,
-            medicine.boxPhotoUrl,
-            null
+            medicineId = medicine.medicineId,
+            name = medicine.name,
+            description = medicine.description,
+            boxPhotoUrl = medicine.boxPhotoUrl,
+            closestPharmacyId = null,
+            closestPharmacyName = null
         )
     }
 
@@ -146,8 +147,8 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
             LocationServices.getFusedLocationProviderClient(context)
 
         fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener { location ->
-                location?.let {
+            .addOnSuccessListener { receivedLocation ->
+                receivedLocation?.let {
                     Log.d("MedicineSearchViewModel", "Location: $it")
                     val location = Location(it.latitude, it.longitude)
 
@@ -169,8 +170,8 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
                         )
                             .flow
                             .map { pagingData ->
-                                pagingData.map {
-                                    it.toMedicineWithClosestPharmacy()
+                                pagingData.map { medicineEntity ->
+                                    medicineEntity.toMedicineWithClosestPharmacy()
                                 }
                             }
                     }

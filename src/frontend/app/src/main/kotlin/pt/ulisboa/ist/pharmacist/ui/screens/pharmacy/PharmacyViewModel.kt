@@ -139,6 +139,8 @@ class PharmacyViewModel @AssistedInject constructor(
                 result as APIResult.Success
                 Log.d("PharmacyViewModel", "Medicines loaded from API: ${result.data.medicines}")
 
+                if (result.data.medicines.isEmpty()) break
+
                 pharmacistDb.medicineDao().upsertPharmacyMedicineList(
                     result.data.medicines.map {
                         it.toPharmacyMedicineEntity(pharmacyId)
@@ -170,9 +172,7 @@ class PharmacyViewModel @AssistedInject constructor(
                     }
             )
 
-            if (result == null || result.isFailure() ||
-                (result as APIResult.Success).data.medicines.isEmpty()
-            ) break
+            if (result == null || result.isFailure()) break
             offset += limit
         }
     }

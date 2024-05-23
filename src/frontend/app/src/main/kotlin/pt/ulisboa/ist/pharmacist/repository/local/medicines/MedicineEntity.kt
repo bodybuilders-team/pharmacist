@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.repository.local.medicines
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -17,8 +18,16 @@ data class MedicineEntity(
     val name: String,
     val description: String,
     val boxPhotoUrl: String,
-    val closestPharmacy: Long?,
-    val notificationsActive: Boolean
+    @ColumnInfo(defaultValue = "0") val notificationsActive: Boolean
+)
+
+data class MedicineWithClosestPharmacyEntity(
+    val medicineId: Long,
+    val name: String,
+    val description: String,
+    val boxPhotoUrl: String,
+    val closestPharmacyId: Long?,
+    val closestPharmacyName: String?
 )
 
 
@@ -27,7 +36,6 @@ data class PharmacyMedicineFlatEntity(
     val name: String,
     val description: String,
     val boxPhotoUrl: String,
-    val closestPharmacy: Long?,
     val notificationsActive: Boolean,
     val stock: Long?
 )

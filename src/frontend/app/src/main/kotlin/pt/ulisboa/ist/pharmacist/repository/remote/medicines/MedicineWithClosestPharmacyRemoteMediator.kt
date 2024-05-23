@@ -10,20 +10,20 @@ import okio.IOException
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineDao
-import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineEntity
+import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineWithClosestPharmacyEntity
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 
 @OptIn(ExperimentalPagingApi::class)
-class MedicineRemoteMediator(
+class MedicineWithClosestPharmacyRemoteMediator(
     private val pharmacistDb: PharmacistDatabase,
     private val medicineApi: MedicineApi,
     private val query: String,
     private val location: Location?
-) : RemoteMediator<Int, MedicineEntity>() {
+) : RemoteMediator<Int, MedicineWithClosestPharmacyEntity>() {
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, MedicineEntity>
+        state: PagingState<Int, MedicineWithClosestPharmacyEntity>
     ): MediatorResult {
         val offset = when (loadType) {
             LoadType.REFRESH -> STARTING_KEY
@@ -49,7 +49,6 @@ class MedicineRemoteMediator(
                 limit = limit.toLong(),
                 offset = offset.toLong()
             )
-
 
             if (!result.isSuccess()) {
                 return MediatorResult.Error(Exception("Error loading data"))

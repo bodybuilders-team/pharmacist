@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.repository.mappers
 
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.repository.local.pharmacies.PharmacyEntity
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyWithUserDataDto
@@ -7,7 +8,8 @@ import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyWithUserDa
 fun PharmacyWithUserDataDto.toPharmacyEntity() = PharmacyEntity(
     pharmacyId = pharmacy.pharmacyId,
     name = pharmacy.name,
-    location = pharmacy.location,
+    latitude = pharmacy.location.lat,
+    longitude = pharmacy.location.lon,
     pictureUrl = pharmacy.pictureUrl,
     globalRating = pharmacy.globalRating,
     numberOfRatings = pharmacy.numberOfRatings,
@@ -19,7 +21,7 @@ fun PharmacyWithUserDataDto.toPharmacyEntity() = PharmacyEntity(
 fun PharmacyEntity.toPharmacy() = Pharmacy(
     pharmacyId = pharmacyId,
     name = name,
-    location = location,
+    location = Location(lat = latitude, lon = longitude),
     pictureUrl = pictureUrl,
     globalRating = globalRating,
     numberOfRatings = numberOfRatings,

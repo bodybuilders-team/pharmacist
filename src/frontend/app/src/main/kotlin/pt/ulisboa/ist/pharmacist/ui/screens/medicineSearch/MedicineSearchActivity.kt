@@ -3,12 +3,12 @@ package pt.ulisboa.ist.pharmacist.ui.screens.medicineSearch
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
 
 /**
  * Activity for the [MedicineSearchScreen].
@@ -21,13 +21,14 @@ class MedicineSearchActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.checkForLocationAccessPermission(this)
-
-        lifecycleScope.launch {
-            viewModel.obtainLocation(this@MedicineSearchActivity)
-        }
+        viewModel.hasLocationPermission = hasLocationPermission()
 
         setContent {
+            LaunchedEffect(key1 = viewModel.hasLocationPermission) {
+                if (viewModel.hasLocationPermission)
+                    viewModel.obtainLocation(this@MedicineSearchActivity)
+            }
+
             MedicineSearchScreen(
                 hasLocationPermission = viewModel.hasLocationPermission,
                 medicinePagingItems = viewModel.medicinePagingFlow?.collectAsLazyPagingItems(),
@@ -37,5 +38,11 @@ class MedicineSearchActivity : PharmacistActivity() {
                 }
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.hasLocationPermission = hasLocationPermission()
     }
 }

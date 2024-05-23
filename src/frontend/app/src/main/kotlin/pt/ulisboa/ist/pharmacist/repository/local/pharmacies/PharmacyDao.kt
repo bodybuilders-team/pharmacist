@@ -16,7 +16,7 @@ interface PharmacyDao {
 
     @Query(
         """
-        SELECT pharmacies.pharmacyId, pharmacies.name, pharmacies.location, pharmacies.pictureUrl, pharmacies.globalRating, pharmacies.numberOfRatings,
+        SELECT pharmacies.pharmacyId, pharmacies.name, pharmacies.latitude, pharmacies.longitude, pharmacies.pictureUrl, pharmacies.globalRating, pharmacies.numberOfRatings,
         pharmacies.userRating, pharmacies.userMarkedAsFavorite, pharmacies.userFlagged
         FROM pharmacies
         JOIN pharmacy_medicine

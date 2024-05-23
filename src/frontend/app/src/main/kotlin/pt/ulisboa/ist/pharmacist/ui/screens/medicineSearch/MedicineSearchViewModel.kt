@@ -30,7 +30,6 @@ import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineRemoteMediator
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
 import javax.inject.Inject
 
 /**
@@ -47,18 +46,14 @@ class MedicineSearchViewModel @Inject constructor(
     private val medicineApi: MedicineApi,
     sessionManager: SessionManager
 ) : PharmacistViewModel(sessionManager) {
+
     var hasLocationPermission by mutableStateOf(false)
-        private set
     private var queryFlow = MutableStateFlow("")
 
     var medicinePagingFlow: Flow<PagingData<MedicineWithClosestPharmacy>>? by mutableStateOf(null)
 
     fun searchMedicines(query: String) {
         this.queryFlow.value = query
-    }
-
-    fun checkForLocationAccessPermission(context: Context) {
-        hasLocationPermission = context.hasLocationPermission()
     }
 
     @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
@@ -68,8 +63,8 @@ class MedicineSearchViewModel @Inject constructor(
             LocationServices.getFusedLocationProviderClient(context)
 
         fusedLocationProviderClient.getCurrentLocation(PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener { location ->
-                location?.let {
+            .addOnSuccessListener { receivedLocation ->
+                receivedLocation?.let {
                     Log.d("MedicineSearchViewModel", "Location: $it")
                     val location = Location(it.latitude, it.longitude)
 
@@ -81,18 +76,25 @@ class MedicineSearchViewModel @Inject constructor(
                                 enablePlaceholders = false,
                                 initialLoadSize = PAGE_SIZE
                             ),
-                            remoteMediator = MedicineRemoteMediator(
+                            remoteMediator = //MedicineWithClosestPharmacyRemoteMediator(
+                            MedicineRemoteMediator(
                                 pharmacistDb = pharmacistDb,
                                 medicineApi = medicineApi,
                                 query = query,
                                 location = location
                             ),
-                            pagingSourceFactory = { pharmacistDb.medicineDao().pagingSource() }
+                            pagingSourceFactory = {
+                                pharmacistDb.medicineDao().pagingSource()
+                                /*pharmacistDb.medicineDao().medicineWithClosestPharmacyPagingSource(
+                                    latitude = location.lat,
+                                    longitude = location.lon,
+                                )*/
+                            }
                         )
                             .flow
                             .map { pagingData ->
-                                pagingData.map {
-                                    it.toMedicineWithClosestPharmacy()
+                                pagingData.map { medicineWithClosestPharmacyEntity ->
+                                    medicineWithClosestPharmacyEntity.toMedicineWithClosestPharmacy()
                                 }
                             }
                     }

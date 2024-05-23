@@ -17,7 +17,8 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 data class PharmacyEntity(
     @PrimaryKey val pharmacyId: Long,
     val name: String,
-    val location: Location,
+    val latitude: Double,
+    val longitude: Double,
     val pictureUrl: String,
     val globalRating: Double?,
     val numberOfRatings: Array<Int>,

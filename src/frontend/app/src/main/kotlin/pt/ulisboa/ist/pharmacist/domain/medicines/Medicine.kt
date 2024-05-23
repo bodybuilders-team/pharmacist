@@ -33,7 +33,8 @@ data class MedicineWithClosestPharmacy(
     val name: String,
     val description: String,
     val boxPhotoUrl: String,
-    val closestPharmacy: Long?
+    val closestPharmacyId: Long?,
+    val closestPharmacyName: String?
 )
 
 /**

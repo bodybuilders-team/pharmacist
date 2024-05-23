@@ -44,9 +44,25 @@ fun MedicineSearchScreen(
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
 ) {
     PharmacistScreen {
+        var rememberedHasLocationPermission by remember { mutableStateOf(hasLocationPermission) }
+
+        if (!rememberedHasLocationPermission) {
+            PermissionScreen(
+                onPermissionGranted = {
+                    rememberedHasLocationPermission = true
+                }, permissionRequests = listOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                permissionTitle = stringResource(R.string.pharmacy_map_location_permission_title),
+                settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
+                settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
+            )
+            return@PharmacistScreen
+        }
+
         MedicineSearch(
             modifier = Modifier.fillMaxSize(),
-            hasLocationPermission = hasLocationPermission,
             medicinePagingItems = medicinePagingItems,
             onSearch = onSearch,
             onMedicineClicked = onMedicineClicked
@@ -57,37 +73,12 @@ fun MedicineSearchScreen(
 @Composable
 fun MedicineSearch(
     modifier: Modifier = Modifier,
-    hasLocationPermission: Boolean,
     medicinePagingItems: LazyPagingItems<MedicineWithClosestPharmacy>?,
     onSearch: (String) -> Unit,
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
     selectedMedicine: MedicineWithClosestPharmacy? = null
 ) {
-    /*Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemCount}")
-    Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.loadState.refresh}")
-    Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemSnapshotList}")*/
-
     var query by remember { mutableStateOf("") }
-
-
-    var hasPermission by remember {
-        mutableStateOf(hasLocationPermission)
-    }
-
-    if (!hasPermission) {
-        PermissionScreen(
-            onPermissionGranted = {
-                hasPermission = true
-            }, permissionRequests = listOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            permissionTitle = stringResource(R.string.pharmacy_map_location_permission_title),
-            settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
-            settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
-        )
-        return
-    }
 
     if (medicinePagingItems == null)
         return Box(
@@ -133,14 +124,6 @@ fun MedicineSearch(
                 LoadingSpinner(modifier = Modifier.align(Alignment.Center))
             }
 
-            /*is LoadState.Error -> {
-                val error = medicinePagingItems.loadState.refresh as LoadState.Error
-                Text(
-                    text = error.error.localizedMessage!!,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }*/
-
             else -> LazyColumn(modifier = Modifier.fillMaxWidth(TEXT_FIELD_WIDTH_FACTOR)) {
                 items(count = medicinePagingItems.itemCount)
                 { index ->
@@ -163,16 +146,6 @@ fun MedicineSearch(
                             )
                         }
                     }
-
-                    /*is LoadState.Error -> {
-                        val error = medicinePagingItems.loadState.append as LoadState.Error
-                        item {
-                            Text(
-                                text = error.error.localizedMessage!!,
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
-                    }*/
 
                     else -> {}
                 }

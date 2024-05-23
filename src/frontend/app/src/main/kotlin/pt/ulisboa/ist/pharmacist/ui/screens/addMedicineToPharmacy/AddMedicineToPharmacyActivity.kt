@@ -52,8 +52,6 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
 
         setContent {
             AddMedicineToPharmacyScreen(
-                loadingState = viewModel.loadingState,
-                hasLocationPermission = viewModel.hasLocationPermission,
                 medicinePagingItems = viewModel.medicinePagingFlow?.collectAsLazyPagingItems(),
                 onSearch = { viewModel.searchMedicines(it) },
                 onMedicineClicked = { medicine ->
