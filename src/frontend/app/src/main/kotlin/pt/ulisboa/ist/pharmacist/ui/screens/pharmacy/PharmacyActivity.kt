@@ -10,34 +10,36 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 
 /**
  * Activity for the [PharmacyScreen].
  */
+@AndroidEntryPoint
 class PharmacyActivity : PharmacistActivity() {
 
     private val pharmacyId by lazy {
         intent.getLongExtra(PHARMACY_ID, -1)
     }
 
-    private val viewModel by viewModelInit {
-        PharmacyViewModel(
-            dependenciesContainer.pharmacistService,
-            dependenciesContainer.sessionManager,
-            dependenciesContainer.realTimeUpdatesService,
-            pharmacyId
-        )
-    }
+    private val viewModel: PharmacyViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<PharmacyViewModel.Factory> { factory ->
+                factory.create(pharmacyId)
+            }
+        }
+    )
 
     private val addMedicineResultLauncher = AddMedicineToPharmacyActivity
         .registerForResult(this) { medicineId, quantity ->
@@ -50,9 +52,14 @@ class PharmacyActivity : PharmacistActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.d("PharmacyActivity", "Pharmacy ID: $pharmacyId")
+
         viewModel.listenForRealTimeUpdates()
-        if (viewModel.loadingState == PharmacyViewModel.PharmacyLoadingState.NOT_LOADED)
+
+        if (viewModel.loadingState == PharmacyViewModel.PharmacyLoadingState.NOT_LOADED) {
+            Log.d("PharmacyActivity", "Loading pharmacy")
             viewModel.loadPharmacy(pharmacyId)
+        }
 
         setContent {
             PharmacyScreen(
@@ -88,9 +95,9 @@ class PharmacyActivity : PharmacistActivity() {
                                     putExtra(
                                         Intent.EXTRA_TEXT,
                                         "Check out this pharmacy!" +
-                                                "\n\nName: ${it.pharmacy.name}" +
-                                                "\nAddress: https://www.google.com/maps/search/?api=1&query=${it.pharmacy.location.lat},${it.pharmacy.location.lon}" +
-                                                (if (it.pharmacy.globalRating != null) "\nRating: ${it.pharmacy.globalRating}⭐" else "") +
+                                                "\n\nName: ${it.name}" +
+                                                "\nAddress: https://www.google.com/maps/search/?api=1&query=${it.location.lat},${it.location.lon}" +
+                                                (if (it.globalRating != null) "\nRating: ${it.globalRating}⭐" else "") +
                                                 "\n\nDownload the Pharmacist app to see more details!"
                                     )
                                     putExtra(Intent.EXTRA_TITLE, "Check out this pharmacy!")

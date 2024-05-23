@@ -4,11 +4,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivity.Companion.AuthenticationMethod
@@ -18,13 +22,19 @@ import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivit
  *
  * @param sessionManager the manager used to handle the user session
  * @param authenticationMethod the authentication method
- * @param pharmacistService the service used to interact with the pharmacist API
  */
-class AuthenticationViewModel(
-    pharmacistService: PharmacistService,
+@HiltViewModel(assistedFactory = AuthenticationViewModel.Factory::class)
+class AuthenticationViewModel @AssistedInject constructor(
+    private val usersApi: UsersApi,
     sessionManager: SessionManager,
-    private val authenticationMethod: AuthenticationMethod
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+    @Assisted val authenticationMethod: AuthenticationMethod
+) : PharmacistViewModel(sessionManager) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(authenticationMethod: AuthenticationMethod): AuthenticationViewModel
+    }
+
     var authenticationState: AuthenticationState by mutableStateOf(AuthenticationState.NOT_AUTHENTICATED)
         private set
 
@@ -48,10 +58,16 @@ class AuthenticationViewModel(
     }
 
     private fun register(username: String, password: String) = viewModelScope.launch {
-        val result = pharmacistService.usersService.register(
-            username = username,
-            password = password
-        )
+        val result = try {
+            usersApi.register(
+                username = username,
+                password = password
+            )
+        } catch (e: Exception) {
+            _events.emit(Event.ShowToast("Couldn't connect to the server. Please try again later."))
+            authenticationState = AuthenticationState.NOT_AUTHENTICATED
+            return@launch
+        }
 
         authenticationState = if (result.isSuccess()) {
             sessionManager.setSession(
@@ -68,10 +84,17 @@ class AuthenticationViewModel(
     }
 
     private fun login(username: String, password: String) = viewModelScope.launch {
-        val result = pharmacistService.usersService.login(
-            username = username,
-            password = password
-        )
+        val result =
+            try {
+                usersApi.login(
+                    username = username,
+                    password = password
+                )
+            } catch (e: Exception) {
+                _events.emit(Event.ShowToast("Couldn't connect to the server. Please try again later."))
+                authenticationState = AuthenticationState.NOT_AUTHENTICATED
+                return@launch
+            }
 
         authenticationState = if (result.isSuccess()) {
             sessionManager.setSession(
@@ -88,10 +111,16 @@ class AuthenticationViewModel(
     }
 
     private fun upgrade(username: String, password: String) = viewModelScope.launch {
-        val result = pharmacistService.usersService.upgrade(
-            username = username,
-            password = password
-        )
+        val result = try {
+            usersApi.upgrade(
+                username = username,
+                password = password
+            )
+        } catch (e: Exception) {
+            _events.emit(Event.ShowToast("Couldn't connect to the server. Please try again later."))
+            authenticationState = AuthenticationState.NOT_AUTHENTICATED
+            return@launch
+        }
 
         authenticationState = if (result.isSuccess()) {
             sessionManager.setSession(

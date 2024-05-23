@@ -15,13 +15,13 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import pt.ulisboa.ist.pharmacist.service.http.utils.Uris
-import pt.ulisboa.ist.pharmacist.service.http.utils.fromJson
+import pt.ulisboa.ist.pharmacist.PharmacistApplication
+import pt.ulisboa.ist.pharmacist.repository.network.utils.Uris
+import pt.ulisboa.ist.pharmacist.repository.network.utils.fromJson
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import java.net.HttpURLConnection
 
 class RealTimeUpdatesService(
-    val apiEndpoint: String,
     val sessionManager: SessionManager,
     val httpClient: OkHttpClient
 ) {
@@ -118,7 +118,7 @@ class RealTimeUpdatesService(
         }
 
         val request = Request.Builder()
-            .url(apiEndpoint + Uris.UPDATE_SUBSCRIPTIONS)
+            .url(PharmacistApplication.API_ENDPOINT + Uris.UPDATE_SUBSCRIPTIONS)
             .addHeader("Authorization", "Bearer ${sessionManager.accessToken}")
             .build()
 

@@ -21,8 +21,7 @@ class AboutActivity : ComponentActivity() {
         setContent {
             AboutScreen(
                 onOpenUrl = { openURL(it) },
-                onSendEmail = { sendEmail(it) },
-                onBackButtonClicked = { finish() }
+                onSendEmail = { sendEmail(it) }
             )
         }
     }

@@ -14,5 +14,8 @@ data class Pharmacy(
     val location: Location,
     val pictureUrl: String,
     val globalRating: Double?,
-    val numberOfRatings: Array<Int>
+    val numberOfRatings: Array<Int>,
+    val userRating: Int?,
+    val userMarkedAsFavorite: Boolean,
+    val userFlagged: Boolean
 )

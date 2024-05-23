@@ -20,39 +20,47 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
+import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyEntity
+import pt.ulisboa.ist.pharmacist.repository.network.connection.APIResult
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
+import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
 import pt.ulisboa.ist.pharmacist.service.LocationService
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
+import javax.inject.Inject
 
 /**
  * View model for the [PharmacyMapActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
  * @property placesClient the client used to interact with the Places API
  * @property geoCoder the geocoder used to get the location of an address
  *
  * @property state the current state of the view model
  */
-class PharmacyMapViewModel(
-    pharmacistService: PharmacistService,
-    sessionManager: SessionManager,
+@HiltViewModel
+class PharmacyMapViewModel @Inject constructor(
+    private val pharmacistDb: PharmacistDatabase,
+    private val pharmacyApi: PharmacyApi,
+    private val uploaderApi: UploaderApi,
     private val realTimeUpdatesService: RealTimeUpdatesService,
-    val placesClient: PlacesClient,
-    val geoCoder: Geocoder
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+    private val placesClient: PlacesClient,
+    private val geoCoder: Geocoder,
+    sessionManager: SessionManager
+) : PharmacistViewModel(sessionManager) {
 
     var pharmacyPhotoUrl by mutableStateOf<String?>(null)
     var newPharmacyPhoto by mutableStateOf<ImageBitmap?>(null)
@@ -62,7 +70,7 @@ class PharmacyMapViewModel(
     var hasLocationPermission by mutableStateOf(false)
     var hasCameraPermission by mutableStateOf(false)
 
-    val pharmacies = mutableStateMapOf<Long, PharmacyWithUserDataModel>()
+    val pharmacies = mutableStateMapOf<Long, Pharmacy>()
 
     var cameraPositionState by mutableStateOf(CameraPositionState())
         private set
@@ -88,15 +96,13 @@ class PharmacyMapViewModel(
         realTimeUpdatesService.listenForRealTimeUpdates(
             onNewPharmacy = { newPharmacy ->
                 pharmacies[newPharmacy.pharmacyId] =
-                    PharmacyWithUserDataModel(
-                        Pharmacy(
-                            pharmacyId = newPharmacy.pharmacyId,
-                            name = newPharmacy.name,
-                            location = newPharmacy.location,
-                            pictureUrl = newPharmacy.pictureUrl,
-                            globalRating = null,
-                            numberOfRatings = emptyArray()
-                        ),
+                    Pharmacy(
+                        pharmacyId = newPharmacy.pharmacyId,
+                        name = newPharmacy.name,
+                        location = newPharmacy.location,
+                        pictureUrl = newPharmacy.pictureUrl,
+                        globalRating = null,
+                        numberOfRatings = emptyArray(),
                         userRating = null,
                         userMarkedAsFavorite = false,
                         userFlagged = false
@@ -108,12 +114,10 @@ class PharmacyMapViewModel(
                 }
             },
             onPharmacyGlobalRating = { pharmacyGlobalRatingData ->
-                pharmacies.compute(pharmacyGlobalRatingData.pharmacyId) { _, pharmacyWithUserData ->
-                    pharmacyWithUserData?.copy(
-                        pharmacy = pharmacyWithUserData.pharmacy.copy(
-                            globalRating = pharmacyGlobalRatingData.globalRating,
-                            numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
-                        )
+                pharmacies.compute(pharmacyGlobalRatingData.pharmacyId) { _, pharmacy ->
+                    pharmacy?.copy(
+                        globalRating = pharmacyGlobalRatingData.globalRating,
+                        numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
                     )
                 }
             },
@@ -137,7 +141,7 @@ class PharmacyMapViewModel(
      * @param mediaType the media type of the box photo
      */
     fun uploadBoxPhoto(boxPhotoData: ByteArray, mediaType: MediaType) = viewModelScope.launch {
-        ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, pharmacistService)
+        ImageHandlingUtils.uploadBoxPhoto(boxPhotoData, mediaType, uploaderApi)
             ?.let {
                 pharmacyPhotoUrl = it.boxPhotoUrl
                 newPharmacyPhoto = it.boxPhoto
@@ -152,24 +156,33 @@ class PharmacyMapViewModel(
 
         state = PharmacyMapState.LOADING
 
-        val result = pharmacistService.pharmaciesService.getPharmacies(limit = 1000)
-
-        if (result.isSuccess()) {
-            result.data.pharmacies.forEach {
-                pharmacies[it.pharmacy.pharmacyId] = it
-            }
-            realTimeUpdatesService.subscribeToUpdates(
-                listOf(RealTimeUpdateSubscription.newPharmacies()) +
-                        result.data.pharmacies.flatMap {
-                            listOf(
-                                RealTimeUpdateSubscription.pharmacyUserRating(it.pharmacy.pharmacyId),
-                                RealTimeUpdateSubscription.pharmacyGlobalRating(it.pharmacy.pharmacyId),
-                                RealTimeUpdateSubscription.pharmacyUserFlagged(it.pharmacy.pharmacyId),
-                                RealTimeUpdateSubscription.pharmacyUserFavorited(it.pharmacy.pharmacyId)
-                            )
-                        }
-            )
+        val result = try {
+            pharmacyApi.getPharmacies(limit = 1000)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get pharmacies", e)
+            null
         }
+
+        if (result != null && result.isSuccess()) {
+            result as APIResult.Success
+
+            pharmacistDb.pharmacyDao()
+                .upsertPharmacies(result.data.pharmacies.map { it.toPharmacyEntity() })
+        }
+        pharmacistDb.pharmacyDao().getAllPharmacies().forEach {
+            pharmacies[it.pharmacyId] = it.toPharmacy()
+        }
+        realTimeUpdatesService.subscribeToUpdates(
+            listOf(RealTimeUpdateSubscription.newPharmacies()) +
+                    pharmacistDb.pharmacyDao().getAllPharmacies().flatMap {
+                        listOf(
+                            RealTimeUpdateSubscription.pharmacyUserRating(it.pharmacyId),
+                            RealTimeUpdateSubscription.pharmacyGlobalRating(it.pharmacyId),
+                            RealTimeUpdateSubscription.pharmacyUserFlagged(it.pharmacyId),
+                            RealTimeUpdateSubscription.pharmacyUserFavorited(it.pharmacyId)
+                        )
+                    }
+        )
 
         state = PharmacyMapState.LOADED
     }
@@ -257,11 +270,16 @@ class PharmacyMapViewModel(
             return
         }
         viewModelScope.launch {
-            val result = pharmacistService.pharmaciesService.addPharmacy(
-                name = name,
-                pharmacyPhotoUrl = pharmacyPhotoUrl!!,
-                location = location
-            )
+            val result = try {
+                pharmacyApi.addPharmacy(
+                    name = name,
+                    pharmacyPhotoUrl = pharmacyPhotoUrl!!,
+                    location = location
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to add pharmacy", e)
+                return@launch
+            }
 
             if (result.isSuccess()) {
                 loadPharmacyList()

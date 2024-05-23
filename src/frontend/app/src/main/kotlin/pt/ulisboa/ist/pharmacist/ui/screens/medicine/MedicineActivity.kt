@@ -10,31 +10,35 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.compose.collectAsLazyPagingItems
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.medicine.MedicineViewModel.MedicineLoadingState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [MedicineScreen].
  */
+@AndroidEntryPoint
 class MedicineActivity : PharmacistActivity() {
 
     private val medicineId by lazy {
         intent.getLongExtra(MEDICINE_ID, -1)
     }
 
-    private val viewModel by viewModelInit {
-        MedicineViewModel(
-            dependenciesContainer.pharmacistService,
-            dependenciesContainer.sessionManager,
-            medicineId
-        )
-    }
+    private val viewModel: MedicineViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<MedicineViewModel.Factory> { factory ->
+                factory.create(medicineId)
+            }
+        }
+    )
 
     companion object {
         const val MEDICINE_ID = "medicineId"
@@ -63,7 +67,7 @@ class MedicineActivity : PharmacistActivity() {
         super.onCreate(savedInstanceState)
 
         if (viewModel.loadingState == NOT_LOADED)
-            viewModel.loadMedicine(medicineId)
+            viewModel.loadMedicine()
 
 
         viewModel.checkForLocationAccessPermission(this)
@@ -75,9 +79,9 @@ class MedicineActivity : PharmacistActivity() {
         setContent {
             MedicineScreen(
                 hasLocationPermission = viewModel.hasLocationPermission,
-                medicineModel = viewModel.medicine,
+                medicine = viewModel.medicine,
                 loadingState = viewModel.loadingState,
-                pharmaciesState = viewModel.pharmaciesState,
+                pharmacies = viewModel.pharmacyPagingFlow.collectAsLazyPagingItems(),
                 onPharmacyClick = { pharmacy ->
                     PharmacyActivity.navigate(this, pharmacy.pharmacyId)
                 },
@@ -94,7 +98,7 @@ class MedicineActivity : PharmacistActivity() {
                                     putExtra(
                                         Intent.EXTRA_TEXT,
                                         "Check out this medicine!" +
-                                                "\n\nName: ${it.medicine.name}" +
+                                                "\n\nName: ${it.name}" +
                                                 "\n\nDownload the Pharmacist app to see more details!"
                                     )
                                     putExtra(Intent.EXTRA_TITLE, "Check out this medicine!")

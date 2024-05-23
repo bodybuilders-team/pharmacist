@@ -1,5 +1,7 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -7,14 +9,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
+import androidx.room.withTransaction
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
-import pt.ulisboa.ist.pharmacist.service.http.connection.isSuccess
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.changeMedicineStock.MedicineStockOperation
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
+import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineStock
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicine
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineEntity
+import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
+import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyEntity
+import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyMedicineEntity
+import pt.ulisboa.ist.pharmacist.repository.network.connection.APIResult
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
+import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.MedicineStockOperation
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
+import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
@@ -24,24 +42,40 @@ import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyL
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyViewModel.PharmacyLoadingState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 
+
 /**
  * View model for the [PharmacyActivity].
  *
- * @property pharmacistService the service used to handle the pharmacist game
  * @property sessionManager the manager used to handle the user session
- *
  * @property loadingState the current loading state of the view model
  */
-class PharmacyViewModel(
-    pharmacistService: PharmacistService,
+@HiltViewModel(assistedFactory = PharmacyViewModel.Factory::class)
+class PharmacyViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
+    private val pharmacistDb: PharmacistDatabase,
+    private val medicineApi: MedicineApi,
+    private val pharmacyApi: PharmacyApi,
+    private val usersApi: UsersApi,
     private val realTimeUpdatesService: RealTimeUpdatesService,
-    val pharmacyId: Long
-) : PharmacistViewModel(pharmacistService, sessionManager) {
+    @Assisted val pharmacyId: Long
+) : PharmacistViewModel(sessionManager) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(pharmacyId: Long): PharmacyViewModel
+    }
+
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+        val activeNetworkInfo = connectivityManager?.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
 
-    var pharmacy by mutableStateOf<PharmacyWithUserDataModel?>(null)
+    var pharmacy by mutableStateOf<Pharmacy?>(null)
         private set
 
     var pharmacyImage by mutableStateOf<ImageBitmap?>(null)
@@ -51,7 +85,8 @@ class PharmacyViewModel(
 
     //private val newMedicineFlow = MutableStateFlow<Long?>(null)
 
-    val medicinesList = mutableStateMapOf<Long, MedicineStockModel>()
+    val medicinesList =
+        mutableStateMapOf<Long, MedicineStock>()
 
     /*@OptIn(ExperimentalCoroutinesApi::class)
      private val _medicinesState = newMedicineFlow.flatMapLatest {
@@ -83,28 +118,61 @@ class PharmacyViewModel(
         val limit = 50L
         while (true) {
             Log.d(
-                "RealTimeUpdatesService",
-                "fetchAllMedicines - Fetching medicines for pharmacy ${pharmacy!!.pharmacy.pharmacyId}" +
+                "PharmacyViewModel",
+                "fetchAllMedicines - Fetching medicines for pharmacy ${pharmacy!!.pharmacyId}" +
                         " with offset $offset and limit $limit"
             )
-            val result = pharmacistService.pharmaciesService.listAvailableMedicines(
-                pharmacyId = pharmacyId,
-                limit = limit,
-                offset = offset
-            )
-            if (!result.isSuccess() || result.data.medicines.isEmpty()) break
-
-            for (medicine in result.data.medicines) {
-                medicinesList[medicine.medicine.medicineId] = medicine
+            val result = try {
+                pharmacyApi.listAvailableMedicines(
+                    pharmacyId = pharmacyId,
+                    limit = limit,
+                    offset = offset
+                )
+            } catch (e: Exception) {
+                Log.e("PharmacyViewModel", "Failed to fetch medicines from API", e)
+                null
             }
-            realTimeUpdatesService.subscribeToUpdates(
-                result.data.medicines.map {
-                    RealTimeUpdateSubscription.pharmacyMedicineStock(
-                        pharmacyId = pharmacyId,
-                        medicineId = it.medicine.medicineId
+
+            if (result == null || result.isFailure()) {
+                Log.d("PharmacyViewModel", "Medicines not retrieved from API")
+            } else if (result.isSuccess()) {
+                result as APIResult.Success
+                Log.d("PharmacyViewModel", "Medicines loaded from API: ${result.data.medicines}")
+
+                pharmacistDb.medicineDao().upsertPharmacyMedicineList(
+                    result.data.medicines.map {
+                        it.toPharmacyMedicineEntity(pharmacyId)
+                    }
+                )
+            }
+            pharmacistDb.medicineDao().getPharmacyMedicineByPharmacyId(pharmacyId)
+                .forEach { pharmacyMedicine ->
+                    medicinesList[pharmacyMedicine.medicineId] = MedicineStock(
+                        medicine = Medicine(
+                            medicineId = pharmacyMedicine.medicineId,
+                            name = pharmacyMedicine.name,
+                            description = pharmacyMedicine.description,
+                            boxPhotoUrl = pharmacyMedicine.boxPhotoUrl
+                        ),
+                        stock = pharmacyMedicine.stock ?: 0
                     )
                 }
+
+            Log.d("PharmacyViewModel", "Got medicines from database: ${medicinesList.size}")
+
+            realTimeUpdatesService.subscribeToUpdates(
+                pharmacistDb.medicineDao().getPharmacyMedicineByPharmacyId(pharmacyId)
+                    .map {
+                        RealTimeUpdateSubscription.pharmacyMedicineStock(
+                            pharmacyId = pharmacyId,
+                            medicineId = it.medicineId
+                        )
+                    }
             )
+
+            if (result == null || result.isFailure() ||
+                (result as APIResult.Success).data.medicines.isEmpty()
+            ) break
             offset += limit
         }
     }
@@ -137,14 +205,10 @@ class PharmacyViewModel(
                 pharmacy = pharmacy?.copy(userRating = pharmacyUserRatingData.userRating)
             },
             onPharmacyGlobalRating = { pharmacyGlobalRatingData ->
-                pharmacy = pharmacy?.let {
-                    it.copy(
-                        pharmacy = it.pharmacy.copy(
-                            globalRating = pharmacyGlobalRatingData.globalRating,
-                            numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
-                        )
-                    )
-                }
+                pharmacy = pharmacy?.copy(
+                    globalRating = pharmacyGlobalRatingData.globalRating,
+                    numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
+                )
             },
             onPharmacyUserFlagged = { pharmacyUserFlaggedData ->
                 pharmacy = pharmacy?.copy(userFlagged = pharmacyUserFlaggedData.flagged)
@@ -173,21 +237,35 @@ class PharmacyViewModel(
     fun loadPharmacy(pharmacyId: Long) = viewModelScope.launch {
         loadingState = LOADING
 
-        val result = pharmacistService.pharmaciesService.getPharmacyById(pharmacyId)
-        if (result.isSuccess()) {
-            pharmacy = result.data
-            realTimeUpdatesService.subscribeToUpdates(
-                listOf(
-                    RealTimeUpdateSubscription.pharmacyUserRating(pharmacyId),
-                    RealTimeUpdateSubscription.pharmacyGlobalRating(pharmacyId),
-                    RealTimeUpdateSubscription.pharmacyUserFlagged(pharmacyId),
-                    RealTimeUpdateSubscription.pharmacyUserFavorited(pharmacyId)
-                )
+        reloadPharmacy()
+
+        realTimeUpdatesService.subscribeToUpdates(
+            listOf(
+                RealTimeUpdateSubscription.pharmacyUserRating(pharmacyId),
+                RealTimeUpdateSubscription.pharmacyGlobalRating(pharmacyId),
+                RealTimeUpdateSubscription.pharmacyUserFlagged(pharmacyId),
+                RealTimeUpdateSubscription.pharmacyUserFavorited(pharmacyId)
             )
-            fetchAllMedicines()
+        )
+        loadingState = LOADED
+        fetchAllMedicines()
+    }
+
+    private suspend fun reloadPharmacy() {
+        val result = try {
+            pharmacyApi.getPharmacyById(pharmacyId)
+        } catch (e: Exception) {
+            Log.e("PharmacyViewModel", "Failed to load pharmacy from API", e)
+            null
+        }
+        if (result != null && result.isSuccess()) {
+            result as APIResult.Success
+            pharmacistDb.pharmacyDao().upsertPharmacy(result.data.toPharmacyEntity())
+            Log.d("PharmacyViewModel", "Loaded pharmacy from API")
         }
 
-        loadingState = LOADED
+        pharmacy = pharmacistDb.pharmacyDao().getPharmacyById(pharmacyId).toPharmacy()
+        Log.d("PharmacyViewModel", "Got pharmacy from database: $pharmacy")
     }
 
     /**
@@ -199,45 +277,55 @@ class PharmacyViewModel(
     fun updateFavoriteStatus() {
         pharmacy?.let {
             viewModelScope.launch {
-                if (it.userMarkedAsFavorite) {
-                    val result =
-                        pharmacistService.usersService.removeFavorite(it.pharmacy.pharmacyId)
-
-                    if (result.isSuccess())
-                        pharmacy = pharmacy?.copy(userMarkedAsFavorite = false)
+                val result = if (it.userMarkedAsFavorite) {
+                    try {
+                        usersApi.removeFavorite(it.pharmacyId)
+                    } catch (e: Exception) {
+                        Log.e("PharmacyViewModel", "Failed to remove favorite pharmacy in API", e)
+                        null
+                    }
                 } else {
-                    val result = pharmacistService.usersService.addFavorite(it.pharmacy.pharmacyId)
+                    try {
+                        usersApi.addFavorite(it.pharmacyId)
+                    } catch (e: Exception) {
+                        Log.e("PharmacyViewModel", "Failed to add favorite pharmacy in API", e)
+                        null
+                    }
+                }
 
-                    if (result.isSuccess())
-                        pharmacy = pharmacy?.copy(userMarkedAsFavorite = true)
+                if (result != null && result.isSuccess()) {
+                    reloadPharmacy()
                 }
             }
         }
     }
 
-    fun updateRating(rating: Int) = pharmacy?.let {
+    fun updateRating(rating: Int) =
         viewModelScope.launch {
-            val result =
-                pharmacistService.pharmaciesService.ratePharmacy(it.pharmacy.pharmacyId, rating)
+            val result = try {
+                pharmacyApi.ratePharmacy(pharmacyId, rating)
+            } catch (e: Exception) {
+                Log.e("PharmacyViewModel", "Failed to update pharmacy rating in API", e)
+                null
+            }
 
-            if (result.isSuccess()) {
-                val result2 =
-                    pharmacistService.pharmaciesService.getPharmacyById(it.pharmacy.pharmacyId)
-                if (result2.isSuccess())
-                    pharmacy = result2.data
+            if (result != null && result.isSuccess()) {
+                reloadPharmacy()
             }
         }
-    }
 
     suspend fun updateReportStatus(): Boolean {
-        pharmacy?.let {
-            Log.d("PharmacyViewModel", "Flagging pharmacy ${it.pharmacy.pharmacyId}")
-            val result = pharmacistService.usersService.flagPharmacy(it.pharmacy.pharmacyId)
-            if (result.isSuccess()) {
-                pharmacy = pharmacy?.copy(userFlagged = true)
-                Log.d("PharmacyViewModel", "Pharmacy ${it.pharmacy.pharmacyId} flagged")
-                return@updateReportStatus true
-            }
+        Log.d("PharmacyViewModel", "Flagging pharmacy $pharmacyId")
+        val result = try {
+            usersApi.flagPharmacy(pharmacyId)
+        } catch (e: Exception) {
+            Log.e("PharmacyViewModel", "Failed to flag pharmacy in API", e)
+            null
+        }
+        if (result != null && result.isSuccess()) {
+            reloadPharmacy()
+            Log.d("PharmacyViewModel", "Pharmacy $pharmacyId flagged")
+            return true
         }
 
         return false
@@ -249,24 +337,45 @@ class PharmacyViewModel(
         quantity: Long = 1
     ) = pharmacy?.let {
         viewModelScope.launch {
-            pharmacistService.pharmaciesService.changeMedicineStock(
-                pharmacyId = it.pharmacy.pharmacyId,
-                medicineId = medicineId,
-                operation = operation,
-                stock = quantity
-            )
+            val result = try {
+                pharmacyApi.changeMedicineStock(
+                    pharmacyId = it.pharmacyId,
+                    medicineId = medicineId,
+                    operation = operation,
+                    stock = quantity
+                )
+            } catch (e: Exception) {
+                Log.e("PharmacyViewModel", "Failed to modify stock in API", e)
+                null
+            }
+            if (result != null && result.isSuccess()) {
+                Log.d("PharmacyViewModel", "Modified stock in API")
+            }
         }
     }
 
     fun onMedicineAdded(medicineId: Long, quantity: Long) {
         viewModelScope.launch {
-            val result = pharmacistService.medicinesService.getMedicineById(medicineId)
+            val result = try {
+                medicineApi.getMedicineById(medicineId)
+            } catch (e: Exception) {
+                Log.e("PharmacyViewModel", "Failed to get medicine from API", e)
+                null
+            }
 
-            if (result.isSuccess()) {
-                medicinesList[medicineId] = MedicineStockModel(
-                    medicine = result.data.medicine,
-                    stock = quantity
-                )
+            if (result != null && result.isSuccess()) {
+                result as APIResult.Success
+                pharmacistDb.withTransaction {
+                    pharmacistDb.medicineDao().upsertMedicine(result.data.toMedicineEntity())
+
+                    medicinesList[medicineId] =
+                        MedicineStock(
+                            medicine = pharmacistDb.medicineDao().getMedicineById(medicineId)
+                                .toMedicine(),
+                            stock = quantity
+                        )
+                }
+
                 realTimeUpdatesService.subscribeToUpdates(
                     listOf(
                         RealTimeUpdateSubscription.pharmacyMedicineStock(pharmacyId, medicineId)
@@ -282,7 +391,7 @@ class PharmacyViewModel(
     suspend fun downloadImage() {
         pharmacy?.let {
             withContext(Dispatchers.IO) {
-                val img: ImageBitmap? = ImageHandlingUtils.downloadImage(it.pharmacy.pictureUrl)
+                val img: ImageBitmap? = ImageHandlingUtils.downloadImage(it.pictureUrl)
                 if (img == null) {
                     Log.e("PharmacyActivity", "Failed to download image")
                     return@withContext
@@ -299,12 +408,6 @@ class PharmacyViewModel(
 
         fun isLoaded() = this == LOADED
     }
-
-    companion object {
-        private const val PAGE_SIZE = 10
-        private const val PREFETCH_DISTANCE = 1
-    }
-
 
     sealed class ModificationEvent {
         data class StockModificationEvent(

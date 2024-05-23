@@ -4,33 +4,36 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.showToast
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the authentication screen.
  *
  * @property viewModel the view model used to handle the authentication logic
  */
+@AndroidEntryPoint
 class AuthenticationActivity : PharmacistActivity() {
 
     private val authenticationMethod by lazy {
         AuthenticationMethod.valueOf(intent.getStringExtra(AUTHENTICATION_METHOD)!!)
     }
 
-    private val viewModel by viewModelInit {
-        AuthenticationViewModel(
-            dependenciesContainer.pharmacistService,
-            dependenciesContainer.sessionManager,
-            authenticationMethod
-        )
-    }
+    private val viewModel: AuthenticationViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<AuthenticationViewModel.Factory> { factory ->
+                factory.create(authenticationMethod)
+            }
+        }
+    )
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {

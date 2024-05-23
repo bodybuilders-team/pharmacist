@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.theme.Gold
 
 private const val MIN_RATING = 1
@@ -36,7 +36,7 @@ private const val MAX_RATING = 5
  */
 @Composable
 fun PharmacyRating(
-    pharmacy: PharmacyWithUserDataModel,
+    pharmacy: Pharmacy,
     onRatingChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -58,7 +58,7 @@ fun PharmacyRating(
         // Global Rating
         Row {
             Text(// only with one decimal
-                text = "${pharmacy.pharmacy.globalRating?.let { String.format("%.1f", it) } ?: 0}",
+                text = "${pharmacy.globalRating?.let { String.format("%.1f", it) } ?: 0}",
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
                 fontSize = 40.sp,
@@ -73,7 +73,7 @@ fun PharmacyRating(
                         modifier = Modifier.height(16.dp)
                     ) {
                         Text(
-                            text = "${pharmacy.pharmacy.numberOfRatings[i - 1]}",
+                            text = "${pharmacy.numberOfRatings[i - 1]}",
                             style = MaterialTheme.typography.bodySmall
                         )
                         StarRatingBar(rating = i, densityFactor = 8f, selectable = false)

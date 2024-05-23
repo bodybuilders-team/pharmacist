@@ -13,31 +13,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.MeteredAsyncImage
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.CachedImage
 import kotlin.math.min
 
 /**
  * A medicine entry in the search medicine result list.
  *
- * @param medicine the Medicine
- * @param closestPharmacy the closest pharmacy where the medicine is available
+ * @param medicine the MedicineWithClosestPharmacy to be displayed
  * @param onMedicineClicked function to be executed when the medicine is clicked
  * @param isSelected true if the medicine is selected, false otherwise
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MedicineEntry(
-    medicine: Medicine,
-    closestPharmacy: Pharmacy? = null,
-    onMedicineClicked: (Medicine) -> Unit,
+    medicine: MedicineWithClosestPharmacy,
+    onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
     isSelected: Boolean,
 ) {
     ElevatedCard(
@@ -60,7 +55,7 @@ fun MedicineEntry(
                 .height(100.dp)
                 .padding(bottom = 8.dp)
         ) {
-            MeteredAsyncImage(
+            CachedImage(
                 url = medicine.boxPhotoUrl,
                 contentDescription = stringResource(R.string.medicine_boxPhoto_description),
                 modifier = Modifier
@@ -84,9 +79,9 @@ fun MedicineEntry(
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(0.1f)
                 )
-                if (closestPharmacy != null)
+                if (medicine.closestPharmacy != null)
                     Text(
-                        text = closestPharmacy.name,
+                        text = "pharmacyId=${medicine.closestPharmacy}", // TODO: Need pharmacy name
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.weight(0.1f)
                     )

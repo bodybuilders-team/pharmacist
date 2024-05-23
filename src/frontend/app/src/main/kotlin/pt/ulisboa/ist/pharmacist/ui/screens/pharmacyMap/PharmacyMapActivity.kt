@@ -1,39 +1,26 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacyMap
 
 import android.graphics.Bitmap
-import android.location.Geocoder
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.lifecycleScope
-import com.google.android.libraries.places.api.Places
-import kotlinx.coroutines.launch
-import pt.ulisboa.ist.pharmacist.R
+import dagger.hilt.android.AndroidEntryPoint
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.ImageHandlingUtils
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasCameraPermission
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.hasLocationPermission
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [PharmacyMapScreen].
  */
+@AndroidEntryPoint
 class PharmacyMapActivity : PharmacistActivity() {
 
-    private val viewModel by viewModelInit {
-        Places.initialize(this, getString(R.string.google_maps_key))
-
-        PharmacyMapViewModel(
-            dependenciesContainer.pharmacistService,
-            dependenciesContainer.sessionManager,
-            dependenciesContainer.realTimeUpdatesService,
-            placesClient = Places.createClient(this),
-            geoCoder = Geocoder(this)
-        )
-    }
+    private val viewModel: PharmacyMapViewModel by viewModels()
 
     private val imageResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

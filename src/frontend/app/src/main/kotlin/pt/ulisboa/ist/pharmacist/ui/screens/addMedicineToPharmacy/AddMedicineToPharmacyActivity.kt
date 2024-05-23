@@ -7,30 +7,33 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.compose.collectAsLazyPagingItems
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
-import pt.ulisboa.ist.pharmacist.ui.screens.addMedicineToPharmacy.AddMedicineToPharmacyViewModel.AddMedicineToPharmacyState.NOT_LOADED
 import pt.ulisboa.ist.pharmacist.ui.screens.createMedicine.CreateMedicineActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateToForResult
-import pt.ulisboa.ist.pharmacist.ui.screens.shared.viewModelInit
 
 /**
  * Activity for the [AddMedicineToPharmacyScreen].
  */
+@AndroidEntryPoint
 class AddMedicineToPharmacyActivity : PharmacistActivity() {
 
     private val pharmacyId by lazy {
         intent.getLongExtra(PHARMACY_ID, -1)
     }
 
-    private val viewModel by viewModelInit {
-        AddMedicineToPharmacyViewModel(
-            dependenciesContainer.pharmacistService,
-            dependenciesContainer.sessionManager,
-            pharmacyId
-        )
-    }
+    private val viewModel: AddMedicineToPharmacyViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<AddMedicineToPharmacyViewModel.Factory> { factory ->
+                factory.create(pharmacyId)
+            }
+        }
+    )
 
     private val createMedicineResultLauncher =
         CreateMedicineActivity.registerForResult(this) { medicineId ->
@@ -44,16 +47,14 @@ class AddMedicineToPharmacyActivity : PharmacistActivity() {
         viewModel.checkForLocationAccessPermission(this)
 
         lifecycleScope.launch {
-            if (viewModel.loadingState == NOT_LOADED)
-                viewModel.loadAvailableMedicines(pharmacyId)
-            viewModel.startObtainingLocation(this@AddMedicineToPharmacyActivity)
+            viewModel.obtainLocation(this@AddMedicineToPharmacyActivity)
         }
 
         setContent {
             AddMedicineToPharmacyScreen(
                 loadingState = viewModel.loadingState,
                 hasLocationPermission = viewModel.hasLocationPermission,
-                medicinesState = viewModel.medicinesState,
+                medicinePagingItems = viewModel.medicinePagingFlow?.collectAsLazyPagingItems(),
                 onSearch = { viewModel.searchMedicines(it) },
                 onMedicineClicked = { medicine ->
                     viewModel.selectedMedicine =

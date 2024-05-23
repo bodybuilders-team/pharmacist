@@ -27,8 +27,8 @@ import androidx.compose.ui.res.stringResource
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import pt.ulisboa.ist.pharmacist.R
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.getPharmacyById.PharmacyWithUserDataModel
-import pt.ulisboa.ist.pharmacist.service.http.services.pharmacies.models.listAvailableMedicines.MedicineStockModel
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineStock
+import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistScreen
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyHeader
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components.PharmacyMedicineList
@@ -45,9 +45,9 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PharmacyScreen(
-    pharmacy: PharmacyWithUserDataModel?,
+    pharmacy: Pharmacy?,
     loadingState: PharmacyViewModel.PharmacyLoadingState,
-    medicinesList: SnapshotStateMap<Long, MedicineStockModel>,
+    medicinesList: SnapshotStateMap<Long, MedicineStock>,
     onMedicineClick: (Long) -> Unit,
     onAddMedicineClick: () -> Unit,
     onAddStockClick: (Long) -> Unit,

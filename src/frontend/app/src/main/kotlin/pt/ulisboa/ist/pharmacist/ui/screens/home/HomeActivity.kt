@@ -4,7 +4,9 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import dagger.hilt.android.AndroidEntryPoint
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.about.AboutActivity
 import pt.ulisboa.ist.pharmacist.ui.screens.authentication.AuthenticationActivity
@@ -15,15 +17,15 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.navigateTo
 /**
  * Activity for the [HomeScreen].
  */
+@AndroidEntryPoint
 class HomeActivity : PharmacistActivity() {
 
-    private val viewModel by getViewModel(::HomeViewModel)
+    private val viewModel: HomeViewModel by viewModels()
 
-    val requestPermissionLauncher =
+    private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { _: Boolean ->
-
         }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

@@ -7,49 +7,43 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
+import coil.request.CachePolicy
+import coil.util.DebugLogger
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import pt.ulisboa.ist.pharmacist.service.http.PharmacistService
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.MedicineNotificationsBackgroundService
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
-import pt.ulisboa.ist.pharmacist.session.SessionManagerSharedPrefs
+import javax.inject.Inject
 
 /**
  * The Pharmacist application.
  *
  * @property jsonEncoder the JSON encoder used to serialize/deserialize objects
  * @property sessionManager the manager used to handle the user session
- * @property pharmacistService the service used to handle the pharmacist requests
  */
-class PharmacistApplication : DependenciesContainer, Application() {
+@HiltAndroidApp
+class PharmacistApplication : DependenciesContainer, Application(), ImageLoaderFactory {
 
-    override val jsonEncoder: Gson = GsonBuilder().create()
+    @Inject
+    override lateinit var httpClient: OkHttpClient
 
-    override val sessionManager: SessionManager = SessionManagerSharedPrefs(context = this)
+    @Inject
+    override lateinit var jsonEncoder: Gson
 
-    override val httpClient = OkHttpClient.Builder()
-        .connectTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
-        .writeTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
-//        .connectionSpecs(listOf(okhttp3.ConnectionSpec.MODERN_TLS))
-        .build()
+    @Inject
+    override lateinit var sessionManager: SessionManager
 
-    override val pharmacistService = PharmacistService(
-        context = this,
-        httpClient = httpClient,
-        sessionManager = sessionManager
-    )
-
-    override val realTimeUpdatesService = RealTimeUpdatesService(
-        apiEndpoint = API_ENDPOINT,
-        sessionManager = sessionManager,
-        httpClient = httpClient
-    )
+    @Inject
+    override lateinit var realTimeUpdatesService: RealTimeUpdatesService
 
     private val serviceScope = CoroutineScope(Dispatchers.Default)
 
@@ -84,15 +78,36 @@ class PharmacistApplication : DependenciesContainer, Application() {
     companion object {
         const val MEDICINE_NOTIFICATION_CHANNEL = "MedicineNotifications"
 
-        private const val API_ENDPOINT_TYPE = "render"
+        private const val API_ENDPOINT_TYPE = "domain"
         val API_ENDPOINT = when (API_ENDPOINT_TYPE) {
             "localhost" -> "http://10.0.2.2:8080"
             "ngrok" -> "https://2b02-2001-818-e871-b700-c937-8172-33bf-a88.ngrok-free.app"
             "render" -> "https://pharmacist-e9t4.onrender.com"
+            "domain" -> "https://thepharmacist.online"
             else -> {
                 throw IllegalStateException("Invalid API_ENDPOINT_TYPE")
             }
         }
         const val TAG = "PharmacistApp"
+    }
+
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .memoryCache {
+                MemoryCache.Builder(this)
+                    .maxSizePercent(0.1)
+                    .strongReferencesEnabled(true)
+                    .build()
+            }
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .diskCache {
+                DiskCache.Builder()
+                    .maxSizePercent(0.03)
+                    .directory(cacheDir)
+                    .build()
+            }
+            .logger(DebugLogger())
+            .build()
     }
 }
