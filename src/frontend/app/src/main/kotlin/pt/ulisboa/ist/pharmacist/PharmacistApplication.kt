@@ -35,10 +35,13 @@ class PharmacistApplication : DependenciesContainer, Application(), ImageLoaderF
 
     @Inject
     override lateinit var httpClient: OkHttpClient
+
     @Inject
     override lateinit var jsonEncoder: Gson
+
     @Inject
     override lateinit var sessionManager: SessionManager
+
     @Inject
     override lateinit var realTimeUpdatesService: RealTimeUpdatesService
 

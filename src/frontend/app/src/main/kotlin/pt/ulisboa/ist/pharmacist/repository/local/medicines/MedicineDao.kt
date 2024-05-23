@@ -12,6 +12,9 @@ interface MedicineDao {
     suspend fun upsertMedicines(medicines: List<MedicineEntity>)
 
     @Upsert
+    suspend fun upsertMedicine(medicine: MedicineEntity)
+
+    @Upsert
     suspend fun upsertPharmacyMedicineList(pharmacyMedicineList: List<PharmacyMedicineEntity>)
 
     @Query("UPDATE medicines SET notificationsActive = :notificationsActive WHERE medicineId = :medicineId")

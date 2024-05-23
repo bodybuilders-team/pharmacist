@@ -93,7 +93,12 @@ object ImageHandlingUtils {
         uploaderApi: UploaderApi
     ): UploadBoxPhotoOutputData? {
         val createSignedUrlResult =
-            uploaderApi.createSignedUrl(mediaType.toString())
+            try {
+                uploaderApi.createSignedUrl(mediaType.toString())
+            } catch (e: Exception) {
+                Log.e("ImageHandlingUtils", "Failed to create signed URL", e)
+                return null
+            }
 
         if (createSignedUrlResult.isFailure()) {
             Log.e("ImageHandlingUtils", "Failed to create signed URL")
@@ -108,7 +113,12 @@ object ImageHandlingUtils {
         val signedUrl = createSignedUrlResult.data.signedUrl
 
         val uploadResult =
-            uploaderApi.uploadBoxPhoto(signedUrl, boxPhotoData, mediaType)
+            try {
+                uploaderApi.uploadBoxPhoto(signedUrl, boxPhotoData, mediaType)
+            } catch (e: Exception) {
+                Log.e("ImageHandlingUtils", "Failed to upload box photo", e)
+                return null
+            }
 
         if (uploadResult.isFailure()) {
             Log.e("ImageHandlingUtils", "Failed to upload box photo")

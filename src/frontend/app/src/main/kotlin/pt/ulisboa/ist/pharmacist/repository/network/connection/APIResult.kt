@@ -32,7 +32,6 @@ sealed class APIResult<out T> {
  * @receiver the api result to check
  * @return true if the result is a success, false otherwise
  */
-@Suppress("unused")
 @OptIn(ExperimentalContracts::class)
 fun <T> APIResult<T>.isSuccess(): Boolean {
     contract {

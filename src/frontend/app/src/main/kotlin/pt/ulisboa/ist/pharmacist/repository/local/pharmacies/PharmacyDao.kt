@@ -11,6 +11,9 @@ interface PharmacyDao {
     @Upsert
     suspend fun upsertPharmacies(pharmacies: List<PharmacyEntity>)
 
+    @Upsert
+    suspend fun upsertPharmacy(pharmacy: PharmacyEntity)
+
     @Query(
         """
         SELECT pharmacies.pharmacyId, pharmacies.name, pharmacies.location, pharmacies.pictureUrl, pharmacies.globalRating, pharmacies.numberOfRatings,
@@ -22,6 +25,9 @@ interface PharmacyDao {
     """
     )
     fun getPagingSourceByMedicineId(medicineId: Long): PagingSource<Int, PharmacyEntity>
+
+    @Query("UPDATE pharmacies SET userMarkedAsFavorite = :isFavorite WHERE pharmacyId = :pharmacyId")
+    fun updatePharmacyFavoriteStatus(pharmacyId: Long, isFavorite: Boolean)
 
     @Query("SELECT * FROM pharmacies")
     suspend fun getAllPharmacies(): List<PharmacyEntity>

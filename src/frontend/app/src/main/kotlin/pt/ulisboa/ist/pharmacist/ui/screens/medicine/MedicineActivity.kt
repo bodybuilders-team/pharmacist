@@ -67,7 +67,7 @@ class MedicineActivity : PharmacistActivity() {
         super.onCreate(savedInstanceState)
 
         if (viewModel.loadingState == NOT_LOADED)
-            viewModel.loadMedicine(medicineId)
+            viewModel.loadMedicine()
 
 
         viewModel.checkForLocationAccessPermission(this)

@@ -29,6 +29,8 @@ import kotlinx.coroutines.launch
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicine
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
@@ -86,14 +88,19 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
 
         Log.d("AddMedicineToPharmacyViewModel", "addMedicineToPharmacy: $medicineId, $stock")
 
-        val result = pharmacyApi.addNewMedicineToPharmacy(
-            pharmacyId,
-            medicineId,
-            stock
-        )
+        val result = try {
+            pharmacyApi.addNewMedicineToPharmacy(
+                pharmacyId,
+                medicineId,
+                stock
+            )
+        } catch (e: Exception) {
+            Log.e("AddMedicineToPharmacyViewModel", "Failed to add medicine to pharmacy", e)
+            return false
+        }
 
         if (result.isFailure()) {
-            Log.e("AddMedicineToPharmacyViewModel", "Failed to add medicine to pharmacy")
+            Log.d("AddMedicineToPharmacyViewModel", "Failed to add medicine to pharmacy")
             return false
         }
 
@@ -105,19 +112,24 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
     fun addMedicine(medicineId: Long) = viewModelScope.launch {
         Log.d("AddMedicineToPharmacyViewModel", "addMedicine: $medicineId")
 
-        val result = medicineApi.getMedicineById(medicineId)
-
+        val result = try {
+            medicineApi.getMedicineById(medicineId)
+        } catch (e: Exception) {
+            Log.e("AddMedicineToPharmacyViewModel", "Failed to get medicine from API", e)
+            return@launch
+        }
         if (result.isFailure()) {
-            Log.e("AddMedicineToPharmacyViewModel", "Failed to get medicine with id $medicineId")
+            Log.d("AddMedicineToPharmacyViewModel", "Failed to get medicine from API")
             return@launch
         }
 
-        val medicine = result.data
+        pharmacistDb.medicineDao().upsertMedicine(result.data.toMedicineEntity())
+        val medicine = pharmacistDb.medicineDao().getMedicineById(medicineId).toMedicine()
         selectedMedicine = MedicineWithClosestPharmacy(
-            medicine.medicine.medicineId,
-            medicine.medicine.name,
-            medicine.medicine.description,
-            medicine.medicine.boxPhotoUrl,
+            medicine.medicineId,
+            medicine.name,
+            medicine.description,
+            medicine.boxPhotoUrl,
             null
         )
     }

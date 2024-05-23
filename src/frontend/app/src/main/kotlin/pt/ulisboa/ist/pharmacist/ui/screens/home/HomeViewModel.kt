@@ -54,7 +54,11 @@ class HomeViewModel @Inject constructor(
         Log.d("LOGOUT", "Logging out user")
         withTimeoutOrNull(5000) {
             isLoading = true
-            usersApi.logout()
+            try {
+                usersApi.logout()
+            } catch (e: Exception) {
+                Log.e("LOGOUT", "Error logging out user", e)
+            }
         }
 
         sessionManager.clearSession()
@@ -86,10 +90,16 @@ class HomeViewModel @Inject constructor(
 
         val guestUserName = "Guest${UUID.randomUUID()}"
         isLoading = true
-        val result = usersApi.register(
-            username = guestUserName,
-            password = UUID.randomUUID().toString()
-        )
+        val result = try {
+            usersApi.register(
+                username = guestUserName,
+                password = UUID.randomUUID().toString()
+            )
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error entering as guest", e)
+            isLoading = false
+            return@launch
+        }
 
         if (result.isSuccess()) {
             sessionManager.setSession(

@@ -63,13 +63,6 @@ fun MedicineSearch(
     onMedicineClicked: (MedicineWithClosestPharmacy) -> Unit,
     selectedMedicine: MedicineWithClosestPharmacy? = null
 ) {
-    if (medicinePagingItems == null)
-        return Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            LoadingSpinner(modifier = Modifier.align(Alignment.Center))
-        }
-
     /*Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemCount}")
     Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.loadState.refresh}")
     Log.d("medicinePagingItems", "MedicineSearch: ${medicinePagingItems.itemSnapshotList}")*/
@@ -95,6 +88,13 @@ fun MedicineSearch(
         )
         return
     }
+
+    if (medicinePagingItems == null)
+        return Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LoadingSpinner(modifier = Modifier.align(Alignment.Center))
+        }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

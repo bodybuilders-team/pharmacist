@@ -44,56 +44,60 @@ fun MedicineScreen(
     toggleMedicineNotification: () -> Unit,
     onShareClick: () -> Unit
 ) {
-    if (loadingState == MedicineViewModel.MedicineLoadingState.LOADED && medicine != null) {
-        var hasPermission by remember { mutableStateOf(hasLocationPermission) }
+    PharmacistScreen {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            if (loadingState == MedicineViewModel.MedicineLoadingState.LOADED && medicine != null) {
+                var hasPermission by remember { mutableStateOf(hasLocationPermission) }
 
-        val isLandscape =
-            LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+                val isLandscape =
+                    LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-        PharmacistScreen {
-            if (!hasPermission) {
-                PermissionScreen(
-                    onPermissionGranted = {
-                        hasPermission = true
-                    }, permissionRequests = listOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ),
-                    permissionTitle = stringResource(R.string.pharmacy_map_location_permission_title),
-                    settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
-                    settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
-                )
-                return@PharmacistScreen
-            }
 
-            if (isLandscape)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    MedicineHeader(
-                        medicine,
-                        toggleMedicineNotification,
-                        onShareClick
+                if (!hasPermission) {
+                    PermissionScreen(
+                        onPermissionGranted = {
+                            hasPermission = true
+                        }, permissionRequests = listOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        ),
+                        permissionTitle = stringResource(R.string.pharmacy_map_location_permission_title),
+                        settingsPermissionNote = stringResource(R.string.pharmacyMap_location_permission_note),
+                        settingsPermissionNoteButtonText = stringResource(R.string.permission_settings_button)
                     )
-                    MedicinePharmacyList(pharmacies, onPharmacyClick)
+                    return@PharmacistScreen
                 }
-            else
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    MedicineHeader(
-                        medicine,
-                        toggleMedicineNotification,
-                        onShareClick
-                    )
-                    MedicinePharmacyList(pharmacies, onPharmacyClick)
-                }
+
+                if (isLandscape)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        MedicineHeader(
+                            medicine,
+                            toggleMedicineNotification,
+                            onShareClick
+                        )
+                        MedicinePharmacyList(pharmacies, onPharmacyClick)
+                    }
+                else
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        MedicineHeader(
+                            medicine,
+                            toggleMedicineNotification,
+                            onShareClick
+                        )
+                        MedicinePharmacyList(pharmacies, onPharmacyClick)
+                    }
+            } else
+                LoadingSpinner(text = stringResource(R.string.loading_medicine))
         }
-    } else
-        Box {
-            LoadingSpinner()
-        }
+    }
 }
 

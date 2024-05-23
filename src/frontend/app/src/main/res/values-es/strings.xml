@@ -118,4 +118,5 @@
     <string name="no_medicine_selected">Ningún medicamento seleccionado</string>
     <string name="star">Estrella</string>
     <string name="favorite_pharmacy">Farmacia Favorita</string>
+    <string name="loading_medicine">Cargando medicamento...</string>
 </resources>

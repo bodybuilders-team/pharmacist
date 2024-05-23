@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
-import androidx.room.withTransaction
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -31,6 +30,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyEntity
+import pt.ulisboa.ist.pharmacist.repository.network.connection.APIResult
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
 import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
@@ -156,29 +156,33 @@ class PharmacyMapViewModel @Inject constructor(
 
         state = PharmacyMapState.LOADING
 
-        val result = pharmacyApi.getPharmacies(limit = 1000)
-
-        if (result.isSuccess()) {
-            pharmacistDb.withTransaction {
-                pharmacistDb.pharmacyDao()
-                    .upsertPharmacies(result.data.pharmacies.map { it.toPharmacyEntity() })
-                pharmacistDb.pharmacyDao().getAllPharmacies().forEach {
-                    pharmacies[it.pharmacyId] = it.toPharmacy()
-                }
-            }
-
-            realTimeUpdatesService.subscribeToUpdates(
-                listOf(RealTimeUpdateSubscription.newPharmacies()) +
-                        result.data.pharmacies.flatMap {
-                            listOf(
-                                RealTimeUpdateSubscription.pharmacyUserRating(it.pharmacy.pharmacyId),
-                                RealTimeUpdateSubscription.pharmacyGlobalRating(it.pharmacy.pharmacyId),
-                                RealTimeUpdateSubscription.pharmacyUserFlagged(it.pharmacy.pharmacyId),
-                                RealTimeUpdateSubscription.pharmacyUserFavorited(it.pharmacy.pharmacyId)
-                            )
-                        }
-            )
+        val result = try {
+            pharmacyApi.getPharmacies(limit = 1000)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get pharmacies", e)
+            null
         }
+
+        if (result != null && result.isSuccess()) {
+            result as APIResult.Success
+
+            pharmacistDb.pharmacyDao()
+                .upsertPharmacies(result.data.pharmacies.map { it.toPharmacyEntity() })
+        }
+        pharmacistDb.pharmacyDao().getAllPharmacies().forEach {
+            pharmacies[it.pharmacyId] = it.toPharmacy()
+        }
+        realTimeUpdatesService.subscribeToUpdates(
+            listOf(RealTimeUpdateSubscription.newPharmacies()) +
+                    pharmacistDb.pharmacyDao().getAllPharmacies().flatMap {
+                        listOf(
+                            RealTimeUpdateSubscription.pharmacyUserRating(it.pharmacyId),
+                            RealTimeUpdateSubscription.pharmacyGlobalRating(it.pharmacyId),
+                            RealTimeUpdateSubscription.pharmacyUserFlagged(it.pharmacyId),
+                            RealTimeUpdateSubscription.pharmacyUserFavorited(it.pharmacyId)
+                        )
+                    }
+        )
 
         state = PharmacyMapState.LOADED
     }
@@ -266,11 +270,16 @@ class PharmacyMapViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            val result = pharmacyApi.addPharmacy(
-                name = name,
-                pharmacyPhotoUrl = pharmacyPhotoUrl!!,
-                location = location
-            )
+            val result = try {
+                pharmacyApi.addPharmacy(
+                    name = name,
+                    pharmacyPhotoUrl = pharmacyPhotoUrl!!,
+                    location = location
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to add pharmacy", e)
+                return@launch
+            }
 
             if (result.isSuccess()) {
                 loadPharmacyList()

@@ -27,8 +27,10 @@ import kotlinx.coroutines.withContext
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithNotificationStatus
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithNotificationStatus
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
+import pt.ulisboa.ist.pharmacist.repository.network.connection.APIResult
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
@@ -101,41 +103,56 @@ class MedicineViewModel @AssistedInject constructor(
         .cachedIn(viewModelScope)
 
     /**
-     * Loads the medicine with the given [mid].
+     * Loads the medicine with the given [medicineId].
      */
-    fun loadMedicine(mid: Long) = viewModelScope.launch {
+    fun loadMedicine() = viewModelScope.launch {
         loadingState = MedicineLoadingState.LOADING
 
-        val result = pharmacistDb.medicineDao().getMedicineById(mid)
-        medicine = result.toMedicineWithNotificationStatus()
+        reloadMedicine()
 
         loadingState = LOADED
     }
 
     fun toggleMedicineNotification() = viewModelScope.launch {
         medicine?.let {
-            if (!it.notificationsActive) {
-                val result = medicineApi.addMedicineNotification(medicineId)
-                if (result.isSuccess()) {
-                    pharmacistDb.medicineDao().updateMedicineNotificationStatus(
-                        medicineId = medicineId,
-                        notificationsActive = true
-                    )
-                    medicine = pharmacistDb.medicineDao().getMedicineById(medicineId)
-                        .toMedicineWithNotificationStatus()
+            val result = if (!it.notificationsActive) {
+                try {
+                    medicineApi.addMedicineNotification(medicineId)
+                } catch (e: Exception) {
+                    Log.e("MedicineViewModel", "Failed to add medicine notification", e)
+                    null
                 }
             } else {
-                val result = medicineApi.removeMedicineNotification(medicineId)
-                if (result.isSuccess()) {
-                    pharmacistDb.medicineDao().updateMedicineNotificationStatus(
-                        medicineId = medicineId,
-                        notificationsActive = true
-                    )
-                    medicine = pharmacistDb.medicineDao().getMedicineById(medicineId)
-                        .toMedicineWithNotificationStatus()
+                try {
+                    medicineApi.removeMedicineNotification(medicineId)
+                } catch (e: Exception) {
+                    Log.e("MedicineViewModel", "Failed to remove medicine notification", e)
+                    null
                 }
             }
+
+            if (result != null && result.isSuccess()) {
+                reloadMedicine()
+            }
         }
+    }
+
+    private suspend fun reloadMedicine() {
+        val result = try {
+            medicineApi.getMedicineById(medicineId)
+        } catch (e: Exception) {
+            Log.e("MedicineViewModel", "Failed to load medicine from API", e)
+            null
+        }
+        if (result != null && result.isSuccess()) {
+            result as APIResult.Success
+            pharmacistDb.medicineDao().upsertMedicine(result.data.toMedicineEntity())
+            Log.d("MedicineViewModel", "Loaded medicine from API")
+        }
+
+        medicine = pharmacistDb.medicineDao().getMedicineById(medicineId)
+            .toMedicineWithNotificationStatus()
+        Log.d("MedicineViewModel", "Got medicine from database: $medicine")
     }
 
     fun checkForLocationAccessPermission(context: Context) {

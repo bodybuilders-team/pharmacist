@@ -58,10 +58,16 @@ class AuthenticationViewModel @AssistedInject constructor(
     }
 
     private fun register(username: String, password: String) = viewModelScope.launch {
-        val result = usersApi.register(
-            username = username,
-            password = password
-        )
+        val result = try {
+            usersApi.register(
+                username = username,
+                password = password
+            )
+        } catch (e: Exception) {
+            _events.emit(Event.ShowToast("Couldn't connect to the server. Please try again later."))
+            authenticationState = AuthenticationState.NOT_AUTHENTICATED
+            return@launch
+        }
 
         authenticationState = if (result.isSuccess()) {
             sessionManager.setSession(
@@ -78,10 +84,17 @@ class AuthenticationViewModel @AssistedInject constructor(
     }
 
     private fun login(username: String, password: String) = viewModelScope.launch {
-        val result = usersApi.login(
-            username = username,
-            password = password
-        )
+        val result =
+            try {
+                usersApi.login(
+                    username = username,
+                    password = password
+                )
+            } catch (e: Exception) {
+                _events.emit(Event.ShowToast("Couldn't connect to the server. Please try again later."))
+                authenticationState = AuthenticationState.NOT_AUTHENTICATED
+                return@launch
+            }
 
         authenticationState = if (result.isSuccess()) {
             sessionManager.setSession(
@@ -98,10 +111,16 @@ class AuthenticationViewModel @AssistedInject constructor(
     }
 
     private fun upgrade(username: String, password: String) = viewModelScope.launch {
-        val result = usersApi.upgrade(
-            username = username,
-            password = password
-        )
+        val result = try {
+            usersApi.upgrade(
+                username = username,
+                password = password
+            )
+        } catch (e: Exception) {
+            _events.emit(Event.ShowToast("Couldn't connect to the server. Please try again later."))
+            authenticationState = AuthenticationState.NOT_AUTHENTICATED
+            return@launch
+        }
 
         authenticationState = if (result.isSuccess()) {
             sessionManager.setSession(

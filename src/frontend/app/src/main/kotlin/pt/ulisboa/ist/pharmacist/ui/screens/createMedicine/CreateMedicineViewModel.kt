@@ -55,8 +55,12 @@ class CreateMedicineViewModel @Inject constructor(
 
         state = CreateMedicineState.CREATING_MEDICINE
 
-        val createMedicineResult =
+        val createMedicineResult = try {
             medicineApi.createMedicine(name, description, boxPhotoUrl)
+        } catch (e: Exception) {
+            Log.e("CreateMedicineModel", "Failed to create medicine", e)
+            return null
+        }
 
         if (createMedicineResult.isFailure()) {
             Log.e("CreateMedicineModel", "Failed to create medicine")
