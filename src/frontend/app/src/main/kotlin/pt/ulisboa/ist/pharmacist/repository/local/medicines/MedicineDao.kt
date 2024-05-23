@@ -24,9 +24,6 @@ interface MedicineDao {
         val boxPhotoUrl: String
     )
 
-    @Upsert
-    suspend fun upsertPharmacyMedicineList(pharmacyMedicineList: List<PharmacyMedicineEntity>)
-
     @Query("UPDATE medicines SET notificationsActive = :notificationsActive WHERE medicineId = :medicineId")
     suspend fun updateMedicineNotificationStatus(
         medicineId: Long,
@@ -82,19 +79,6 @@ interface MedicineDao {
     @Query("SELECT * FROM medicines WHERE medicineId = :medicineId")
     suspend fun getMedicineById(medicineId: Long): MedicineEntity
 
-    @Query(
-        """
-        SELECT medicines.medicineId, medicines.name, medicines.description, medicines.boxPhotoUrl, medicines.notificationsActive, pharmacy_medicine.stock
-        FROM medicines
-        INNER JOIN pharmacy_medicine ON medicines.medicineId = pharmacy_medicine.medicineId
-        WHERE pharmacy_medicine.pharmacyId = :pharmacyId
-        """
-    )
-    suspend fun getPharmacyMedicineByPharmacyId(pharmacyId: Long): List<PharmacyMedicineFlatEntity>
-
     @Query("DELETE FROM medicines")
     suspend fun clearAllMedicines()
-
-    @Query("DELETE FROM pharmacy_medicine")
-    suspend fun clearAllPharmacyMedicine()
 }

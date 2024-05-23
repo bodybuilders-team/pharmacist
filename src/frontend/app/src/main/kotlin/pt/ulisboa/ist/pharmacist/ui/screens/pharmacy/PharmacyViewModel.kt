@@ -4,34 +4,38 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
-import androidx.room.withTransaction
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
-import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
-import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicine
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineEntity
+import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineStock
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyEntity
-import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyMedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.network.connection.APIResult
-import pt.ulisboa.ist.pharmacist.repository.network.connection.isFailure
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.MedicineStockOperation
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
+import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyMedicinesRemoteMediator
 import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
@@ -81,123 +85,37 @@ class PharmacyViewModel @AssistedInject constructor(
     var pharmacyImage by mutableStateOf<ImageBitmap?>(null)
         private set
 
-    //private val modificationEvents = MutableSharedFlow<ModificationEvent>()
+    val triggerUpdateFlow = MutableStateFlow(false)
 
-    //private val newMedicineFlow = MutableStateFlow<Long?>(null)
-
-    val medicinesList =
-        mutableStateMapOf<Long, MedicineStock>()
-
-    /*@OptIn(ExperimentalCoroutinesApi::class)
-     private val _medicinesState = newMedicineFlow.flatMapLatest {
-         Pager(
-             config = PagingConfig(
-                 pageSize = PAGE_SIZE,
-                 prefetchDistance = PREFETCH_DISTANCE,
-                 enablePlaceholders = false
-             ),
-             pagingSourceFactory = {
-                 PharmacyMedicinesPagingSource(
-                     pharmaciesService = pharmacistService.pharmaciesService,
-                     realTimeUpdatesService = realTimeUpdatesService,
-                     pid = pharmacyId
-                 )
-             }
-         ).flow.cachedIn(viewModelScope)
-             .combine(modificationEvents) { pagingData, modificationEvents ->
-                 modificationEvents.fold(pagingData) { pagingDataAcc, modificationEvent ->
-                     applyModificationEvent(pagingDataAcc, modificationEvent)
-                 }
-             }
-     }*/
-
-    private fun fetchAllMedicines() = viewModelScope.launch {
-        if (pharmacy == null) return@launch
-
-        var offset = 0L
-        val limit = 50L
-        while (true) {
-            Log.d(
-                "PharmacyViewModel",
-                "fetchAllMedicines - Fetching medicines for pharmacy ${pharmacy!!.pharmacyId}" +
-                        " with offset $offset and limit $limit"
-            )
-            val result = try {
-                pharmacyApi.listAvailableMedicines(
-                    pharmacyId = pharmacyId,
-                    limit = limit,
-                    offset = offset
-                )
-            } catch (e: Exception) {
-                Log.e("PharmacyViewModel", "Failed to fetch medicines from API", e)
-                null
-            }
-
-            if (result == null || result.isFailure()) {
-                Log.d("PharmacyViewModel", "Medicines not retrieved from API")
-            } else if (result.isSuccess()) {
-                result as APIResult.Success
-                Log.d("PharmacyViewModel", "Medicines loaded from API: ${result.data.medicines}")
-
-                if (result.data.medicines.isEmpty()) break
-
-                pharmacistDb.medicineDao().upsertPharmacyMedicineList(
-                    result.data.medicines.map {
-                        it.toPharmacyMedicineEntity(pharmacyId)
-                    }
-                )
-            }
-            pharmacistDb.medicineDao().getPharmacyMedicineByPharmacyId(pharmacyId)
-                .forEach { pharmacyMedicine ->
-                    medicinesList[pharmacyMedicine.medicineId] = MedicineStock(
-                        medicine = Medicine(
-                            medicineId = pharmacyMedicine.medicineId,
-                            name = pharmacyMedicine.name,
-                            description = pharmacyMedicine.description,
-                            boxPhotoUrl = pharmacyMedicine.boxPhotoUrl
-                        ),
-                        stock = pharmacyMedicine.stock ?: 0
+    @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
+    val medicinePagingFlow =
+        triggerUpdateFlow.flatMapLatest {
+            Pager(
+                config = PagingConfig(
+                    pageSize = PAGE_SIZE,
+                    prefetchDistance = PREFETCH_DISTANCE,
+                    enablePlaceholders = false,
+                    initialLoadSize = PAGE_SIZE
+                ),
+                remoteMediator = PharmacyMedicinesRemoteMediator(
+                    pharmacistDb = pharmacistDb,
+                    pharmacyApi = pharmacyApi,
+                    pharmacyId = pharmacyId
+                ),
+                pagingSourceFactory = {
+                    pharmacistDb.pharmacyDao().pagingSourcePharmacyMedicineByPharmacyId(
+                        pharmacyId = pharmacyId
                     )
                 }
-
-            Log.d("PharmacyViewModel", "Got medicines from database: ${medicinesList.size}")
-
-            realTimeUpdatesService.subscribeToUpdates(
-                pharmacistDb.medicineDao().getPharmacyMedicineByPharmacyId(pharmacyId)
-                    .map {
-                        RealTimeUpdateSubscription.pharmacyMedicineStock(
-                            pharmacyId = pharmacyId,
-                            medicineId = it.medicineId
-                        )
-                    }
             )
-
-            if (result == null || result.isFailure()) break
-            offset += limit
-        }
-    }
-
-    /*private fun applyModificationEvent(
-        pagingData: PagingData<MedicineStockModel>,
-        modificationEvent: ModificationEvent
-    ): PagingData<MedicineStockModel> = when (modificationEvent) {
-        is StockModificationEvent -> {
-            Log.d("RealTimeUpdatesService", "Applying stock modification event: $modificationEvent")
-            pagingData.map {
-                if (it.medicine.medicineId != modificationEvent.medicineId)
-                    return@map it
-
-                it.copy(
-                    stock = it.stock + when (modificationEvent.operation) {
-                        MedicineStockOperation.ADD -> modificationEvent.quantity
-                        MedicineStockOperation.REMOVE -> -modificationEvent.quantity
+                .flow
+                .map { pagingData ->
+                    pagingData.map { pharmacyMedicineFlatEntity ->
+                        pharmacyMedicineFlatEntity.toMedicineStock()
                     }
-                )
-            }
+                }
         }
-    }*/
-
-    //val medicinesState get() = _medicinesState
+            .cachedIn(viewModelScope)
 
     fun listenForRealTimeUpdates() = viewModelScope.launch {
         realTimeUpdatesService.listenForRealTimeUpdates(
@@ -243,9 +161,7 @@ class PharmacyViewModel @AssistedInject constructor(
                     "RealTimeUpdatesService",
                     "Received medicine stock update: $medicineStockData"
                 )
-                medicinesList.compute(medicineStockData.medicineId) { _, medicineStock ->
-                    medicineStock?.copy(stock = medicineStockData.stock)
-                }
+                // triggerUpdateFlow.value = !triggerUpdateFlow.value
             }
         )
     }
@@ -269,7 +185,6 @@ class PharmacyViewModel @AssistedInject constructor(
             )
         )
         loadingState = LOADED
-        fetchAllMedicines()
     }
 
     private suspend fun reloadPharmacy() {
@@ -372,6 +287,7 @@ class PharmacyViewModel @AssistedInject constructor(
             if (result != null && result.isSuccess()) {
                 Log.d("PharmacyViewModel", "Modified stock in API")
             }
+            triggerUpdateFlow.value = !triggerUpdateFlow.value
         }
     }
 
@@ -386,16 +302,8 @@ class PharmacyViewModel @AssistedInject constructor(
 
             if (result != null && result.isSuccess()) {
                 result as APIResult.Success
-                pharmacistDb.withTransaction {
-                    pharmacistDb.medicineDao().upsertMedicine(result.data.toMedicineEntity())
-
-                    medicinesList[medicineId] =
-                        MedicineStock(
-                            medicine = pharmacistDb.medicineDao().getMedicineById(medicineId)
-                                .toMedicine(),
-                            stock = quantity
-                        )
-                }
+                pharmacistDb.medicineDao().upsertMedicine(result.data.toMedicineEntity())
+                triggerUpdateFlow.value = !triggerUpdateFlow.value
 
                 realTimeUpdatesService.subscribeToUpdates(
                     listOf(
@@ -436,6 +344,11 @@ class PharmacyViewModel @AssistedInject constructor(
             val operation: MedicineStockOperation,
             val quantity: Long
         ) : ModificationEvent()
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 10
+        private const val PREFETCH_DISTANCE = 1
     }
 }
 

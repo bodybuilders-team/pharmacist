@@ -1,4 +1,4 @@
-package pt.ulisboa.ist.pharmacist.repository.remote.medicines
+package pt.ulisboa.ist.pharmacist.repository.remote.pharmacies
 
 import android.util.Log
 import androidx.paging.ExperimentalPagingApi
@@ -7,23 +7,22 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import okio.IOException
-import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineDao
-import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineWithClosestPharmacyEntity
+import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineEntity
+import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineFlatEntity
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
 
 @OptIn(ExperimentalPagingApi::class)
-class MedicineWithClosestPharmacyRemoteMediator(
+class PharmacyMedicinesRemoteMediator(
     private val pharmacistDb: PharmacistDatabase,
-    private val medicineApi: MedicineApi,
-    private val query: String,
-    private val location: Location?
-) : RemoteMediator<Int, MedicineWithClosestPharmacyEntity>() {
+    private val pharmacyApi: PharmacyApi,
+    private val pharmacyId: Long
+) : RemoteMediator<Int, PharmacyMedicineFlatEntity>() {
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, MedicineWithClosestPharmacyEntity>
+        state: PagingState<Int, PharmacyMedicineFlatEntity>
     ): MediatorResult {
         val offset = when (loadType) {
             LoadType.REFRESH -> STARTING_KEY
@@ -35,17 +34,16 @@ class MedicineWithClosestPharmacyRemoteMediator(
 
         val limit = state.config.pageSize
 
-        Log.d("MedicineWithClosestPharmacyRemoteMediator", "LoadType: $loadType")
+        Log.d("PharmacyMedicinesRemoteMediator", "LoadType: $loadType")
         Log.d(
-            "MedicineWithClosestPharmacyRemoteMediator",
+            "PharmacyMedicinesRemoteMediator",
             "Item count: ${state.pages.flatten().map { it.medicineId }}"
         )
-        Log.d("MedicineWithClosestPharmacyRemoteMediator", "Offset: $offset, Limit: $limit")
+        Log.d("PharmacyMedicinesRemoteMediator", "Offset: $offset, Limit: $limit")
 
         return try {
-            val result = medicineApi.getMedicinesWithClosestPharmacy(
-                substring = query,
-                location = location,
+            val result = pharmacyApi.listAvailableMedicines(
+                pharmacyId = pharmacyId,
                 limit = limit.toLong(),
                 offset = offset.toLong()
             )
@@ -54,14 +52,11 @@ class MedicineWithClosestPharmacyRemoteMediator(
                 return MediatorResult.Error(Exception("Error loading data"))
             }
 
-            Log.d(
-                "MedicineWithClosestPharmacyRemoteMediator",
-                "Result: ${result.data.medicines.size}"
-            )
+            Log.d("PharmacyMedicinesRemoteMediator", "Result: ${result.data.medicines.size}")
 
             pharmacistDb.withTransaction {
                 if (loadType == LoadType.REFRESH)
-                    pharmacistDb.medicineDao().clearAllMedicines()
+                    pharmacistDb.pharmacyDao().clearPharmacyMedicineByPharmacyId(pharmacyId)
 
                 pharmacistDb.medicineDao().upsertBaseMedicines(result.data.medicines.map {
                     MedicineDao.MedicineBaseEntity(
@@ -71,10 +66,17 @@ class MedicineWithClosestPharmacyRemoteMediator(
                         boxPhotoUrl = it.medicine.boxPhotoUrl
                     )
                 })
+                pharmacistDb.pharmacyDao().upsertPharmacyMedicineList(result.data.medicines.map {
+                    PharmacyMedicineEntity(
+                        pharmacyId = pharmacyId,
+                        medicineId = it.medicine.medicineId,
+                        stock = it.stock
+                    )
+                })
             }
 
             Log.d(
-                "MedicineWithClosestPharmacyRemoteMediator",
+                "PharmacyMedicinesRemoteMediator",
                 "Reached end of pagination: ${result.data.medicines.isEmpty() || result.data.medicines.size < limit}"
             )
 

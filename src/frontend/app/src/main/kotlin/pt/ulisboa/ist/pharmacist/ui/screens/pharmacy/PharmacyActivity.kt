@@ -13,6 +13,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.launch
@@ -54,6 +55,7 @@ class PharmacyActivity : PharmacistActivity() {
 
         Log.d("PharmacyActivity", "Loading pharmacy")
         viewModel.loadPharmacy(pharmacyId)
+        viewModel.triggerUpdateFlow.value = !viewModel.triggerUpdateFlow.value
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +74,7 @@ class PharmacyActivity : PharmacistActivity() {
             PharmacyScreen(
                 pharmacy = viewModel.pharmacy,
                 loadingState = viewModel.loadingState,
-                medicinesList = viewModel.medicinesList,
+                medicineList = viewModel.medicinePagingFlow.collectAsLazyPagingItems(),
                 onMedicineClick = { medicineId ->
                     MedicineActivity.navigate(this, medicineId)
                 },

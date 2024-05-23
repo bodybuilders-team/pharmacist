@@ -1,7 +1,10 @@
 package pt.ulisboa.ist.pharmacist.repository.mappers
 
+import pt.ulisboa.ist.pharmacist.domain.medicines.Medicine
+import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineStock
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
+import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineFlatEntity
 import pt.ulisboa.ist.pharmacist.repository.local.pharmacies.PharmacyEntity
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyWithUserDataDto
 
@@ -28,4 +31,14 @@ fun PharmacyEntity.toPharmacy() = Pharmacy(
     userRating = userRating,
     userMarkedAsFavorite = userMarkedAsFavorite,
     userFlagged = userFlagged
+)
+
+fun PharmacyMedicineFlatEntity.toMedicineStock() = MedicineStock(
+    Medicine(
+        medicineId = medicineId,
+        name = name,
+        description = description,
+        boxPhotoUrl = boxPhotoUrl
+    ),
+    stock = stock ?: 0
 )

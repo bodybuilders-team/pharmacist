@@ -18,12 +18,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.paging.compose.LazyPagingItems
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import pt.ulisboa.ist.pharmacist.R
@@ -47,7 +47,7 @@ import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 fun PharmacyScreen(
     pharmacy: Pharmacy?,
     loadingState: PharmacyViewModel.PharmacyLoadingState,
-    medicinesList: SnapshotStateMap<Long, MedicineStock>,
+    medicineList: LazyPagingItems<MedicineStock>,
     onMedicineClick: (Long) -> Unit,
     onAddMedicineClick: () -> Unit,
     onAddStockClick: (Long) -> Unit,
@@ -57,7 +57,6 @@ fun PharmacyScreen(
     onShareClick: () -> Unit,
     onRatingChanged: (Int) -> Unit
 ) {
-    val medicinesStock = medicinesList.values.toList()
     val isLandscape =
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val pagerState = rememberPagerState(initialPage = 0)
@@ -131,11 +130,11 @@ fun PharmacyScreen(
                             modifier = Modifier.fillMaxWidth(0.35f)
                         )
                         PharmacyMedicineList(
-                            medicinesStock,
-                            onAddMedicineClick,
-                            onMedicineClick,
-                            onAddStockClick,
-                            onRemoveStockClick
+                            medicineList = medicineList,
+                            onAddMedicineClick = onAddMedicineClick,
+                            onMedicineClick = onMedicineClick,
+                            onAddStockClick = onAddStockClick,
+                            onRemoveStockClick = onRemoveStockClick
                         )
                     }
                 else
@@ -159,11 +158,11 @@ fun PharmacyScreen(
                             modifier = Modifier.fillMaxWidth(0.8f)
                         )
                         PharmacyMedicineList(
-                            medicinesStock,
-                            onAddMedicineClick,
-                            onMedicineClick,
-                            onAddStockClick,
-                            onRemoveStockClick
+                            medicineList = medicineList,
+                            onAddMedicineClick = onAddMedicineClick,
+                            onMedicineClick = onMedicineClick,
+                            onAddStockClick = onAddStockClick,
+                            onRemoveStockClick = onRemoveStockClick
                         )
                     }
             } else

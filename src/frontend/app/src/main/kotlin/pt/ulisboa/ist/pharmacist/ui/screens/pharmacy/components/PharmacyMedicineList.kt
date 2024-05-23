@@ -1,5 +1,6 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,13 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineStock
 import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.IconTextButton
+import pt.ulisboa.ist.pharmacist.ui.screens.shared.components.LoadingSpinner
 
 @Composable
 fun PharmacyMedicineList(
-    medicinesStock: List<MedicineStock>,
+    medicineList: LazyPagingItems<MedicineStock>,
     onAddMedicineClick: () -> Unit,
     onMedicineClick: (Long) -> Unit,
     onAddStockClick: (Long) -> Unit,
@@ -31,9 +35,9 @@ fun PharmacyMedicineList(
         modifier = Modifier.fillMaxSize()
     ) {
         Text(
-            text = "${medicinesStock.size} " +
+            text = "${medicineList.itemCount} " +
                     stringResource(
-                        if (medicinesStock.size != 1)
+                        if (medicineList.itemCount != 1)
                             R.string.medicines_available
                         else R.string.medicine_available
                     ),
@@ -49,21 +53,45 @@ fun PharmacyMedicineList(
             onClick = onAddMedicineClick
         )
 
-        LazyColumn(
-            modifier = Modifier
-                .padding(20.dp)
-        ) {
-            items(medicinesStock.size) { index ->
-                val (medicine, stock) = medicinesStock[index]
-                PharmacyMedicineEntry(
-                    medicine,
-                    stock,
-                    onMedicineClick = onMedicineClick,
-                    onAddStockClick = onAddStockClick,
-                    onRemoveStockClick = onRemoveStockClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
+        when (medicineList.loadState.refresh) {
+            is LoadState.Loading -> Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                LoadingSpinner(modifier = Modifier.align(Alignment.Center))
             }
+
+            else ->
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(20.dp)
+                ) {
+                    items(medicineList.itemCount) { index ->
+                        val (medicine, stock) = medicineList[index]!!
+                        PharmacyMedicineEntry(
+                            medicine,
+                            stock,
+                            onMedicineClick = onMedicineClick,
+                            onAddStockClick = onAddStockClick,
+                            onRemoveStockClick = onRemoveStockClick,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    when (medicineList.loadState.append) {
+                        is LoadState.Loading -> {
+                            item {
+                                LoadingSpinner(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .align(Alignment.CenterHorizontally)
+                                )
+                            }
+                        }
+
+                        else -> {}
+                    }
+                }
         }
     }
 }

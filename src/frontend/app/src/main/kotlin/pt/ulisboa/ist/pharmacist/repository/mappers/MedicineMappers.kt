@@ -5,9 +5,7 @@ import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.domain.medicines.MedicineWithNotificationStatus
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineWithClosestPharmacyEntity
-import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.GetMedicineOutputDto
-import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.MedicineStockDto
 
 fun GetMedicineOutputDto.toMedicineEntity() = MedicineEntity(
     medicineId = medicine.medicineId,
@@ -15,12 +13,6 @@ fun GetMedicineOutputDto.toMedicineEntity() = MedicineEntity(
     description = medicine.description,
     boxPhotoUrl = medicine.boxPhotoUrl,
     notificationsActive = notificationsActive
-)
-
-fun MedicineStockDto.toPharmacyMedicineEntity(pharmacyId: Long) = PharmacyMedicineEntity(
-    medicineId = medicine.medicineId,
-    pharmacyId = pharmacyId,
-    stock = stock
 )
 
 fun MedicineEntity.toMedicine() = Medicine(

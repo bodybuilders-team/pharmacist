@@ -5,6 +5,8 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
+import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineEntity
+import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineFlatEntity
 
 @Dao
 interface PharmacyDao {
@@ -15,13 +17,30 @@ interface PharmacyDao {
     @Upsert
     suspend fun upsertPharmacy(pharmacy: PharmacyEntity)
 
+    @Upsert
+    suspend fun upsertPharmacyMedicineList(pharmacyMedicineList: List<PharmacyMedicineEntity>)
+
+    @Upsert(entity = PharmacyMedicineEntity::class)
+    suspend fun upsertPharmacyMedicineNoStockList(
+        pharmacyMedicineNoStockList: List<PharmacyMedicineNoStockEntity>
+    )
+
+    data class PharmacyMedicineNoStockEntity(
+        val pharmacyId: Long,
+        val medicineId: Long
+    )
+
     @Query("UPDATE pharmacies SET userRating = :userRating WHERE pharmacyId = :pharmacyId")
     suspend fun updateUserRating(pharmacyId: Long, userRating: Int)
 
     @Update(entity = PharmacyEntity::class)
     suspend fun updateGlobalRating(pharmacyEntityGlobalRating: PharmacyEntityGlobalRating)
 
-    suspend fun updateGlobalRating(pharmacyId: Long, globalRating: Double, numberOfRatings: Array<Int>) {
+    suspend fun updateGlobalRating(
+        pharmacyId: Long,
+        globalRating: Double,
+        numberOfRatings: Array<Int>
+    ) {
         updateGlobalRating(PharmacyEntityGlobalRating(pharmacyId, globalRating, numberOfRatings))
     }
 
@@ -49,19 +68,39 @@ interface PharmacyDao {
     )
     fun pagingSourceByMedicineId(medicineId: Long): PagingSource<Int, PharmacyEntity>
 
+    @Query(
+        """
+        SELECT medicines.medicineId, medicines.name, medicines.description, medicines.boxPhotoUrl, medicines.notificationsActive, pharmacy_medicine.stock
+        FROM medicines
+        INNER JOIN pharmacy_medicine ON medicines.medicineId = pharmacy_medicine.medicineId
+        WHERE pharmacy_medicine.pharmacyId = :pharmacyId
+        """
+    )
+    fun pagingSourcePharmacyMedicineByPharmacyId(pharmacyId: Long): PagingSource<Int, PharmacyMedicineFlatEntity>
+
     @Query("SELECT * FROM pharmacies")
     suspend fun getAllPharmacies(): List<PharmacyEntity>
 
     @Query("SELECT * FROM pharmacies WHERE pharmacyId = :id")
     suspend fun getPharmacyById(id: Long): PharmacyEntity
 
-    /*suspend fun listAvailableMedicines(
-        pharmacyId: Long,
-        limit: Long? = null,
-        offset: Long? = null
-    ): Flow<List<LocalMedicine>>*/
-
     @Query("DELETE FROM pharmacies")
     suspend fun clearAllPharmacies()
+
+    @Query(
+        """
+        DELETE FROM pharmacies
+        WHERE pharmacyId IN (
+            SELECT pharmacyId FROM pharmacy_medicine WHERE medicineId = :medicineId
+        )
+    """
+    )
+    suspend fun clearAllPharmaciesByMedicineId(medicineId: Long)
+
+    @Query("DELETE FROM pharmacy_medicine")
+    suspend fun clearAllPharmacyMedicine()
+
+    @Query("DELETE FROM pharmacy_medicine WHERE pharmacyId = :pharmacyId")
+    suspend fun clearPharmacyMedicineByPharmacyId(pharmacyId: Long)
 }
 

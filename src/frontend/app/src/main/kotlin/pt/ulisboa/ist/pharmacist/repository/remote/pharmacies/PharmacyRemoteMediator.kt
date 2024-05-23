@@ -8,7 +8,7 @@ import androidx.room.withTransaction
 import okio.IOException
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
-import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineEntity
+import pt.ulisboa.ist.pharmacist.repository.local.pharmacies.PharmacyDao
 import pt.ulisboa.ist.pharmacist.repository.local.pharmacies.PharmacyEntity
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacyEntity
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
@@ -43,17 +43,16 @@ class PharmacyRemoteMediator(
 
             pharmacistDb.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    pharmacistDb.pharmacyDao().clearAllPharmacies()
+                    pharmacistDb.pharmacyDao().clearAllPharmaciesByMedicineId(medicineId)
                 }
                 pharmacistDb.pharmacyDao().upsertPharmacies(result.data.pharmacies.map {
                     it.toPharmacyEntity()
                 })
-                pharmacistDb.medicineDao().upsertPharmacyMedicineList(
+                pharmacistDb.pharmacyDao().upsertPharmacyMedicineNoStockList(
                     result.data.pharmacies.map {
-                        PharmacyMedicineEntity(
-                            medicineId = medicineId,
+                        PharmacyDao.PharmacyMedicineNoStockEntity( // TODO maybe get stock from API
                             pharmacyId = it.pharmacy.pharmacyId,
-                            stock = null
+                            medicineId = medicineId
                         )
                     }
                 )
