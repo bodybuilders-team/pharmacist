@@ -3,6 +3,7 @@ package pt.ulisboa.ist.pharmacist.repository.local.pharmacies
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 
 @Dao
@@ -14,6 +15,28 @@ interface PharmacyDao {
     @Upsert
     suspend fun upsertPharmacy(pharmacy: PharmacyEntity)
 
+    @Query("UPDATE pharmacies SET userRating = :userRating WHERE pharmacyId = :pharmacyId")
+    suspend fun updateUserRating(pharmacyId: Long, userRating: Int)
+
+    @Update(entity = PharmacyEntity::class)
+    suspend fun updateGlobalRating(pharmacyEntityGlobalRating: PharmacyEntityGlobalRating)
+
+    suspend fun updateGlobalRating(pharmacyId: Long, globalRating: Double, numberOfRatings: Array<Int>) {
+        updateGlobalRating(PharmacyEntityGlobalRating(pharmacyId, globalRating, numberOfRatings))
+    }
+
+    data class PharmacyEntityGlobalRating(
+        val pharmacyId: Long,
+        val globalRating: Double,
+        val numberOfRatings: Array<Int>
+    )
+
+    @Query("UPDATE pharmacies SET userFlagged = :isFlagged WHERE pharmacyId = :pharmacyId")
+    suspend fun updateUserFlagged(pharmacyId: Long, isFlagged: Boolean)
+
+    @Query("UPDATE pharmacies SET userMarkedAsFavorite = :isFavorite WHERE pharmacyId = :pharmacyId")
+    suspend fun updateUserMarkedAsFavorite(pharmacyId: Long, isFavorite: Boolean)
+
     @Query(
         """
         SELECT pharmacies.pharmacyId, pharmacies.name, pharmacies.latitude, pharmacies.longitude, pharmacies.pictureUrl, pharmacies.globalRating, pharmacies.numberOfRatings,
@@ -24,10 +47,7 @@ interface PharmacyDao {
         WHERE pharmacy_medicine.medicineId = :medicineId
     """
     )
-    fun getPagingSourceByMedicineId(medicineId: Long): PagingSource<Int, PharmacyEntity>
-
-    @Query("UPDATE pharmacies SET userMarkedAsFavorite = :isFavorite WHERE pharmacyId = :pharmacyId")
-    fun updatePharmacyFavoriteStatus(pharmacyId: Long, isFavorite: Boolean)
+    fun pagingSourceByMedicineId(medicineId: Long): PagingSource<Int, PharmacyEntity>
 
     @Query("SELECT * FROM pharmacies")
     suspend fun getAllPharmacies(): List<PharmacyEntity>

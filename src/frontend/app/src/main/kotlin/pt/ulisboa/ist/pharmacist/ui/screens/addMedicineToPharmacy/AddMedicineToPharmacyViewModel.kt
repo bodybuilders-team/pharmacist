@@ -166,7 +166,10 @@ class AddMedicineToPharmacyViewModel @AssistedInject constructor(
                                 query = query,
                                 location = location
                             ),
-                            pagingSourceFactory = { pharmacistDb.medicineDao().pagingSource() }
+                            pagingSourceFactory = {
+                                pharmacistDb.medicineDao()
+                                    .pagingSourceMedicineNotInPharmacy(query, pharmacyId)
+                            }
                         )
                             .flow
                             .map { pagingData ->

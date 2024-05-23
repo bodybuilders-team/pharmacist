@@ -49,6 +49,13 @@ class PharmacyActivity : PharmacistActivity() {
             }
         }
 
+    override fun onResume() {
+        super.onResume()
+
+        Log.d("PharmacyActivity", "Loading pharmacy")
+        viewModel.loadPharmacy(pharmacyId)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

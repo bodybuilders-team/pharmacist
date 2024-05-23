@@ -80,10 +80,10 @@ class RealTimeUpdatesService(
                 super.onOpen(webSocket, response)
                 Log.d(TAG, "WebSocket opened")
 
-                Log.d(TAG, "Sending subscriptions to WebSocket")
+                /*Log.d(TAG, "Sending subscriptions to WebSocket")
                 val json = Gson().toJson(currentSubscriptions.map { it.toDto() }.toTypedArray())
                 val sent = webSocket.send(json)
-                Log.d(TAG, "Successfully sent subscriptions to WebSocket: $sent")
+                Log.d(TAG, "Successfully sent subscriptions to WebSocket: $sent")*/
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
@@ -111,7 +111,7 @@ class RealTimeUpdatesService(
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                 super.onClosed(webSocket, code, reason)
-                Log.d(TAG, "WebSocket closed")
+                Log.d(TAG, "WebSocket closed: reason: $reason")
                 close()
             }
 

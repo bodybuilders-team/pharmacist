@@ -90,7 +90,7 @@ class MedicineViewModel @AssistedInject constructor(
                 location = location
             ),
             pagingSourceFactory = {
-                pharmacistDb.pharmacyDao().getPagingSourceByMedicineId(medicineId = medicineId)
+                pharmacistDb.pharmacyDao().pagingSourceByMedicineId(medicineId = medicineId)
             }
         )
             .flow

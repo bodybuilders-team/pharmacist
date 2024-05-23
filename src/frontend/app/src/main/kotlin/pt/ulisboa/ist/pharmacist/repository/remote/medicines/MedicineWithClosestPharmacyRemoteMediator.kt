@@ -35,12 +35,12 @@ class MedicineWithClosestPharmacyRemoteMediator(
 
         val limit = state.config.pageSize
 
-        Log.d("MedicineRemoteMediator", "LoadType: $loadType")
+        Log.d("MedicineWithClosestPharmacyRemoteMediator", "LoadType: $loadType")
         Log.d(
-            "MedicineRemoteMediator",
+            "MedicineWithClosestPharmacyRemoteMediator",
             "Item count: ${state.pages.flatten().map { it.medicineId }}"
         )
-        Log.d("MedicineRemoteMediator", "Offset: $offset, Limit: $limit")
+        Log.d("MedicineWithClosestPharmacyRemoteMediator", "Offset: $offset, Limit: $limit")
 
         return try {
             val result = medicineApi.getMedicinesWithClosestPharmacy(
@@ -54,7 +54,7 @@ class MedicineWithClosestPharmacyRemoteMediator(
                 return MediatorResult.Error(Exception("Error loading data"))
             }
 
-            Log.d("MedicineRemoteMediator", "Result: ${result.data.medicines.size}")
+            Log.d("MedicineWithClosestPharmacyRemoteMediator", "Result: ${result.data.medicines.size}")
 
             pharmacistDb.withTransaction {
                 if (loadType == LoadType.REFRESH)
@@ -71,7 +71,7 @@ class MedicineWithClosestPharmacyRemoteMediator(
             }
 
             Log.d(
-                "MedicineRemoteMediator",
+                "MedicineWithClosestPharmacyRemoteMediator",
                 "Reached end of pagination: ${result.data.medicines.isEmpty() || result.data.medicines.size < limit}"
             )
 

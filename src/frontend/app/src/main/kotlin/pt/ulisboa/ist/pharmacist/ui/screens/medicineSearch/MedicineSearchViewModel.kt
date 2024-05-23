@@ -27,7 +27,7 @@ import pt.ulisboa.ist.pharmacist.domain.pharmacies.Location
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineWithClosestPharmacy
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
-import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineRemoteMediator
+import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineWithClosestPharmacyRemoteMediator
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.ui.screens.PharmacistViewModel
 import javax.inject.Inject
@@ -76,19 +76,18 @@ class MedicineSearchViewModel @Inject constructor(
                                 enablePlaceholders = false,
                                 initialLoadSize = PAGE_SIZE
                             ),
-                            remoteMediator = //MedicineWithClosestPharmacyRemoteMediator(
-                            MedicineRemoteMediator(
+                            remoteMediator = MedicineWithClosestPharmacyRemoteMediator(
                                 pharmacistDb = pharmacistDb,
                                 medicineApi = medicineApi,
                                 query = query,
                                 location = location
                             ),
                             pagingSourceFactory = {
-                                pharmacistDb.medicineDao().pagingSource()
-                                /*pharmacistDb.medicineDao().medicineWithClosestPharmacyPagingSource(
+                                pharmacistDb.medicineDao().pagingSourceMedicineWithClosestPharmacy(
                                     latitude = location.lat,
                                     longitude = location.lon,
-                                )*/
+                                    query = query
+                                )
                             }
                         )
                             .flow

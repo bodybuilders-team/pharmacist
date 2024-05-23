@@ -202,20 +202,41 @@ class PharmacyViewModel @AssistedInject constructor(
     fun listenForRealTimeUpdates() = viewModelScope.launch {
         realTimeUpdatesService.listenForRealTimeUpdates(
             onPharmacyUserRating = { pharmacyUserRatingData ->
-                pharmacy = pharmacy?.copy(userRating = pharmacyUserRatingData.userRating)
+                viewModelScope.launch {
+                    pharmacistDb.pharmacyDao().updateUserRating(
+                        pharmacyId = pharmacyId,
+                        userRating = pharmacyUserRatingData.userRating
+                    )
+                    pharmacy = pharmacistDb.pharmacyDao().getPharmacyById(pharmacyId).toPharmacy()
+                }
             },
             onPharmacyGlobalRating = { pharmacyGlobalRatingData ->
-                pharmacy = pharmacy?.copy(
-                    globalRating = pharmacyGlobalRatingData.globalRating,
-                    numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
-                )
+                viewModelScope.launch {
+                    pharmacistDb.pharmacyDao().updateGlobalRating(
+                        pharmacyId = pharmacyId,
+                        globalRating = pharmacyGlobalRatingData.globalRating,
+                        numberOfRatings = pharmacyGlobalRatingData.numberOfRatings.toTypedArray()
+                    )
+                    pharmacy = pharmacistDb.pharmacyDao().getPharmacyById(pharmacyId).toPharmacy()
+                }
             },
             onPharmacyUserFlagged = { pharmacyUserFlaggedData ->
-                pharmacy = pharmacy?.copy(userFlagged = pharmacyUserFlaggedData.flagged)
+                viewModelScope.launch {
+                    pharmacistDb.pharmacyDao().updateUserFlagged(
+                        pharmacyId = pharmacyId,
+                        isFlagged = pharmacyUserFlaggedData.flagged
+                    )
+                    pharmacy = pharmacistDb.pharmacyDao().getPharmacyById(pharmacyId).toPharmacy()
+                }
             },
             onPharmacyUserFavorited = { pharmacyUserFavoritedData ->
-                pharmacy =
-                    pharmacy?.copy(userMarkedAsFavorite = pharmacyUserFavoritedData.favorited)
+                viewModelScope.launch {
+                    pharmacistDb.pharmacyDao().updateUserMarkedAsFavorite(
+                        pharmacyId = pharmacyId,
+                        isFavorite = pharmacyUserFavoritedData.favorited
+                    )
+                    pharmacy = pharmacistDb.pharmacyDao().getPharmacyById(pharmacyId).toPharmacy()
+                }
             },
             onMedicineStock = { medicineStockData ->
                 Log.d(

@@ -28,7 +28,7 @@ interface MedicineDao {
     suspend fun upsertPharmacyMedicineList(pharmacyMedicineList: List<PharmacyMedicineEntity>)
 
     @Query("UPDATE medicines SET notificationsActive = :notificationsActive WHERE medicineId = :medicineId")
-    fun updateMedicineNotificationStatus(
+    suspend fun updateMedicineNotificationStatus(
         medicineId: Long,
         notificationsActive: Boolean
     )
@@ -36,27 +36,34 @@ interface MedicineDao {
     @Query("SELECT * FROM medicines ORDER BY medicineId ASC")
     fun pagingSource(): PagingSource<Int, MedicineEntity>
 
-    @Query("SELECT * FROM medicines WHERE name LIKE :query")
+    @Query("SELECT * FROM medicines WHERE name LIKE '%' || :query || '%'")
     fun pagingSource(query: String): PagingSource<Int, MedicineEntity>
 
     @Query(
         """
         SELECT medicines.medicineId, medicines.name, medicines.description, medicines.boxPhotoUrl,
-                pharmacy_medicine.pharmacyId AS closestPharmacyId, pharmacies.name AS closestPharmacyName
+                       pharmacy_medicine.pharmacyId AS closestPharmacyId, pharmacies.name AS closestPharmacyName
         FROM medicines
         LEFT JOIN pharmacy_medicine ON medicines.medicineId = pharmacy_medicine.medicineId
-        INNER JOIN pharmacies ON pharmacy_medicine.pharmacyId = pharmacies.pharmacyId
-        WHERE pharmacy_medicine.pharmacyId = (
-            SELECT pharmacyId FROM pharmacies
-            ORDER BY (ABS(pharmacies.latitude - :latitude) + ABS(pharmacies.longitude - :longitude)) ASC
-            LIMIT 1
+        LEFT JOIN pharmacies ON pharmacy_medicine.pharmacyId = pharmacies.pharmacyId
+        WHERE (pharmacies.pharmacyId = (
+          -- Closest pharmacy to each medicine
+          SELECT p.pharmacyId
+          FROM pharmacy_medicine pm
+          JOIN pharmacies p ON pm.pharmacyId = p.pharmacyId
+          WHERE pm.medicineId = medicines.medicineId
+          ORDER BY ABS(p.latitude - :latitude) + ABS(p.longitude - :longitude) ASC
+          LIMIT 1
+        ) OR pharmacy_medicine.pharmacyId IS NULL
         )
+        AND medicines.name LIKE "%" || :query || "%"
         ORDER BY medicines.medicineId ASC
     """
     )
-    fun medicineWithClosestPharmacyPagingSource(
+    fun pagingSourceMedicineWithClosestPharmacy(
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        query: String
     ): PagingSource<Int, MedicineWithClosestPharmacyEntity>
 
     @Query(
@@ -64,7 +71,7 @@ interface MedicineDao {
         SELECT * FROM medicines
         WHERE medicineId NOT IN (
             SELECT medicineId FROM pharmacy_medicine WHERE pharmacyId = :pharmacyId
-        ) AND name LIKE :query
+        ) AND name LIKE "%" || :query || "%"
     """
     )
     fun pagingSourceMedicineNotInPharmacy(
