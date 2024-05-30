@@ -53,21 +53,23 @@ The frontend is a **mobile application** for **Android** built using
 **[Kotlin](https://kotlinlang.org/)** and **[Jetpack Compose](https://developer.android.com/develop/ui/compose)**. It is
 responsible for providing a user interface for the application.
 
+For client-side persistence, the frontend uses **[Room](https://developer.android.com/jetpack/androidx/releases/room)**
+to store the data locally on the device and enable caching for offline usage. We also use
+**[Coil](https://coil-kt.github.io/coil/)** for image loading. Finally, we use
+**[OkHttp](https://square.github.io/okhttp/)** to make HTTP requests to the backend.
+
 The frontend code is organized as follows:
 
-- [Domain](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/domain): contains the domain
-  models of the
+- [Domain](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/domain): contains the domain models of the
   application.
-- [Service](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/service): contains the
-  service classes that
-  interact with the backend.
-- [Session](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/session): contains the
-  session classes that
+- [Service](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/service): contains the service classes for the
+  location service and the real time updates service.
+- [Repository](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/repository): contains the repository classes
+- that manage the data, and communication with the backend.
+- [Session](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/session): contains the session classes that
   manage the user session.
-- [UI](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/ui): contains the UI components of
-  the application.
-    - [Screens](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/ui/screens): contains the
-      screens of the
+- [UI](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/ui): contains the UI components of the application.
+    - [Screens](src/frontend/app/src/main/kotlin/pt/ulisboa/ist/pharmacist/ui/screens): contains the screens of the
       application, where each screen is implemented using a:
         - **<ScreenName>Screen.kt**: the screen composable.
         - **<ScreenName>ViewModel.kt**: the view model of the screen, responsible for managing the
