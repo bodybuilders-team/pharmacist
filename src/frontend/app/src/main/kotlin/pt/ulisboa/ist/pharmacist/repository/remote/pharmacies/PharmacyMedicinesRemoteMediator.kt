@@ -12,12 +12,15 @@ import pt.ulisboa.ist.pharmacist.repository.local.medicines.MedicineDao
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineFlatEntity
 import pt.ulisboa.ist.pharmacist.repository.network.connection.isSuccess
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdateSubscription
+import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 
 @OptIn(ExperimentalPagingApi::class)
 class PharmacyMedicinesRemoteMediator(
     private val pharmacistDb: PharmacistDatabase,
     private val pharmacyApi: PharmacyApi,
-    private val pharmacyId: Long
+    private val pharmacyId: Long,
+    private val realTimeUpdatesService: RealTimeUpdatesService,
 ) : RemoteMediator<Int, PharmacyMedicineFlatEntity>() {
 
     override suspend fun load(
@@ -66,6 +69,7 @@ class PharmacyMedicinesRemoteMediator(
                         boxPhotoUrl = it.medicine.boxPhotoUrl
                     )
                 })
+
                 pharmacistDb.pharmacyDao().upsertPharmacyMedicineList(result.data.medicines.map {
                     PharmacyMedicineEntity(
                         pharmacyId = pharmacyId,
@@ -73,6 +77,15 @@ class PharmacyMedicinesRemoteMediator(
                         stock = it.stock
                     )
                 })
+
+                realTimeUpdatesService.subscribeToUpdates(
+                    result.data.medicines.map {
+                        RealTimeUpdateSubscription.pharmacyMedicineStock(
+                            pharmacyId = pharmacyId,
+                            medicineId = it.medicine.medicineId
+                        )
+                    }
+                )
             }
 
             Log.d(

@@ -31,9 +31,9 @@ object ApplicationModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .connectTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
-            .readTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
-            .writeTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
+//            .connectTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
+//            .readTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
+//            .writeTimeout(100, java.util.concurrent.TimeUnit.SECONDS)
             //.connectionSpecs(listOf(okhttp3.ConnectionSpec.MODERN_TLS))
             .build()
     }

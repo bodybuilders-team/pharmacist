@@ -55,7 +55,7 @@ class PharmacyActivity : PharmacistActivity() {
 
         Log.d("PharmacyActivity", "Loading pharmacy")
         viewModel.loadPharmacy(pharmacyId)
-        viewModel.triggerUpdateFlow.value = !viewModel.triggerUpdateFlow.value
+        viewModel.invalidate()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -196,6 +196,12 @@ class PharmacyActivity : PharmacistActivity() {
          */
         fun navigate(context: Context, pharmacyId: Long) {
             context.navigateTo<PharmacyActivity> {
+                putExtra(PHARMACY_ID, pharmacyId)
+            }
+        }
+
+        fun getNavigationIntent(applicationContext: Context, pharmacyId: Long): Intent {
+            return Intent(applicationContext, PharmacyActivity::class.java).apply {
                 putExtra(PHARMACY_ID, pharmacyId)
             }
         }

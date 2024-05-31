@@ -20,6 +20,9 @@ interface PharmacyDao {
     @Upsert
     suspend fun upsertPharmacyMedicineList(pharmacyMedicineList: List<PharmacyMedicineEntity>)
 
+    @Upsert
+    suspend fun upsertPharmacyMedicine(pharmacyMedicine: PharmacyMedicineEntity)
+
     @Upsert(entity = PharmacyMedicineEntity::class)
     suspend fun upsertPharmacyMedicineNoStockList(
         pharmacyMedicineNoStockList: List<PharmacyMedicineNoStockEntity>

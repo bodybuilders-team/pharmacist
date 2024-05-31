@@ -1,7 +1,5 @@
 package pt.ulisboa.ist.pharmacist.ui.screens.pharmacy
 
-import android.content.Context
-import android.net.ConnectivityManager
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.InvalidatingPagingSourceFactory
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
@@ -19,13 +18,12 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pt.ulisboa.ist.pharmacist.domain.pharmacies.Pharmacy
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
+import pt.ulisboa.ist.pharmacist.repository.local.medicines.PharmacyMedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineEntity
 import pt.ulisboa.ist.pharmacist.repository.mappers.toMedicineStock
 import pt.ulisboa.ist.pharmacist.repository.mappers.toPharmacy
@@ -69,13 +67,6 @@ class PharmacyViewModel @AssistedInject constructor(
         fun create(pharmacyId: Long): PharmacyViewModel
     }
 
-    fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
-        val activeNetworkInfo = connectivityManager?.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
-    }
-
     var loadingState by mutableStateOf(NOT_LOADED)
         private set
 
@@ -85,36 +76,35 @@ class PharmacyViewModel @AssistedInject constructor(
     var pharmacyImage by mutableStateOf<ImageBitmap?>(null)
         private set
 
-    val triggerUpdateFlow = MutableStateFlow(false)
+    private val invalidatingPagingSourceFactory = InvalidatingPagingSourceFactory {
+        pharmacistDb.pharmacyDao().pagingSourcePharmacyMedicineByPharmacyId(
+            pharmacyId = pharmacyId
+        )
+    }
 
     @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
     val medicinePagingFlow =
-        triggerUpdateFlow.flatMapLatest {
-            Pager(
-                config = PagingConfig(
-                    pageSize = PAGE_SIZE,
-                    prefetchDistance = PREFETCH_DISTANCE,
-                    enablePlaceholders = false,
-                    initialLoadSize = PAGE_SIZE
-                ),
-                remoteMediator = PharmacyMedicinesRemoteMediator(
-                    pharmacistDb = pharmacistDb,
-                    pharmacyApi = pharmacyApi,
-                    pharmacyId = pharmacyId
-                ),
-                pagingSourceFactory = {
-                    pharmacistDb.pharmacyDao().pagingSourcePharmacyMedicineByPharmacyId(
-                        pharmacyId = pharmacyId
-                    )
+        Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PREFETCH_DISTANCE,
+                enablePlaceholders = false,
+                initialLoadSize = PAGE_SIZE
+            ),
+            remoteMediator = PharmacyMedicinesRemoteMediator(
+                pharmacistDb = pharmacistDb,
+                pharmacyApi = pharmacyApi,
+                pharmacyId = pharmacyId,
+                realTimeUpdatesService = realTimeUpdatesService
+            ),
+            pagingSourceFactory = invalidatingPagingSourceFactory
+        )
+            .flow
+            .map { pagingData ->
+                pagingData.map { pharmacyMedicineFlatEntity ->
+                    pharmacyMedicineFlatEntity.toMedicineStock()
                 }
-            )
-                .flow
-                .map { pagingData ->
-                    pagingData.map { pharmacyMedicineFlatEntity ->
-                        pharmacyMedicineFlatEntity.toMedicineStock()
-                    }
-                }
-        }
+            }
             .cachedIn(viewModelScope)
 
     fun listenForRealTimeUpdates() = viewModelScope.launch {
@@ -161,7 +151,16 @@ class PharmacyViewModel @AssistedInject constructor(
                     "RealTimeUpdatesService",
                     "Received medicine stock update: $medicineStockData"
                 )
-                // triggerUpdateFlow.value = !triggerUpdateFlow.value
+                viewModelScope.launch {
+                    pharmacistDb.pharmacyDao().upsertPharmacyMedicine(
+                        PharmacyMedicineEntity(
+                            pharmacyId = pharmacyId,
+                            medicineId = medicineStockData.medicineId,
+                            stock = medicineStockData.stock
+                        )
+                    )
+                    invalidatingPagingSourceFactory.invalidate()
+                }
             }
         )
     }
@@ -181,7 +180,7 @@ class PharmacyViewModel @AssistedInject constructor(
                 RealTimeUpdateSubscription.pharmacyUserRating(pharmacyId),
                 RealTimeUpdateSubscription.pharmacyGlobalRating(pharmacyId),
                 RealTimeUpdateSubscription.pharmacyUserFlagged(pharmacyId),
-                RealTimeUpdateSubscription.pharmacyUserFavorited(pharmacyId)
+                RealTimeUpdateSubscription.pharmacyUserFavorited(pharmacyId),
             )
         )
         loadingState = LOADED
@@ -287,7 +286,6 @@ class PharmacyViewModel @AssistedInject constructor(
             if (result != null && result.isSuccess()) {
                 Log.d("PharmacyViewModel", "Modified stock in API")
             }
-            triggerUpdateFlow.value = !triggerUpdateFlow.value
         }
     }
 
@@ -303,7 +301,7 @@ class PharmacyViewModel @AssistedInject constructor(
             if (result != null && result.isSuccess()) {
                 result as APIResult.Success
                 pharmacistDb.medicineDao().upsertMedicine(result.data.toMedicineEntity())
-                triggerUpdateFlow.value = !triggerUpdateFlow.value
+                invalidatingPagingSourceFactory.invalidate()
 
                 realTimeUpdatesService.subscribeToUpdates(
                     listOf(
@@ -328,6 +326,10 @@ class PharmacyViewModel @AssistedInject constructor(
                 pharmacyImage = img
             }
         }
+    }
+
+    fun invalidate() {
+        invalidatingPagingSourceFactory.invalidate()
     }
 
     enum class PharmacyLoadingState {
