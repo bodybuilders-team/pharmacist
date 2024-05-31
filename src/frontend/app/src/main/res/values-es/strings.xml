@@ -114,10 +114,11 @@
     <string name="pick_location">Elegir Ubicación</string>
     <string name="medicine_available">medicamento disponible</string>
     <string name="medicine_availableIn1Pharmacy_text">Disponible en 1 farmacia</string>
-    <string name="loading_pharmacy">Cargando farmacia...</string>
+    <string name="loading_pharmacy">Cargando farmacia…</string>
     <string name="no_medicine_selected">Ningún medicamento seleccionado</string>
     <string name="star">Estrella</string>
     <string name="favorite_pharmacy">Farmacia Favorita</string>
-    <string name="loading_medicine">Cargando medicamento...</string>
-    <string name="pharmacy_notification_message">Farmacia %1$s cerca de ti</string>
+    <string name="loading_medicine">Cargando medicamento…</string>
+    <string name="pharmacy_notification_title">Farmacia %1$s cerca de ti</string>
+    <string name="pharmacy_notification_message">Haz clic para ver más detalles</string>
 </resources>

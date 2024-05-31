@@ -19,7 +19,6 @@ import coil.request.CachePolicy
 import coil.util.DebugLogger
 import com.google.gson.Gson
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -30,6 +29,7 @@ import pt.ulisboa.ist.pharmacist.service.PharmacyNotificationWork
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.MedicineNotificationsBackgroundService
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
+import javax.inject.Inject
 
 
 /**
@@ -106,26 +106,6 @@ class PharmacistApplication : DependenciesContainer, Application(), ImageLoaderF
         notificationManager.createNotificationChannel(channel)
     }
 
-    companion object {
-        const val MEDICINE_NOTIFICATION_CHANNEL = "MedicineNotifications"
-
-        private const val API_ENDPOINT_TYPE = "render"
-        val API_ENDPOINT = when (API_ENDPOINT_TYPE) {
-            "localhost" -> "http://10.0.2.2:8080"
-            "ngrok" -> "https://2b02-2001-818-e871-b700-c937-8172-33bf-a88.ngrok-free.app"
-            "render" -> "https://pharmacist-e9t4.onrender.com"
-            "domain" -> "https://thepharmacist.online"
-            else -> {
-                throw IllegalStateException("Invalid API_ENDPOINT_TYPE")
-            }
-        }
-        const val TAG = "PharmacistApp"
-        private const val PERIODIC_PHARMACY_NOTIFICATION_INTERVAL = 15L
-        private const val PHARMACY_NOTIFICATIONS_DELAY = 5000L
-
-
-    }
-
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .memoryCachePolicy(CachePolicy.ENABLED)
@@ -151,4 +131,21 @@ class PharmacistApplication : DependenciesContainer, Application(), ImageLoaderF
             .setWorkerFactory(workerFactory)
             .build()
 
+    companion object {
+        const val MEDICINE_NOTIFICATION_CHANNEL = "MedicineNotifications"
+
+        private const val API_ENDPOINT_TYPE = "render"
+        val API_ENDPOINT = when (API_ENDPOINT_TYPE) {
+            "localhost" -> "http://10.0.2.2:8080"
+            "ngrok" -> "https://2b02-2001-818-e871-b700-c937-8172-33bf-a88.ngrok-free.app"
+            "render" -> "https://pharmacist-e9t4.onrender.com"
+            "domain" -> "https://thepharmacist.online"
+            else -> {
+                throw IllegalStateException("Invalid API_ENDPOINT_TYPE")
+            }
+        }
+        const val TAG = "PharmacistApp"
+        private const val PERIODIC_PHARMACY_NOTIFICATION_INTERVAL = 15L
+        private const val PHARMACY_NOTIFICATIONS_DELAY = 30_000L
+    }
 }

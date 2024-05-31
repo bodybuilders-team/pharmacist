@@ -13,7 +13,6 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -22,6 +21,7 @@ import pt.ulisboa.ist.pharmacist.R
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.local.pharmacies.PharmacyEntity
 import pt.ulisboa.ist.pharmacist.ui.screens.pharmacy.PharmacyActivity
+import kotlin.coroutines.resume
 
 
 class PharmacyNotificationService(
@@ -92,7 +92,6 @@ class PharmacyNotificationService(
             pharmacyId
         )
 
-        //TODO: Check what happens when the user clicks on the back button in the MedicineActivity after clicking on the notification
         notificationIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
         val pendingNotiIntent: PendingIntent = PendingIntent.getActivity(
@@ -103,10 +102,7 @@ class PharmacyNotificationService(
         )
 
 
-        val message = applicationContext.getString(
-            R.string.pharmacy_notification_message,
-            pharmacyName,
-        )
+        val message = applicationContext.getString(R.string.pharmacy_notification_message)
 
         // Show notification to the user
         val notificationCompat = NotificationCompat.Builder(
@@ -116,7 +112,7 @@ class PharmacyNotificationService(
             .setSmallIcon(R.drawable.pharmacy_logo)
             .setContentTitle(
                 applicationContext.getString(
-                    R.string.pharmacy_notification_message,
+                    R.string.pharmacy_notification_title,
                     pharmacyName
                 )
             )
@@ -148,6 +144,6 @@ class PharmacyNotificationService(
 
     companion object {
         private const val PHARMACY_NOTIFICATION_ID = 1
-        private const val MAX_DISTANCE_METERS = 100
+        private const val MAX_DISTANCE_METERS = 500
     }
 }
