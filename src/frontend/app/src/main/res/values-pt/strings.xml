@@ -119,4 +119,5 @@
     <string name="star">Estrela</string>
     <string name="favorite_pharmacy">Farmácia Favorita</string>
     <string name="loading_medicine">Carregando medicamento...</string>
+    <string name="pharmacy_notification_message">Farmácia %1$s perto de ti</string>
 </resources>

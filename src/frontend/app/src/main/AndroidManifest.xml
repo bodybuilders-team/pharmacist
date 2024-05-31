@@ -71,5 +71,10 @@
 
         <service android:name="pt.ulisboa.ist.pharmacist.service.real_time_updates.MedicineNotificationsBackgroundService" />
         <receiver android:name="pt.ulisboa.ist.pharmacist.service.real_time_updates.MedicineNotificationsBroadcastReceiver" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
     </application>
 </manifest>

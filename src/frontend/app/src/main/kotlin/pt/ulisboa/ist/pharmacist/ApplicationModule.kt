@@ -12,16 +12,17 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import pt.ulisboa.ist.pharmacist.repository.local.PharmacistDatabase
 import pt.ulisboa.ist.pharmacist.repository.remote.medicines.MedicineApi
 import pt.ulisboa.ist.pharmacist.repository.remote.pharmacies.PharmacyApi
 import pt.ulisboa.ist.pharmacist.repository.remote.upload.UploaderApi
 import pt.ulisboa.ist.pharmacist.repository.remote.users.UsersApi
+import pt.ulisboa.ist.pharmacist.service.PharmacyNotificationService
 import pt.ulisboa.ist.pharmacist.service.real_time_updates.RealTimeUpdatesService
 import pt.ulisboa.ist.pharmacist.session.SessionManager
 import pt.ulisboa.ist.pharmacist.session.SessionManagerSharedPrefs
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -139,5 +140,17 @@ object ApplicationModule {
     fun providePlacesClient(@ApplicationContext context: Context): PlacesClient {
         Places.initialize(context, context.getString(R.string.google_maps_key))
         return Places.createClient(context)
+    }
+
+    @Provides
+    @Singleton
+    fun providePharmacyNotificationService(
+        @ApplicationContext context: Context,
+        database: PharmacistDatabase
+    ): PharmacyNotificationService {
+        return PharmacyNotificationService(
+            applicationContext = context,
+            database = database
+        )
     }
 }
